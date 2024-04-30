@@ -1,4 +1,4 @@
-package com.smoker.mahjong.service;
+package com.smoker.mahjong.impl;
 
 public class GameStart {
     // 游戏初始化
