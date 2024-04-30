@@ -1,4 +1,4 @@
-package com.smoker.mahjong.dao;
+package com.smoker.mahjong.data;
 
 
 import java.io.BufferedReader;
