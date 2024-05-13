@@ -4,7 +4,7 @@ public interface hide {
     public void open();
 
     // 暗槓
-    public void anKong();
+    public void canKong();
 
     // 加槓
 }
