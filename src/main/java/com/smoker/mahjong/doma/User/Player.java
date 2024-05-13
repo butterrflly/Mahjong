@@ -25,6 +25,15 @@ public class Player {
     public void addInitialHand(Tile tile) {
         //Distribute the initial hand
         handTile.addTile(tile);
+        handTile.sort();
     }
 
+
+    public String getName() {
+        return name;
+    }
+
+    public HandTile getHandTile() {
+        return handTile;
+    }
 }

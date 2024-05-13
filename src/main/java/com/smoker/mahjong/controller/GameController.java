@@ -46,6 +46,12 @@ public class GameController {
         return "HandTile";
     }
 
+    @RequestMapping(value = "/")
+    public String draw()
+    {
+        return Result.okGetString();
+    }
+
     //  ......
 
 }

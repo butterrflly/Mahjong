@@ -22,6 +22,8 @@ public class TileLibrary {
     }
 
     /**
+     * 创建初始牌库
+     *
      * 牌的 id 可以精准找到牌的 类型 大小 第几张牌
      * id 一定是一个三位数
      *
@@ -30,7 +32,6 @@ public class TileLibrary {
      * 个位代表这是第几张牌  因为每种类型的牌有 4个 ，所以个位就用来记录 这是4张一样的牌中的第几个 大小范围是 1 ~ 4
      */
     public void createTiles(){
-
         for(int suit = 1; suit <= 5; suit++){
             int figure = 9;
             if (suit == 4) figure = 4;
@@ -53,9 +54,17 @@ public class TileLibrary {
         for(Player player : playerList){
             for(int i = 0; i < 13; i++){
                 player.addInitialHand(tiles.remove(0));
-                System.out.println(tiles.size());
             }
         }
+    }
+
+    public Tile deal(String name){
+        for(Player player : playerList){
+            if(player.getName().equals(name)){
+                return player.getHandTile().addTile(tiles.remove(0));
+            }
+        }
+        return null;
     }
 
     public ArrayList<Tile> getTiles(){

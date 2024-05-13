@@ -13,14 +13,6 @@ public class GameRoom {
         playerList = new ArrayList<Player>();
     }
 
-    public String startGame() {
-        if (playerList.size() < 4) {
-            return "人数不足";
-        }
-        tileLibrary = new TileLibrary(playerList);
-        return "游戏开始";
-    }
-
     public String addPlayer(String player) {
         if  (playerList.contains(player)) {
             return "玩家已存在";
@@ -41,11 +33,11 @@ public class GameRoom {
         return "玩家不存在";
     }
 
-    public int playNum() {
+    public int getPlayerNum() {
         return playerList.size();
     }
 
-    public TileLibrary getTileLibrary() {
-        return tileLibrary;
+    public ArrayList<Player> getPlayerList() {
+        return playerList;
     }
 }
