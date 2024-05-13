@@ -102,11 +102,4 @@ public class UserRegistration {
             e.printStackTrace();
         }
     }
-
-    public static void main(String[] args) {
-//        System.out.println(register("宋昊", "6666"));
-//        System.out.println(login("1234", "1314"));
-//        System.out.println(deleteUser("wxn", "1314"));
-//        System.out.println(changePassword("宋昊", "6666", "1234"));
-    }
 }

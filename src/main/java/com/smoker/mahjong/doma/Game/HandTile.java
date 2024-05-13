@@ -9,7 +9,15 @@ public class HandTile {
 
     private ArrayList<Meld> melds;
 
-    public void addTile(Tile tile){}
+
+    public HandTile() {
+        handTile = new ArrayList<Tile>();
+        melds = new ArrayList<Meld>();
+    }
+
+    public void addTile(Tile tile){
+        handTile.add(tile);
+    }
 
     public void removeTile(Tile tile){}
 
