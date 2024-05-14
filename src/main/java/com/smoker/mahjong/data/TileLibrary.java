@@ -11,6 +11,8 @@ public class TileLibrary {
     private ArrayList<Player> playerList;
     private ArrayList<Tile> tiles;
 
+    private ArrayList<Tile> totalTiles;
+
 
 
     public TileLibrary(ArrayList<Player> playerList){
@@ -42,6 +44,7 @@ public class TileLibrary {
                 }
             }
         }
+        totalTiles = new ArrayList<>(tiles);
     }
 
     public void shuffle(ArrayList<Tile> tiles){
@@ -62,6 +65,15 @@ public class TileLibrary {
         for(Player player : playerList){
             if(player.getName().equals(name)){
                 return player.getHandTile().addTile(tiles.remove(0));
+            }
+        }
+        return null;
+    }
+
+    public Tile findTile(int id){
+        for(Tile tile : totalTiles){
+            if(tile.getId() == id){
+                return tile;
             }
         }
         return null;
