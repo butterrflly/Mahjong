@@ -1,6 +1,5 @@
 <script setup>
 import GameTitle from './components/GameTitle.vue'
-import TheWelcome from './components/TheWelcome.vue'
 </script>
 
 <template>
