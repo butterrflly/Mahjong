@@ -21,20 +21,23 @@ import MatchingButton from "@/components/MatchingButton.vue";
 </template>
 
 <style scoped>
+    @import "src/assets/font/font.css";
     header {
     display: flex;
     place-items: center;
     padding-right: calc(var(--section-gap) / 2);
+    font-family: "阿里妈妈灵动体 VF Thin";
     }
 
     .logo {
-    margin: 10rem 15rem 0 0;
+    margin: 10rem 0 0 0;
     position: fixed;
-    left: 350px;
+    left: 280px;
+    top:-100px;
     }
 
     .background {
-        background-image: url('@/assets/background.jpeg');
+        background-image: url('@/assets/background.png');
         background-size: cover;
         background-repeat: no-repeat;
         background-position: center;

@@ -8,9 +8,9 @@
 }
 
 a,
-.red {
+.black {
   text-decoration: none;
-  color: hsl(0, 100%, 50%);
+  color: hsl(0, 0%, 0%);
   transition: 0.4s;
   padding: 3px;
 }

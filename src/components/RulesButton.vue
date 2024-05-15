@@ -27,6 +27,7 @@ export default defineComponent({
         color: hsl(0, 3%, 33%);
         margin-right: -40px;
         font-size: 40px;
+        font-family: "Times New Roman",serif;
     }
 
     #button {
