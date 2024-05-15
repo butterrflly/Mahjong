@@ -1,5 +1,7 @@
 <script setup>
 import GameTitle from './components/GameTitle.vue'
+import RulesButton from "@/components/RulesButton.vue";
+import MatchingButton from "@/components/MatchingButton.vue";
 </script>
 
 <template>
@@ -12,35 +14,13 @@ import GameTitle from './components/GameTitle.vue'
         </header>
 
         <main>
-
+            <RulesButton class="rulesButton"/>
+            <MatchingButton class="matchButton"/>
         </main>
     </div>
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-  left: 40px;
-}
-
-.background {
-    background-image: url('@/assets/background.jpeg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-    position: fixed;
-    top:0;
-    left:0;
-    width: 100%;
-    height: 100vh;
-}
-
-@media (min-width: 1024px) {
     header {
     display: flex;
     place-items: center;
@@ -48,13 +28,9 @@ header {
     }
 
     .logo {
-    margin: 0 2rem 0 0;
-    }
-
-    header .logo {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
+    margin: 10rem 15rem 0 0;
+    position: fixed;
+    left: 350px;
     }
 
     .background {
@@ -68,5 +44,20 @@ header {
         width: 100%;
         height: 100vh;
     }
-}
+
+    .rulesButton {
+        position: fixed;
+        margin: 20rem 10rem 0 0;
+        left: 39%;
+        width: 22%;
+        height: 10vh;
+    }
+
+    .matchButton {
+        position: fixed;
+        margin: 35rem 10rem 0 0;
+        left: 34.5%;
+        width: 30%;
+        height: 10vh;
+    }
 </style>
