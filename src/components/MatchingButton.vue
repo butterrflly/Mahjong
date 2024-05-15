@@ -1,5 +1,5 @@
 <template>
-    <el-button type="info" id="button" size="large" color="#73ef84" :dark="isDark" plain>
+    <el-button type="success" id="button" size="large" color="#73ef84" :dark="isDark" plain>
         <el-icon><Search id="document"/></el-icon>
         <h1 id="title">Start Matching!</h1>
     </el-button>
@@ -26,6 +26,7 @@ export default defineComponent({
         color: hsl(0, 3%, 33%);
         margin-right: -40px;
         font-size: 40px;
+        font-family: "Times New Roman",serif;
     }
 
     #button {
