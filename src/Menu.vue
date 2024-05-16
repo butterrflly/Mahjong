@@ -15,7 +15,8 @@ import MatchingButton from "@/components/MatchingButton.vue";
 
         <main>
             <router-link to="/GameRules"><RulesButton class="rulesButton"/></router-link>
-            <MatchingButton class="matchButton"/>
+            <router-link to="/Login"><MatchingButton class="matchButton"/></router-link>
+
         </main>
 
     </div>
