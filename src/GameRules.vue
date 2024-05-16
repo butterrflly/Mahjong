@@ -2,6 +2,7 @@
     <div class="background">
         <div class="content">
             <header>
+                <router-link to="/Menu"><BackButton class="backButton"/></router-link>
                 <h1>北京麻将规则</h1>
             </header>
 
@@ -70,14 +71,30 @@
             </section>
 
             <img alt="Mahjong" class="logo" src="./assets/mahjong.png" width="334" height="240"/>
+            <el-button-group class="buttonGroup">
+                <el-button type="primary" :icon="ArrowLeft" color="#73ef84" plain>Previous Page</el-button>
+                <el-button type="primary" color="#05ef6e" plain>
+                    Next Page<el-icon class="el-icon--right"><ArrowRight /></el-icon>
+                </el-button>
+            </el-button-group>
         </div>
 
     </div>
 </template>
 
 <script>
+import BackButton from "@/components/BackButton.vue";
+import RulesButton from "@/components/RulesButton.vue";
+import {ArrowLeft, ArrowRight} from "@element-plus/icons-vue";
+
 export default {
-    name: "GameRules"
+    name: "GameRules",
+    computed: {
+        ArrowLeft() {
+            return ArrowLeft
+        }
+    },
+    components: {ArrowRight, RulesButton, BackButton}
 }
 </script>
 
@@ -91,10 +108,19 @@ export default {
         text-align: center;
     }
 
+    .backButton {
+        position: fixed;
+        margin: 0 0 0 0;
+        left: 5%;
+        top: 4%;
+        width: 3%;
+        height: 4vh;
+    }
+
     .logo {
         margin: 10rem 0 0 0;
         position: fixed;
-        left: 950px;
+        left: 850px;
         bottom: 10px;
     }
 
@@ -124,6 +150,12 @@ export default {
         margin: 10rem 0 0 0;
         position: fixed;
         left: 80px;
-        top:-50px;
+        top:-70px;
+    }
+
+    .buttonGroup {
+        position: fixed;
+        left: 80%;
+        bottom: 3%;
     }
 </style>
