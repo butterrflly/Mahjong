@@ -1,6 +1,8 @@
 <template>
-    <el-button type="info" id="button" size="large" color="#73ef84" :dark="isDark" href="./GameRules" plain>
-        <el-icon><Document id="document"/></el-icon>
+    <el-button type="info" id="button" size="large" color="#73ef84" :dark="isDark" plain>
+        <el-icon><Document id="document"/>
+
+        </el-icon>
         <h1 id="title">Game Rules</h1>
     </el-button>
 </template>
@@ -11,7 +13,6 @@ import {Document} from "@element-plus/icons-vue";
 
 export default defineComponent({
     components: {Document}
-
 })
 </script>
 

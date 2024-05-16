@@ -14,9 +14,10 @@ import MatchingButton from "@/components/MatchingButton.vue";
         </header>
 
         <main>
-            <RulesButton class="rulesButton"/>
+            <router-link to="/GameRules"><RulesButton class="rulesButton"/></router-link>
             <MatchingButton class="matchButton"/>
         </main>
+
     </div>
 </template>
 
@@ -59,7 +60,7 @@ import MatchingButton from "@/components/MatchingButton.vue";
     .matchButton {
         position: fixed;
         margin: 35rem 10rem 0 0;
-        left: 34.5%;
+        left: 35%;
         width: 30%;
         height: 10vh;
     }

@@ -1,12 +1,12 @@
 <template>
-  <div>
-      <h1>this is login screen</h1>
-  </div>
+    <div>
+        <router-view></router-view>
+    </div>
 </template>
 
 <script>
 export default {
-    name: "Login"
+    name: "App"
 }
 </script>
 
