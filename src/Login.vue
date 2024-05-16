@@ -1,6 +1,7 @@
 <template>
   <div class="background">
   <div>
+    <header><router-link to="/Menu"><BackButton class="backButton"/></router-link></header>
     user name:<input v-model = "userName"/><br />
     <!-- 打印username -->
     password:<input type="number" v-model = "password"><br />
@@ -22,7 +23,11 @@
 </template>
 
 <script lang ='ts'>
-export default {//export default 是 ES6 语法中的一个特性，用于在一个模块或文件中导出一个“默认”值，这样其他文件就可以通过 import 语句来引入这个值
+import BackButton from "@/components/BackButton.vue";
+
+export default {
+  components: {BackButton},
+//export default 是 ES6 语法中的一个特性，用于在一个模块或文件中导出一个“默认”值，这样其他文件就可以通过 import 语句来引入这个值
   data(){
     return{
       userName:'',
