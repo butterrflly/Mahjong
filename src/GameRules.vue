@@ -71,12 +71,17 @@
             </section>
 
             <img alt="Mahjong" class="logo" src="./assets/mahjong.png" width="334" height="240"/>
-            <el-button-group class="buttonGroup">
-                <el-button type="primary" :icon="ArrowLeft" color="#73ef84" plain>Previous Page</el-button>
-                <el-button type="primary" color="#05ef6e" plain>
-                    Next Page<el-icon class="el-icon--right"><ArrowRight /></el-icon>
-                </el-button>
-            </el-button-group>
+<!--            <el-button-group class="buttonGroup">-->
+<!--                <el-button type="primary" color="#73ef84" plain>-->
+<!--                    Rules<el-icon><Collection /></el-icon>-->
+<!--                </el-button>-->
+<!--                <el-button type="primary" color="#efb652" plain>-->
+<!--                    Tiles<el-icon><Postcard /></el-icon>-->
+<!--                </el-button>-->
+<!--                <el-button type="primary" color="#60a6ef" plain onclick="openTab('operations')">-->
+<!--                    Operation<el-icon><GoldMedal /></el-icon>-->
+<!--                </el-button>-->
+<!--            </el-button-group>-->
         </div>
 
     </div>
@@ -85,16 +90,11 @@
 <script>
 import BackButton from "@/components/BackButton.vue";
 import RulesButton from "@/components/RulesButton.vue";
-import {ArrowLeft, ArrowRight} from "@element-plus/icons-vue";
+import {Collection, Postcard, GoldMedal} from "@element-plus/icons-vue";
 
 export default {
     name: "GameRules",
-    computed: {
-        ArrowLeft() {
-            return ArrowLeft
-        }
-    },
-    components: {ArrowRight, RulesButton, BackButton}
+    components: {Collection, Postcard, GoldMedal, RulesButton, BackButton}
 }
 </script>
 
@@ -153,9 +153,10 @@ export default {
         top:-70px;
     }
 
-    .buttonGroup {
-        position: fixed;
-        left: 80%;
-        bottom: 3%;
-    }
+    /*.buttonGroup {*/
+    /*    position: fixed;*/
+    /*    left: 80%;*/
+    /*    top: 4%;*/
+    /*}*/
+
 </style>
