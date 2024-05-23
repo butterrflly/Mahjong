@@ -2,13 +2,13 @@ import './assets/main.css'
 
 import { createApp } from 'vue'
 import ElementPlus from 'element-plus'
-import GameTable from './GameTable.vue'
-import Login from './Login.vue'
-import Menu from './Menu.vue'
-import GameRules from "./GameRules.vue";
+import GameTable from './views/GameTable.vue'
+import Login from './views/Login.vue'
+import Menu from './views/Menu.vue'
+import GameRules from "./views/GameRules.vue";
 import 'element-plus/dist/index.css'
 import {createRouter, createWebHistory} from 'vue-router'
-import App from "@/assets/App.vue";
+import App from "@/App.vue";
 
 //配置基本路由规则
 const routes = [
