@@ -16,7 +16,7 @@ public class GameController {
     private GameService gameService;
 
     @RequestMapping(value = "/newRoom", method = RequestMethod.POST)
-    public String draw(@RequestParam("player") String name)
+    public String newRoom(@RequestParam("player") String name)
     {
         gameService.newRoom(name);
         return Result.okGetString();
