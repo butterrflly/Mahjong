@@ -10,6 +10,8 @@ vue: 3.4.21
 
 vue-router: 4.3.2
 
+axios: 1.7.2
+
 ## Recommended IDE Setup
 
 [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
