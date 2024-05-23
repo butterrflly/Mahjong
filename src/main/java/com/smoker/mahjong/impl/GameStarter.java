@@ -14,6 +14,7 @@ public class GameStarter {
     private GameRoom gameRoom;
     private TileLibrary tileLibrary;
     private boolean gaming = false;
+    private String owner;
     private Player banker;
     private Player winner;
     private Player loser;
@@ -22,8 +23,9 @@ public class GameStarter {
 
 
 
-    public GameStarter() {
+    public GameStarter(String owner) {
         gameRoom = new GameRoom();
+        this.owner = owner;
     }
 
     public String startGame(String name) {
@@ -149,9 +151,13 @@ public class GameStarter {
     }
 
 
+    public String getOwner(){
+        return owner;
+    }
+
 
     public static void main(String[] args) {
-        GameStarter gameStarter = new GameStarter();
+        GameStarter gameStarter = new GameStarter("butterfly");
         gameStarter.addPlayer("songhao");
         gameStarter.addPlayer("666");
         gameStarter.addPlayer("123");

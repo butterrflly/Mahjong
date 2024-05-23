@@ -10,7 +10,7 @@ public class UserRegistration {
 
     private static String filename = "users.txt";
 
-    public static String register(String name, String password) {
+    public static String signup(String name, String password) {
         ArrayList<String> users = readFile(filename);
         for (String user : users) {
             String[] userInfo = user.split(" ");
