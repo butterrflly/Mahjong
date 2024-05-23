@@ -25,9 +25,10 @@ public class HandTile {
     }
 
 
-    public void removeTile(Tile tile){
+    public int removeTile(Tile tile){
         handTile.remove(tile);
         sort();
+        return tile.getId();
     }
 
     public void cleanTile(){

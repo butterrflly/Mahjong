@@ -59,9 +59,9 @@ public class GameStarter {
         return tileLibrary.deal(name).getId();
     }
 
-    public void discard(String name,int tileID) {
+    public int discard(String name,int tileID) {
         // 打一张牌
-        findPlayer(name).getHandTile().removeTile(findTile(tileID));
+        return findPlayer(name).getHandTile().removeTile(findTile(tileID));
     }
 
     public Player findPlayer(String name){
