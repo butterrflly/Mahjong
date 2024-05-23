@@ -6,7 +6,7 @@
     <!-- 打印username -->
     password:<input type="number" v-model = "password"><br />
     <!-- v-model 是 Vue.js 中的一个指令，用于在表单输入和应用状态之间创建双向数据绑定 -->
-    <button v-on:click="register()">Register</button><button v-on:click="closeAccount()">Close Account</button><button v-on:click="login()">Login</button>
+    <button v-on:click="register()">Register</button><button v-on:click="closeAccount()">Close Account</button><button v-on:click="Login()">Login</button>
     <!--v-on 是一个指令，用于监听 DOM 事件并在事件触发时执行一些 JavaScript 代码 -->
   </div>
   <div v-if="registerIf" >
@@ -17,7 +17,8 @@
   </div>
   <div v-if="closeAccountIf" >
     <h2>Make sure you want to Close Account</h2>
-
+    delete user name:<input v-model = "deleteUserInfo.deleteUserName"/><br />
+    delete password:<input type="number" v-model = "deleteUserInfo.deleteUserPassword"><br />
   </div>
   </div>
 </template>
@@ -38,27 +39,93 @@ export default {
       newUserInfo:{
         newUserName:'',
         newUserPassword:null,
+      },
+      deleteUserInfo: {
+        deleteUserName:'',
+        deleteUserPassword:null,
       }
     }
   },
-  methods:{
-    register(){
+  methods: {
+    register() {
       this.registerIf = !this.registerIf;
       this.closeAccountIf = false;
+      // 当注册表单提交时，调用 signup 方法
+      if (this.registerIf === false) {
+        this.signup(this.newUserInfo.newUserName, this.newUserInfo.newUserPassword);
+      }
     },
-    closeAccount(){
+
+    closeAccount() {
       this.closeAccountIf = !this.closeAccountIf;
       this.registerIf = false;
+      // 当关闭账户表单提交时，调用 deleteUser 方法
+      if (this.closeAccountIf === false) {
+        this.deleteUser(this.deleteUserInfo.deleteUserName,this.deleteUserInfo.deleteUserPassword);
+      }
+    },
 
+    Login() {
+      this.loginIf = !this.loginIf;
+      // 调用 login 方法,得到用户名与密码是否正确de返回值
+      this.login(this.userName,this.password);
+      //这里通过login方法接受返回值字符串,对loginIf进行最终修改
+
+
+
+
+
+
+      if (this.loginIf) {
+        this.$router.push({ path: '/Matching' });//进行页面跳转的方法
+      }
+    },
+
+
+    signup(name, password) {
+      fetch('http://localhost:5173/Login/signup', {//说实话我不确定这个url该填什么,后期拜托了
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name, password })
+      })
+          .then(response => response.json())
+          .then(data => console.log(data))
+          .catch(error => console.error('Error:', error));
+    },
+
+    login(name, password) {
+      fetch('http://localhost:5173/Login/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name, password })
+      })
+          .then(response => response.json())
+          .then(data => {
+            console.log(data);
+          //在这里接受后端的返回值,暂且可能是'yes'或者'no',需要一个检测方法来进行判断,这里是合代码之后的主要方向
+          })
+          .catch(error => console.error('Error:', error));
 
     },
-    login(){
-      this.loginIf = !this.loginIf;
 
+    deleteUser(name, password) {
+      fetch('http://localhost:5173/Login/deleteUser', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name, password })
+      })
+          .then(response => response.json())
+          .then(data => console.log(data))
+          .catch(error => console.error('Error:', error));
     }
   }
-}
-</script>
+}</script>
 
 
 <style scoped>

@@ -4,6 +4,7 @@ import { createApp } from 'vue'
 import ElementPlus from 'element-plus'
 import GameTable from './GameTable.vue'
 import Login from './Login.vue'
+import Matching from "./Matching.vue";
 import Menu from './Menu.vue'
 import GameRules from "./GameRules.vue";
 import 'element-plus/dist/index.css'
@@ -17,6 +18,7 @@ const routes = [
     {path:"/GameTable", name: GameTable, component: GameTable},
     {path:"/Login", name: Login, component: Login},
     {path:"/GameRules", name: GameRules, component: GameRules},
+    {path:"/Matching", name: Matching, component: Matching}
 ]
 
 //创建路由器
