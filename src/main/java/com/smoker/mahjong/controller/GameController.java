@@ -22,11 +22,16 @@ public class GameController {
         return Result.okGetString();
     }
 
-    @RequestMapping(value = "/startGame", method = RequestMethod.POST)
-    public String startGame(@RequestParam("owner") String owner,
-                            @RequestParam("banker") String banker)
+    @RequestMapping(value = "/findRoom", method = RequestMethod.POST)
+    public String findRoom(@RequestParam("owner") String owner)
     {
-        return gameService.startGame(owner, banker);
+        return gameService.findRoom(owner);
+    }
+
+    @RequestMapping(value = "/startGame", method = RequestMethod.POST)
+    public String startGame(@RequestParam("owner") String owner)
+    {
+        return gameService.startGame(owner);
     }
 
 
@@ -45,7 +50,19 @@ public class GameController {
         return gameService.removePlayer(owner, name);
     }
 
+    @RequestMapping(value = "/getBanker", method = RequestMethod.POST)
+    public String getBanker(@RequestParam("owner") String owner)
+    {
+        return gameService.getBanker(owner);
+    }
 
+    @RequestMapping(value = "/getSequence", method = RequestMethod.POST)
+    public String getSequence(@RequestParam("owner") String owner,
+                               @RequestParam("name") String name)
+    {
+        return gameService.getSequence(owner, name);
+    }
+    
     @RequestMapping(value = "/deal", method = RequestMethod.POST)
     public String deal(@RequestParam("owner") String owner,
                        @RequestParam("name") String name)

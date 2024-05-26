@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSONObject;
 import com.smoker.mahjong.doma.Game.HandTile;
 import com.smoker.mahjong.doma.Game.Meld;
 import com.smoker.mahjong.doma.Game.Tile;
+import com.smoker.mahjong.doma.User.Player;
 import com.smoker.mahjong.impl.GameStarter;
 import org.springframework.stereotype.Service;
 
@@ -19,17 +20,34 @@ public class GameService {
         games.put(owner, new GameStarter(owner));
     }
 
-    public String startGame(String owner, String banker){
-        return handleResult(games.get(owner).startGame(banker));
+
+    public String findRoom(String owner){
+        GameStarter result = games.get(owner);
+        if (result == null){
+            return handleResult(false);
+        } else {
+            return handleResult(true);
+        }
+    }
+
+    public String startGame(String owner){
+        return handleResult(games.get(owner).startGame());
     }
 
     public String addPlayer(String owner, String name) {
         return handleResult(games.get(owner).addPlayer(name));
-
     }
 
     public String removePlayer(String owner, String name) {
         return handleResult(games.get(owner).removePlayer(name));
+    }
+
+    public String getBanker(String owner){
+        return handleResult(games.get(owner).getBanker());
+    }
+
+    public String getSequence(String owner, String name){
+        return handleResult(games.get(owner).getSequence(name));
     }
 
     public String deal(String owner, String name) {

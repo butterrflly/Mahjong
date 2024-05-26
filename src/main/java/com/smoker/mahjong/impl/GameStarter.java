@@ -26,14 +26,14 @@ public class GameStarter {
     public GameStarter(String owner) {
         gameRoom = new GameRoom();
         this.owner = owner;
+        banker = findPlayer(owner);
     }
 
-    public String startGame(String name) {
+    public String startGame() {
         if (gameRoom.getPlayerNum() < 4) {
             return "人数不足";
         }
         tileLibrary = new TileLibrary(gameRoom.getPlayerList());
-        banker = findPlayer(name);
         gaming = true;
         return "游戏开始";
     }
@@ -43,6 +43,7 @@ public class GameStarter {
         for(Player player : gameRoom.getPlayerList()){
             player.scoring(banker, winner, loser);
         }
+        setBanker();
     }
 
     public String addPlayer(String name) {
@@ -138,6 +139,36 @@ public class GameStarter {
     }
 
 
+    public void setBanker(){
+        if (winner == banker){
+            return;
+        }
+        ArrayList<Player> players = gameRoom.getPlayerList();
+        int i = players.indexOf(banker);
+        if (i + 1 == players.size()){
+            banker = players.get(0);
+        } else {
+            banker = players.get(i + 1);
+        }
+    }
+
+    public String getBanker(){
+        return banker.getName();
+    }
+
+    public String[] getSequence(String name){
+        ArrayList<String> playerName = new ArrayList<>();
+        ArrayList<Player> players = gameRoom.getPlayerList();
+        int i = players.indexOf(findPlayer(name));
+        String play;
+        for (int j = 0; j < 4; j++) {
+            play = players.get(i % 4).getName();
+            playerName.add(play);
+            i++;
+        }
+        return playerName.toArray(new String[0]);
+    }
+
     public void printHand(String name){
         for (Tile tile : findPlayer(name).getHandTile().getHandTile()) {
             System.out.println(tile.getId());
@@ -164,7 +195,7 @@ public class GameStarter {
         gameStarter.addPlayer("butterfly");
 
 
-        System.out.println(gameStarter.startGame("butterfly"));
+        System.out.println(gameStarter.startGame());
         HandTile handTile = gameStarter.getHandTile("butterfly");
 //        for (Tile tile : handTile.getHandTile()){
 //            System.out.println(tile.getId());

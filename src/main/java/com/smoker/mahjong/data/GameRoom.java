@@ -37,7 +37,7 @@ public class GameRoom {
         return playerList.size();
     }
 
-    public ArrayList<Player> getPlayerList() {
+    public ArrayList<Player> getPlayerList(){
         return playerList;
     }
 }
