@@ -1,9 +1,9 @@
 <template>
-  <div className="background">
+  <div class="background">
     <h2>test</h2>
-    <div className="room">
-
-      <button v-on:click="fillIn(),createRoom()">creatRoom</button><button v-on:click="joinRoom()">Join in the Room</button>
+    <div class="room">
+      <button v-on:click="fillIn();createRoom()">creatRoom</button>
+      <button v-on:click="joinRoom()">Join in the Room</button>
     </div>
     <div v-if="createRoomIf">
       {{users[0]}}
@@ -47,7 +47,7 @@ export default {
        //创建房间的代码
     },
     joinRoom(){
-      if(this.valueOfUser == 4){
+      if(this.valueOfUser == 3){
         this.startGame();
       }
       //加入房间的代码

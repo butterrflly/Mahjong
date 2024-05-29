@@ -1,180 +1,295 @@
 <template>
-  <div class="background">
-  <div>
-    <header><router-link to="/Menu"><BackButton class="backButton"/></router-link></header>
-    user name:<input v-model = "userName"/><br />
-    <!-- 打印username -->
-    password:<input type="number" v-model = "password"><br />
-    <!-- v-model 是 Vue.js 中的一个指令，用于在表单输入和应用状态之间创建双向数据绑定 -->
-    <button v-on:click="register()">Register</button><button v-on:click="closeAccount()">Close Account</button><button v-on:click="Login()">Login</button>
-    <!--v-on 是一个指令，用于监听 DOM 事件并在事件触发时执行一些 JavaScript 代码 -->
-  </div>
-  <div v-if="registerIf" >
-    <h2>Register your userName and password</h2>
-    <!--需要检查与之前的用户名是否重合 -->
-    new user name:<input v-model = "newUserInfo.newUserName"/><br />
-    new password:<input type="number" v-model = "newUserInfo.newUserPassword"><br />
-  </div>
-  <div v-if="closeAccountIf" >
-    <h2>Make sure you want to Close Account</h2>
-    delete user name:<input v-model = "deleteUserInfo.deleteUserName"/><br />
-    delete password:<input type="number" v-model = "deleteUserInfo.deleteUserPassword"><br />
-  </div>
-  </div>
+    <div class="background">
+        <div>
+            <header><BackButton @click="this.$router.go(-1)" class="backButton"/></header>
+        </div>
+        <!-- buttons-->
+        <div>
+            <button v-if="registerButtonIf" v-on:click="register()">Register</button>
+            <button v-if="registerIf" v-on:click="signup(userName, password)">Register！</button>
+
+            <button v-if="deleteAccountButtonIf" v-on:click="deleteAccount()">Delete Account</button>
+            <button v-if="deleteAccountIf" v-on:click="deleteUser(userName, password)">Delete！</button>
+
+            <button v-if="loginButtonIf" v-on:click="loginAccount()">Login</button>
+            <button v-if="loginIf" v-on:click="login(userName, password)">Login！</button>
+
+            <button v-if="changePasswordButtonIf" v-on:click="changeNewPassword()">Change Password</button>
+            <button v-if="changePasswordIf" v-on:click="changePassword(userName, password, newPassword)">Login！</button>
+        </div>
+
+        <div>
+            <!--是否注册-->
+            <div v-if="registerIf">
+                <h2>Set your userName and password</h2>
+                new user name:<input v-model = "userName"/><br />
+                new password:<input type="password" v-model = "password"><br />
+            </div>
+
+            <!--是否删除账户-->
+            <div v-if="deleteAccountIf">
+                <h2>Make sure you want to Close Account</h2>
+                user name want to delete:<input v-model = "userName"/><br />
+                enter the password:<input type="password" v-model = "password"><br />
+            </div>
+
+            <!--是否登陆-->
+            <div v-if="loginIf">
+                <h2>Please enter your user name and password</h2>
+                user name:<input v-model = "userName"/><br />
+                password:<input type="password" v-model = "password"><br />
+            </div>
+
+            <!--是否改密码-->
+            <div v-if="changePasswordIf">
+                <h2>Please enter your user name, old password and new password</h2>
+                user name:<input v-model = "userName"/><br />
+                old password:<input type="password" v-model = "password"><br />
+                new password:<input type="password" v-model = "newPassword"><br />
+            </div>
+
+            <!-- 在 errorMessage 不为空时显示错误消息 -->
+            <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+            <!-- 在 successMessage 不为空时显示成功消息 -->
+            <div v-if="successMessage" class="success-message">{{ successMessage }}</div>
+            <button v-if="errorMessage" v-on:click="back()">back</button>
+            <button v-if="successMessage" v-on:click="back()">back</button>
+        </div>
+
+    </div>
 </template>
 
 <script lang ='ts'>
-import BackButton from "@/components/BackButton.vue";
+import BackButton from "../components/BackButton.vue";
+import { postData } from '../api.js';
+import { mapState, mapActions } from 'vuex';
 
 export default {
-  components: {BackButton},
-//export default 是 ES6 语法中的一个特性，用于在一个模块或文件中导出一个“默认”值，这样其他文件就可以通过 import 语句来引入这个值
-  data(){
-    return{
-      userName:'',
-      password:null,
-      registerIf:false,
-      closeAccountIf:false,
-      loginIf:false,
-      newUserInfo:{
-        newUserName:'',
-        newUserPassword:null,
-      },
-      deleteUserInfo: {
-        deleteUserName:'',
-        deleteUserPassword:null,
-      }
-    }
-  },
-  methods: {
-    register() {
-      this.registerIf = !this.registerIf;
-      this.closeAccountIf = false;
-      // 当注册表单提交时，调用 signup 方法
-      if (this.registerIf === false) {
-        this.signup(this.newUserInfo.newUserName, this.newUserInfo.newUserPassword);
-      }
+    components: {BackButton},
+
+    computed: {
+        ...mapState(['name', 'owner'])
     },
 
-    closeAccount() {
-      this.closeAccountIf = !this.closeAccountIf;
-      this.registerIf = false;
-      // 当关闭账户表单提交时，调用 deleteUser 方法
-      if (this.closeAccountIf === false) {
-        this.deleteUser(this.deleteUserInfo.deleteUserName,this.deleteUserInfo.deleteUserPassword);
-      }
+    data(){
+        return{
+            userName:'',
+            password:'',
+            newPassword:'',
+            successMessage:'',
+            errorMessage:'',
+            // 控制四个表单的出现
+            registerIf:false,
+            deleteAccountIf:false,
+            loginIf:false,
+            changePasswordIf: false,
+            // 控制四个按钮的出现
+            registerButtonIf:true,
+            deleteAccountButtonIf:true,
+            loginButtonIf:true,
+            changePasswordButtonIf:true,
+        }
     },
 
-    Login() {
-      this.loginIf = !this.loginIf;
-      // 调用 login 方法,得到用户名与密码是否正确de返回值
-      this.login(this.userName,this.password);
-      //这里通过login方法接受返回值字符串,对loginIf进行最终修改
+    methods: {
+        ...mapActions(['updateName', 'updateOwner']),
 
-
-
-
-
-
-      if (this.loginIf) {
-        this.$router.push({ path: '/Matching' });//进行页面跳转的方法
-      }
-    },
-
-
-    signup(name, password) {
-      fetch('http://localhost:5173/Login/signup', {//说实话我不确定这个url该填什么,后期拜托了
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
+        register() {
+            // 初始化，控制四个表单和按钮的出现
+            this.successMessage = '';
+            this.errorMessage = '';
+            this.registerButtonIf = false;
+            this.registerIf = true;
+            this.deleteAccountButtonIf = false;
+            this.deleteAccountIf = false;
+            this.loginButtonIf = false;
+            this.loginIf = false;
+            this.changePasswordButtonIf = false;
+            this.changePasswordIf = false;
         },
-        body: JSON.stringify({ name, password })
-      })
-          .then(response => response.json())
-          .then(data => console.log(data))
-          .catch(error => console.error('Error:', error));
-    },
 
-    login(name, password) {
-      fetch('http://localhost:5173/Login/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
+        deleteAccount() {
+            this.successMessage = '';
+            this.errorMessage = '';
+            this.deleteAccountButtonIf = false;
+            this.deleteAccountIf = true;
+            this.registerButtonIf = false;
+            this.registerIf = false;
+            this.loginButtonIf = false;
+            this.loginIf = false;
+            this.changePasswordButtonIf = false;
+            this.changePasswordIf = false;
         },
-        body: JSON.stringify({ name, password })
-      })
-          .then(response => response.json())
-          .then(data => {
-            console.log(data);
-          //在这里接受后端的返回值,暂且可能是'yes'或者'no',需要一个检测方法来进行判断,这里是合代码之后的主要方向
-          })
-          .catch(error => console.error('Error:', error));
+
+        loginAccount() {
+            this.successMessage = '';
+            this.errorMessage = '';
+            this.loginButtonIf = false;
+            this.loginIf = true;
+            this.registerButtonIf = false;
+            this.registerIf = false;
+            this.deleteAccountButtonIf = false;
+            this.deleteAccountIf = false;
+            this.changePasswordButtonIf = false;
+            this.changePasswordIf = false;
+        },
+
+        changeNewPassword() {
+            this.successMessage = '';
+            this.errorMessage = '';
+            this.changePasswordButtonIf = false;
+            this.changePasswordIf = true;
+            this.registerButtonIf = false;
+            this.registerIf = false;
+            this.deleteAccountButtonIf = false;
+            this.deleteAccountIf = false;
+            this.loginButtonIf = false;
+            this.loginIf = false;
+        },
+
+        back() {
+            this.successMessage = '';
+            this.errorMessage = '';
+            this.registerButtonIf = true;
+            this.registerIf = false;
+            this.deleteAccountButtonIf = true;
+            this.deleteAccountIf = false;
+            this.loginButtonIf = true;
+            this.loginIf = false;
+            this.changePasswordButtonIf = true;
+            this.changePasswordIf = false;
+        },
+
+        async signup(name, password) {
+            // 保存name
+            await this.updateName(this.name);
+            try {
+                // 使用封装的 postData 函数发起 POST 请求
+                const response = await postData('user/signup', { name: name, password: password });
+                console.log('Response from POST:', response);
+                if (response=="注册成功") {
+                    this.successMessage = "success!"
+                } else if (response === "用户已存在") {
+                    this.errorMessage = "account already exist!";
+                }
+            } catch (error) {
+                console.error('Error during POST:', error);
+                this.errorMessage = "An error occurred during login. Please try again later.";
+            }
+            this.userName = '';
+            this.password = '';
+        },
+
+        async login(name, password) {
+            // 保存name
+            await this.updateName(this.name);
+            try {
+                // 使用封装的 postData 函数发起 POST 请求
+                const response = await postData('user/login', { name: name, password: password });
+                console.log('Response from POST:', response);
+                if (response=="登录成功") {
+                    this.successMessage = "success!"
+                    // this.$router.push({path: '/'});
+                } else if (response === "密码错误") {
+                    this.errorMessage = "wrong password！";
+                } else if (response === "用户不存在") {
+                    this.errorMessage = "account does not exist!";
+                }
+            } catch (error) {
+                console.error('Error during POST:', error);
+                this.errorMessage = "An error occurred during login. Please try again later.";
+            }
+            this.userName = '';
+            this.password = '';
+        },
+
+        async deleteUser(name, password) {
+            try {
+                // 使用封装的 postData 函数发起 POST 请求
+                const response = await postData('user/deleteUser', { name: name, password: password });
+                console.log('Response from POST:', response);
+                return response;
+            } catch (error) {
+                console.error('Error during POST:', error);
+                this.errorMessage = "An error occurred during login. Please try again later.";
+            }
+            this.userName = '';
+            this.password = '';
+        },
+
+        async changePassword(name, oldPassword, newPassword) {
+            try {
+                // 使用封装的 postData 函数发起 POST 请求
+                const response = await postData('user/changePassword', { name: name, oldPassword: oldPassword, newPassword: newPassword });
+                console.log('Response from POST:', response);
+                return response;
+            } catch (error) {
+                console.error('Error during POST:', error);
+                this.errorMessage = "An error occurred during login. Please try again later.";
+            }
+            this.userName = '';
+            this.password = '';
+            this.newPassword = '';
+        }
 
     },
+}
 
-    deleteUser(name, password) {
-      fetch('http://localhost:5173/Login/deleteUser', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ name, password })
-      })
-          .then(response => response.json())
-          .then(data => console.log(data))
-          .catch(error => console.error('Error:', error));
-    }
-  }
-}</script>
+</script>
 
 
 <style scoped>
 .background {
-  background-image: url('@/assets/background.png');
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  position: fixed;
-  top:0;
-  left:0;
-  width: 100%;
-  height: 100vh;
+    background-image: url('@/assets/background.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    position: fixed;
+    top:0;
+    left:0;
+    width: 100%;
+    height: 100vh;
 }
 
 button {
-  background-color: #4CAF50; /* 按钮背景颜色 */
-  border: none;
-  color: white;
-  padding: 10px 20px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 4px 2px;
-  cursor: pointer;
-  border-radius: 4px;
+    background-color: #4CAF50; /* 按钮背景颜色 */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
 }
 
 input[type='number'] {
-  margin: 8px 0;
-  display: inline-block;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-  padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    padding: 12px 20px;
 }
 
 input[type='text'] {
-  margin: 8px 0;
-  display: inline-block;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-  padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    padding: 12px 20px;
 }
 
 h2 {
-  color: #333;
+    color: #333;
+}
+
+.error-message {
+    color: red;
+    margin-top: 10px;
 }
 </style>
 

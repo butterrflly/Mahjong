@@ -2,6 +2,7 @@
 import GameTitle from '../components/GameTitle.vue'
 import RulesButton from "@/components/RulesButton.vue";
 import MatchingButton from "@/components/MatchingButton.vue";
+import LoginButton from "@/components/LoginButton.vue";
 </script>
 
 <template>
@@ -14,9 +15,9 @@ import MatchingButton from "@/components/MatchingButton.vue";
         </header>
 
         <main>
-            <router-link to="/GameRules"><RulesButton class="rulesButton"/></router-link>
-            <router-link to="/Login"><MatchingButton class="matchButton"/></router-link>
-
+            <router-link to="GameRules"><RulesButton class="rulesButton"/></router-link>
+            <router-link to="Matching"><MatchingButton class="matchButton"/></router-link>
+            <router-link to="Login"><LoginButton class="loginButton"/></router-link>
         </main>
 
     </div>
@@ -64,5 +65,12 @@ import MatchingButton from "@/components/MatchingButton.vue";
         left: 35%;
         width: 30%;
         height: 10vh;
+    }
+
+    .loginButton {
+        position: fixed;
+        margin: 5% 83%;
+        width: 180px;
+        height: 80px;
     }
 </style>
