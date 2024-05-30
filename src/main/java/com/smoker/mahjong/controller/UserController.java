@@ -3,13 +3,11 @@ package com.smoker.mahjong.controller;
 import com.smoker.mahjong.utils.Result;
 import com.smoker.mahjong.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
+@CrossOrigin(origins = "http://172.20.10.2:5173")
 public class UserController {
 
     @Autowired // 引用容器中的service

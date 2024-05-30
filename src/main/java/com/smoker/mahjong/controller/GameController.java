@@ -3,22 +3,20 @@ package com.smoker.mahjong.controller;
 import com.smoker.mahjong.service.GameService;
 import com.smoker.mahjong.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/game")
+@CrossOrigin(origins = "http://172.20.10.2:5173")
 public class GameController {
 
     @Autowired // 引用容器中的service
     private GameService gameService;
 
     @RequestMapping(value = "/newRoom", method = RequestMethod.POST)
-    public String newRoom(@RequestParam("player") String name)
+    public String newRoom(@RequestParam("owner") String owner)
     {
-        gameService.newRoom(name);
+        gameService.newRoom(owner);
         return Result.okGetString();
     }
 
@@ -98,8 +96,8 @@ public class GameController {
     }
 
 
-    @RequestMapping(value = "/canKong", method = RequestMethod.POST)
-    public String canKong(@RequestParam("owner") String owner,
+    @RequestMapping(value = "/canKongSelf", method = RequestMethod.POST)
+    public String canKongSelf(@RequestParam("owner") String owner,
                           @RequestParam("name") String name)
     {
         return gameService.canKong(owner, name);
@@ -172,7 +170,7 @@ public class GameController {
 
 
     @RequestMapping(value = "/getHandTile", method = RequestMethod.POST)
-    public String getHandTile(@RequestParam("owner") String owner,
+    public String t(@RequestParam("owner") String owner,
                               @RequestParam("name") String name)
     {
         return gameService.getHandTile(owner, name);

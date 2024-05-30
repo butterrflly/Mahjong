@@ -26,6 +26,7 @@ public class GameStarter {
     public GameStarter(String owner) {
         gameRoom = new GameRoom();
         this.owner = owner;
+        addPlayer(owner);
         banker = findPlayer(owner);
     }
 
