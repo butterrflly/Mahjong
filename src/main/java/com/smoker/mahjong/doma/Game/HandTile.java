@@ -11,6 +11,10 @@ public class HandTile {
 
     private ArrayList<Meld> melds;
 
+    private boolean isMeldHide = true;
+
+
+
 
     public HandTile() {
         handTile = new ArrayList<Tile>();
@@ -57,6 +61,9 @@ public class HandTile {
         int numMelds = 0;
 
         for (Tile tile : handTile) {
+            if (tile.getId() == tileID) {
+                continue;
+            }
             if (tile.getId() / 10 == tileID / 10) {
                 numHand++;
             }
@@ -295,6 +302,10 @@ public class HandTile {
 
     public ArrayList<Meld> getMelds(){
         return melds;
+    }
+
+    public boolean isMeldHide(){
+        return isMeldHide;
     }
 }
 

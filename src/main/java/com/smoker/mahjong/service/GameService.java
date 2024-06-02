@@ -16,171 +16,476 @@ import java.util.Map;
 public class GameService {
     private final Map<String, GameStarter> games = new HashMap<>();
 
-    public void newRoom(String owner){
-        games.put(owner, new GameStarter(owner));
+
+    /**
+     * @return {"operation" : "Duplicate room number"}
+     */
+    public String newRoom(String roomID){
+        if (games.containsKey(roomID)) {
+            Map<String, Object> result = new HashMap<>();
+            result.put("operation", "Duplicate room number");
+            return JSONObject.toJSONString(result);
+        }
+        games.put(roomID, new GameStarter(roomID));
+        return "success";
+    }
+
+    public void removeRoom(String roomID){
+        games.remove(roomID);
+    }
+
+    public void addPlayer(String playName, String roomID) {
+        games.get(roomID).addPlayer(playName);
+    }
+
+    public void removePlayer(String playName, String roomID) {
+        games.get(roomID).removePlayer(playName);
+    }
+
+    public ArrayList<Player> getPlayers(String roomID) {
+        return games.get(roomID).getPlayerList();
+    }
+
+    public void prepare(String playName, String roomID) {
+        games.get(roomID).findPlayer(playName).setPrepare();
+    }
+
+    public boolean startGame(String roomID){
+        return games.get(roomID).startGame();
+    }
+
+    public String getDealPlayer(String roomID){
+        return games.get(roomID).getDealPlayer().getName();
     }
 
 
-    public String findRoom(String owner){
-        GameStarter result = games.get(owner);
-        if (result == null){
-            return handleResult(false);
-        } else {
-            return handleResult(true);
+    /**
+     * @return {"operation" : "getGameRooms", "msg" : {"room number" : int, "room message" : {"room id_1" : player number, "room id_1" : player number, ...}}}
+     */
+    public String getGameRooms() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("operation", "getGameRooms");
+
+        Map<String, Object> message = new HashMap<>();
+        message.put("room number", games.size());
+
+        Map<String, Object> roomMessage = new HashMap<>();
+        for (String key : games.keySet()) {
+            roomMessage.put(key, games.get(key).getPlayerNum());
+        }
+
+        message.put("room message", roomMessage);
+
+        result.put("msg", message);
+        return JSONObject.toJSONString(result);
+    }
+
+    /**
+     * @return {"operation" : "getRoomPlayerMessage", "msg" : {"self" : {"name" : String, "prepare" : boolean, "score" : int},
+     *                                                         "nextPlayer" : {"name" : String, "prepare" : boolean, "score" : int},
+     *                                                         "oppositePlayer" : {"name" : String, "prepare" : boolean, "score" : int},
+     *                                                         "prevPlayer" : {"name" : String, "prepare" : boolean, "score" : int}}}
+     */
+    public String getRoomPlayerMessage(String playerName, String roomID){
+        GameStarter gs = games.get(roomID);
+        Player[] players = gs.getSequence(playerName);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("operation", "getRoomPlayerMessage");
+
+        Map<String, Object> message = new HashMap<>();
+        String[] positions = {"self", "nextPlayer", "oppositePlayer", "prevPlayer"};
+
+        for (int i = 0; i < 4; i++){
+            Map<String, Object> playerMessage = new HashMap<>();
+            if (players[i] == null){
+                playerMessage.put("name", "");
+                playerMessage.put("prepare", false);
+                playerMessage.put("score", 0);
+                message.put(positions[i], playerMessage);
+                continue;
+            }
+            playerMessage.put("name", players[i].getName());
+            playerMessage.put("prepare", players[i].isPrepare());
+            playerMessage.put("score", players[i].getScore());
+            message.put(positions[i], playerMessage);
+        }
+
+        result.put("msg", message);
+        return JSONObject.toJSONString(result);
+    }
+
+
+
+    /**
+     * @return {"operation" : "getHandTile", "mag" : {"self" : {"name" : String, "handTile number" : int, "handTile" : [int, int, ...]}
+     *                                                "nextPlayer" : {"name" : String, "handTile number" : int, "handTile" : [int, int, ...]}
+     *                                                "oppositePlayer" : {"name" : String, "handTile number" : int, "handTile" : [int, int, ...]}
+     *                                                "prevPlayer" : {"name" : String, "handTile number" : int, "handTile" : [int, int, ...]}}}
+     */
+    public String getHandTile(String playerName, String roomID) {
+        GameStarter gs = games.get(roomID);
+        Player[] players = gs.getSequence(playerName);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("operation", "getHandTile");
+
+        Map<String, Object> message = new HashMap<>();
+        String[] positions = {"self", "nextPlayer", "oppositePlayer", "prevPlayer"};
+
+        for (int i = 0; i < 4; i++){
+            Map<String, Object> playerMessage = new HashMap<>();
+            playerMessage.put("name", players[i].getName());
+            playerMessage.put("handTile number", players[i].getHandTile().getHandTile().size());
+            playerMessage.put("handTile", players[i].getHandTile().getHandTile().stream().mapToInt(Tile :: getId).toArray());
+            message.put(positions[i], playerMessage);
+        }
+
+        result.put("msg", message);
+        return JSONObject.toJSONString(result);
+    }
+
+
+    /**
+     * @return {"operation" : "getMeld", "mag" : {"self" : {"name" : String, "isHide" : boolean, "meld number" : int, "meld" : [[int, int, int], ...]}
+     *                                            "nextPlayer" : {"name" : String, "isHide" : boolean, "meld number" : int, "meld" : [[int, int, int], ...]}
+     *                                            "oppositePlayer" : {"name" : String, "isHide" : boolean, "meld number" : int, "meld" : [[int, int, int], ...]}
+     *                                            "prevPlayer" : {"name" : String, "isHide" : boolean, "meld number" : int, "meld" : [[int, int, int], ...]}}}
+     */
+    public String getMeld(String playerName, String roomID) {
+        GameStarter gs = games.get(roomID);
+        Player[] players = gs.getSequence(playerName);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("operation", "getMeld");
+
+        Map<String, Object> message = new HashMap<>();
+        String[] positions = {"self", "nextPlayer", "oppositePlayer", "prevPlayer"};
+
+        for (int i = 0; i < 4; i++) {
+            Map<String, Object> playerMessage = new HashMap<>();
+            playerMessage.put("name", players[i].getName());
+            playerMessage.put("isHide", players[i].getHandTile().isMeldHide());
+            playerMessage.put("meld number", players[i].getHandTile().getMelds().size());
+
+            ArrayList<Meld> melds = players[i].getHandTile().getMelds();
+            ArrayList<int[]> meldArray = new ArrayList<>();
+            for (Meld meld : melds){
+                meldArray.add(meld.getMeld().stream().mapToInt(Tile :: getId).toArray());
+            }
+
+            playerMessage.put("meld", meldArray.toArray());
+            message.put(positions[i], playerMessage);
+        }
+
+        result.put("msg", message);
+        return JSONObject.toJSONString(result);
+    }
+
+
+    public void deal(String roomID) {
+        GameStarter gs = games.get(roomID);
+        gs.deal();
+    }
+
+
+    /**
+     * @return {"operation" : "deal", "msg" : {"position" : String, "playerName" : String, "tileID" : int}}
+     * positions = {"self", "nextPlayer", "oppositePlayer", "prevPlayer"}
+     */
+    public String deal(String playerName, String roomID) {
+        GameStarter gs = games.get(roomID);
+        Player[] players = gs.getSequence(playerName);
+
+        Player dealPlayer = gs.getDealPlayer();
+        int dealTileID = gs.getDealTileID();
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("operation", "deal");
+
+        Map<String, Object> msg = new HashMap<>();
+        String[] positions = {"self", "nextPlayer", "oppositePlayer", "prevPlayer"};
+        for (int i = 0; i < 4; i++)
+            if (players[i] == dealPlayer)
+                msg.put("position", positions[i]);
+        msg.put("playerName", dealPlayer.getName());
+        msg.put("tileID", dealTileID);
+
+        result.put("msg", msg);
+
+        return JSONObject.toJSONString(result);
+    }
+
+
+
+    /**
+     * @return {"operation" : "getSelfAffair", "msg" : {"playerName" : String, "canKong" : boolean, "canHu" : boolean}}
+     */
+    public String getSelfAffair(String playerName, String roomID){
+        GameStarter gs = games.get(roomID);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("operation", "getSelfAffair");
+
+        Map<String, Object> msg = new HashMap<>();
+        msg.put("playerName", playerName);
+
+        msg.put("canKong", gs.canKong(playerName).size() == 0);
+        msg.put("canHu", gs.canHu(playerName, gs.getDealTileID()));
+
+        result.put("msg", msg);
+
+        return JSONObject.toJSONString(result);
+    }
+
+
+
+    /**
+     * @return {"operation" : "discardRequest", "msg" : "Until you play"}
+     */
+    public String discardRequest(){
+        Map<String, Object> result = new HashMap<>();
+        result.put("operation", "discard");
+        result.put("msg", "你怎么还不出牌啊，我等的花都谢了");
+
+        return JSONObject.toJSONString(result);
+    }
+
+
+    public void discard(String roomID, String discardPlayerName, int TileID) {
+        GameStarter gs = games.get(roomID);
+        gs.discard(discardPlayerName, TileID);
+    }
+
+
+
+    /**
+     * @return {"operation" : "discard", "msg" : {"position" : String, "playerName" : String, "tileID" : int}}
+     * positions = {"self", "nextPlayer", "oppositePlayer", "prevPlayer"}
+     */
+    public String discard(String playerName, String roomID, String discardPlayerName) {
+        GameStarter gs = games.get(roomID);
+        Player[] players = gs.getSequence(playerName);
+        Player discardPlayer = gs.findPlayer(discardPlayerName);
+        int discardTileID = gs.getDiscardTileID();
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("operation", "discard");
+
+        Map<String, Object> msg = new HashMap<>();
+        String[] positions = {"self", "nextPlayer", "oppositePlayer", "prevPlayer"};
+
+        for (int i = 0; i < 4; i++)
+            if (players[i] == discardPlayer)
+                msg.put("position", positions[i]);
+        msg.put("playerName", discardPlayer.getName());
+        msg.put("tileID", discardTileID);
+
+        result.put("msg", msg);
+
+        return JSONObject.toJSONString(result);
+    }
+
+
+
+    /**
+     * @return {"operation" : "canHu", "msg" : {"playerName" : String, "canHu" : boolean}}
+     */
+    public String canHu(String playerName, String roomID){
+        GameStarter gs = games.get(roomID);
+        int discardTileID = gs.getDiscardTileID();
+
+        Player[] players = gs.getSequence(playerName);
+        Player nextPlayer = players[1];
+
+        if (nextPlayer.getName().equals(gs.getDiscardPlayerName())){
+            Map<String, Object> result = new HashMap<>();
+            result.put("operation", "canHu");
+
+            Map<String, Object> msg = new HashMap<>();
+            msg.put("playerName", "null");
+            result.put("msg", msg);
+            return JSONObject.toJSONString(result);
+        }
+
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("operation", "canHu");
+
+        Map<String, Object> msg = new HashMap<>();
+        msg.put("playerName", nextPlayer.getName());
+        msg.put("canPang", games.get(roomID).canHu(nextPlayer.getName(), discardTileID));
+
+        result.put("msg", msg);
+
+        return JSONObject.toJSONString(result);
+    }
+
+
+
+
+    /**
+     * @return {"operation" : "getAffair", "msg" : {"playerName" : String, "canPang" : boolean, "canKong" : boolean, "canChow" : boolean}}
+     */
+    public String getAffair(String playerName, String roomID){
+        GameStarter gs = games.get(roomID);
+        Player[] players = gs.getSequence(playerName);
+        int discardTileID = gs.getDiscardTileID();
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("operation", "getAffair");
+
+        Map<String, Object> msg = new HashMap<>();
+        msg.put("playerName", playerName);
+        msg.put("canPang", gs.canPang(playerName, discardTileID));
+        msg.put("canKong", gs.canKong(playerName, discardTileID));
+
+        if (players[3].getName().equals(gs.getDiscardPlayerName()))
+            msg.put("canChow", gs.canChow(playerName, discardTileID).size() == 0);
+        else
+            msg.put("canChow", false);
+
+        result.put("msg", msg);
+
+        return JSONObject.toJSONString(result);
+    }
+
+
+
+    public void Hu(String playerName, String roomID) {
+        GameStarter gs = games.get(roomID);
+
+        if (gs.getDiscardTileID() == 0)
+            gs.Hu(playerName, gs.getDealTileID(), "allPlayers");
+        else
+            gs.Hu(playerName, gs.getDiscardTileID(), gs.getDiscardPlayerName());
+    }
+
+
+    /**
+     * @return {"operation" : "Hu", "msg" : {"position" : String, "playerName" : String}}
+     * positions = {"self", "nextPlayer", "oppositePlayer", "prevPlayer"}
+     */
+    public String Hu(String playerName, String roomID, String winnerPlayerName) {
+        GameStarter gs = games.get(roomID);
+        Player[] players = gs.getSequence(playerName);
+        Player winnerPlayer = gs.findPlayer(winnerPlayerName);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("operation", "Hu");
+
+        Map<String, Object> msg = new HashMap<>();
+        String[] positions = {"self", "nextPlayer", "oppositePlayer", "prevPlayer"};
+
+        for (int i = 0; i < 4; i++)
+            if (players[i] == winnerPlayer)
+                msg.put("position", positions[i]);
+        msg.put("playerName", winnerPlayer.getName());
+
+        result.put("msg", msg);
+
+        return JSONObject.toJSONString(result);
+    }
+
+
+
+    /**
+     * @return {"operation" : "Kong", "msg" : {"playerName" : String, "KongNum" : int, "KongList" : [TileID_1, TileID_2, ...]}}
+     */
+    public String Kong(String playerName, String roomID) {
+        GameStarter gs = games.get(roomID);
+
+        if (gs.getDiscardTileID() == 0) {
+            // 自己 kong 自己
+            ArrayList<Tile> kongTiles = gs.canKong(playerName);
+            Map<String, Object> result = new HashMap<>();
+            result.put("operation", "Kong");
+
+            Map<String, Object> msg = new HashMap<>();
+            msg.put("playerName", playerName);
+            msg.put("KongNum", kongTiles.size());
+
+            int[] KongList = new int[kongTiles.size()];
+            for (int i = 0; i < kongTiles.size(); i++){
+                KongList[i] = kongTiles.get(i).getId();
+            }
+            msg.put("KongList", KongList);
+
+            result.put("msg", msg);
+
+            return JSONObject.toJSONString(result);
+        }
+        else {
+            gs.Kong(playerName, gs.getDiscardTileID());
+            return null;
         }
     }
 
-    public String startGame(String owner){
-        return handleResult(games.get(owner).startGame());
-    }
 
-    public String addPlayer(String owner, String name) {
-        return handleResult(games.get(owner).addPlayer(name));
-    }
+    public void selfKong(String playerName, String roomID, int tileID){
+        GameStarter gs = games.get(roomID);
+        Map<String, Object> result = new HashMap<>();
 
-    public String removePlayer(String owner, String name) {
-        return handleResult(games.get(owner).removePlayer(name));
-    }
-
-    public String getBanker(String owner){
-        return handleResult(games.get(owner).getBanker());
-    }
-
-    public String getSequence(String owner, String name){
-        return handleResult(games.get(owner).getSequence(name));
-    }
-
-    public String deal(String owner, String name) {
-        return handleResult(games.get(owner).deal(name));
-    }
-
-    public String discard(String owner, String name, int tileID) {
-        return handleResult(games.get(owner).discard(name, tileID));
+        gs.Kong(playerName, tileID);
     }
 
 
-    public String canPang(String owner, String name, int tileID) {
-        return handleResult(games.get(owner).canPang(name, tileID));
+    /**
+     * @return {"operation" : "Chow", "msg" : {"playerName" : String, "ChowNum" : int, "ChowList" : [[TileID_1, TileID_2, TileID_3], ...]}}
+     */
+    public String Chow(String playerName, String roomID) {
+        GameStarter gs = games.get(roomID);
+
+        ArrayList<ArrayList<Tile>> chowTiles = gs.canChow(playerName, gs.getDiscardTileID());
+        Map<String, Object> result = new HashMap<>();
+        result.put("operation", "Chow");
+
+        Map<String, Object> msg = new HashMap<>();
+        msg.put("playerName", playerName);
+        msg.put("ChowNum", chowTiles.size());
+
+        int[][] KongList = new int[chowTiles.size()][3];
+        for (int i = 0; i < chowTiles.size(); i++){
+            for (int j = 0; j < 3; j++)
+                KongList[i][j] = chowTiles.get(i).get(j).getId();
+        }
+        msg.put("ChowList", KongList);
+
+        result.put("msg", msg);
+
+        return JSONObject.toJSONString(result);
     }
 
 
-    public String canKong(String owner, String name, int tileID) {
-        return handleResult(games.get(owner).canKong(name, tileID));
-    }
+    public void Chow(String playerName, String roomID, int[] tileIDList){
+        GameStarter gs = games.get(roomID);
 
-
-    public String canKong(String owner, String name) {
-        GameStarter game = games.get(owner);
-        ArrayList<Tile> tiles = game.canKong(name);
-        if (tiles.size() == 0) {
-            return handleResult(false);
+        ArrayList<Tile> chowTiles = new ArrayList<>();
+        for (int tileID : tileIDList) {
+            chowTiles.add(gs.findTile(tileID));
         }
 
-        int[] intArray = tiles.stream().mapToInt(Tile :: getId).toArray();
-        Map<String, Object> map = new HashMap<>();
-        map.put("code", 200);
-        map.put("msg", "ok");
-        map.put("data", true);
-        map.put("tiles", intArray);
-        return JSONObject.toJSONString(map);
+        gs.Chow(chowTiles, playerName, gs.getDiscardTileID());
+    }
+
+    public void Pang(String playerName, String roomID) {
+        GameStarter gs = games.get(roomID);
+        gs.Pang(playerName, gs.getDiscardTileID());
+    }
+
+    public Boolean canDraw(String roomID) {
+        return games.get(roomID).canDraw();
     }
 
 
-    public String canChow(String owner, String name, int tileID) {
-        GameStarter game = games.get(owner);
-        ArrayList<ArrayList<Tile>> tiless = game.canChow(name, tileID);
-        if (tiless.size() == 0) {
-            return handleResult(false);
-        }
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("code", 200);
-        map.put("msg", "ok");
-        map.put("data", true);
-        map.put("num", tiless.size());
-        for (ArrayList<Tile> tiles : tiless){
-            int[] intArray = tiles.stream().mapToInt(Tile :: getId).toArray();
-            map.put("tiles" + (tiless.indexOf(tiles) + 1), intArray);
-        }
-        return JSONObject.toJSONString(map);
-    }
-
-
-    public String canHu(String owner, String name, int tileID) {
-        return handleResult(games.get(owner).canHu(name, tileID));
-    }
-
-
-    public String Pang(String owner, String name, int tileID) {
-        games.get(owner).Pang(name, tileID);
-        return handleResult();
-    }
-
-    public String Kong(String owner, String name, int tileID) {
-        games.get(owner).Kong(name, tileID);
-        return handleResult();
-    }
-
-
-    public String Chow(String owner, String name, int tileID, int tile1, int tile2, int tile3) {
-        GameStarter game = games.get(owner);
-        ArrayList<Tile> tiles = new ArrayList<>();
-        tiles.add(game.findTile(tile1));
-        tiles.add(game.findTile(tile2));
-        tiles.add(game.findTile(tile3));
-        game.Chow(tiles, name, tileID);
-        return handleResult();
-    }
-
-
-    public String Hu(String owner, String winnerName, int tileID, String loserName) {
-        games.get(owner).Hu(winnerName, tileID, loserName);
-        return handleResult();
-    }
-
-
-    public String canDraw(String owner) {
-        return handleResult(games.get(owner).canDraw());
-    }
-
-
-    public String getHandTile(String owner, String name) {
-        HandTile handTile = games.get(owner).getHandTile(name);
-        ArrayList<Tile> tiles = handTile.getHandTile();
-        ArrayList<Meld> melds = handTile.getMelds();
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("code", 200);
-        map.put("msg", "ok");
-        map.put("手牌数量", tiles.size());
-
-        int[] intArray = tiles.stream().mapToInt(Tile :: getId).toArray();
-        map.put("手牌", intArray);
-
-        map.put("组数量", handTile.getMelds().size());
-
-        for (Meld meld : melds){
-            int[] meldArray = meld.getMeld().stream().mapToInt(Tile :: getId).toArray();
-            map.put("meld" + (melds.indexOf(meld) + 1), intArray);
-        }
-
-        map.put("组是明还是暗", true);
-
-        return JSONObject.toJSONString(map);
-    }
-
-    public String handleResult() {
-        Map<String, Object> map = new HashMap<>();
-        map.put("code", 200);
-        map.put("msg", "ok");
-        return JSONObject.toJSONString(map);
-    }
-
-    public String handleResult(Object result) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("code", 200);
-        map.put("msg", "ok");
-        map.put("data", result);
-        return JSONObject.toJSONString(map);
+    /**
+     * @return {"operation" : "Draw", "msg" : "Game Over"}
+     */
+    public String Draw() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("operation", "Draw");
+        result.put("msg", "Game Over");
+        return JSONObject.toJSONString(result);
     }
 }

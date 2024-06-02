@@ -12,13 +12,14 @@ public class Player {
     private HandTile handTile;
     private ArrayList<Meld> melds;
     private int score;
+    private boolean prepare;
 
     public Player(String name) {
-        this.id = id;
         this.name = name;
         this.handTile = new HandTile();
         this.melds = new ArrayList<Meld>();
         this.score = 0; // 分数初始化
+        this.prepare = false;
     }
 
 
@@ -35,7 +36,7 @@ public class Player {
      * @param winner 赢家，可能是null
      * @param loser 输家，可能是null
      */
-    public void scoring(Player banker, Player winner, Player loser){
+    public void scoring(Player banker, Player winner, ArrayList<Player> loser){
         // 计分算法
     }
 
@@ -49,6 +50,16 @@ public class Player {
 
     public int getScore() {
         return score;
+    }
+
+
+
+    public boolean isPrepare() {
+        return prepare;
+    }
+
+    public void setPrepare() {
+        prepare = !prepare;
     }
 
 }

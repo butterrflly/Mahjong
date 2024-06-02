@@ -14,37 +14,43 @@ public class GameStarter {
     private GameRoom gameRoom;
     private TileLibrary tileLibrary;
     private boolean gaming = false;
-    private String owner;
+    private String roomID;
     private Player banker;
     private Player winner;
-    private Player loser;
+    private ArrayList<Player> loser;
+    private String dealPlayName;
+    private String discardName;
+    private int dealTileID;
+    private int discardTileID;
 
 
-
-
-
-    public GameStarter(String owner) {
+    public GameStarter(String roomID) {
         gameRoom = new GameRoom();
-        this.owner = owner;
-        addPlayer(owner);
-        banker = findPlayer(owner);
+        this.roomID = roomID;
     }
 
-    public String startGame() {
+    public boolean startGame() {
         if (gameRoom.getPlayerNum() < 4) {
-            return "人数不足";
+            return false;
+        }
+        ArrayList<Player> playerList = gameRoom.getPlayerList();
+        for (Player player : playerList){
+            if (!player.isPrepare()){
+                return false;
+            }
         }
         tileLibrary = new TileLibrary(gameRoom.getPlayerList());
         gaming = true;
-        return "游戏开始";
+        setBanker();
+        return true;
     }
 
     public void gameOver() {
         gaming = false;
         for(Player player : gameRoom.getPlayerList()){
             player.scoring(banker, winner, loser);
+            player.setPrepare();
         }
-        setBanker();
     }
 
     public String addPlayer(String name) {
@@ -52,35 +58,86 @@ public class GameStarter {
     }
 
     public String removePlayer(String name) {
+        banker = null;
+        winner = null;
+        loser = null;
         return gameRoom.removePlayer(name);
     }
 
+    public ArrayList<Player> getPlayerList() {
+        return gameRoom.getPlayerList();
+    }
 
-    public int deal(String name) {
+    public int getPlayerNum() {
+        return gameRoom.getPlayerNum();
+    }
+
+    public Player getDealPlayer(){
+        return findPlayer(dealPlayName);
+    }
+
+    public int getDealTileID(){
+        return dealTileID;
+    }
+
+    public String getDiscardPlayerName(){
+        return discardName;
+    }
+
+    public int getDiscardTileID(){
+        return discardTileID;
+    }
+
+
+
+    public HandTile getHandTile(String name){
+        return findPlayer(name).getHandTile();
+    }
+
+
+
+
+    public void setBanker(){
+        ArrayList<Player> players = gameRoom.getPlayerList();
+
+        if (banker == null){
+            banker = players.get(0);
+            return;
+        }
+
+        if (winner == banker || winner == null){
+            return;
+        }
+
+        int i = players.indexOf(banker);
+        banker = players.get((i + 1) % 4);
+
+        dealPlayName = null;
+    }
+
+    public String getBanker(){
+        return banker.getName();
+    }
+
+
+
+
+    public int deal() {
         // 抓一张牌
-        return tileLibrary.deal(name).getId();
+        if (dealPlayName == null) dealPlayName = banker.getName();
+        else dealPlayName = getSequence(dealPlayName)[1].getName();
+
+        dealTileID = tileLibrary.deal(dealPlayName).getId();
+        discardName = null;
+        discardTileID = 0;
+        return dealTileID;
     }
 
     public int discard(String name,int tileID) {
         // 打一张牌
+        discardName = name;
+        discardTileID = tileID;
         return findPlayer(name).getHandTile().removeTile(findTile(tileID));
-    }
-
-    public Player findPlayer(String name){
-        for (Player player : gameRoom.getPlayerList()) {
-            if (player.getName().equals(name)) {
-                return player;
-            }
-        }
-        return null;
-    }
-
-    public Tile findTile(int id){
-        return tileLibrary.findTile(id);
-    }
-
-    public HandTile getHandTile(String name){
-        return findPlayer(name).getHandTile();
     }
 
     public boolean canPang(String name, int tileID) {
@@ -103,25 +160,39 @@ public class GameStarter {
         return findPlayer(name).getHandTile().canHu(findTile(tileID));
     }
 
+
     public void Pang(String name, int tileID) {
         // 碰牌
         findPlayer(name).getHandTile().Pang(findTile(tileID));
+        dealPlayName = name;
     }
 
     public void Kong(String name, int tileID) {
         // 杠牌
         findPlayer(name).getHandTile().Kong(findTile(tileID));
+        dealPlayName = getSequence(name)[3].getName();
     }
 
     public void Chow(ArrayList<Tile> chowTiles, String name, int tileID) {
         // 吃牌
         findPlayer(name).getHandTile().Chow(chowTiles, findTile(tileID));
+        dealPlayName = name;
     }
 
     public void Hu(String winnerName, int tileID, String loserName) {
         // 胡牌
         winner = findPlayer(winnerName);
-        loser = findPlayer(loserName);
+        loser = new ArrayList<>();
+        if (loserName.equals("allPlayers")) {
+            for (Player player : gameRoom.getPlayerList()){
+                if (player != winner){
+                    loser.add(player);
+                }
+            }
+        }
+        else {
+            loser.add(findPlayer(loserName));
+        }
         gameOver();
     }
 
@@ -139,35 +210,30 @@ public class GameStarter {
         return false;
     }
 
-
-    public void setBanker(){
-        if (winner == banker){
-            return;
-        }
+    public Player[] getSequence(String name){
+        ArrayList<Player> newPlayers = new ArrayList<>();
         ArrayList<Player> players = gameRoom.getPlayerList();
-        int i = players.indexOf(banker);
-        if (i + 1 == players.size()){
-            banker = players.get(0);
-        } else {
-            banker = players.get(i + 1);
-        }
-    }
-
-    public String getBanker(){
-        return banker.getName();
-    }
-
-    public String[] getSequence(String name){
-        ArrayList<String> playerName = new ArrayList<>();
-        ArrayList<Player> players = gameRoom.getPlayerList();
+        while (players.size() < 4)
+            players.add(null);
         int i = players.indexOf(findPlayer(name));
-        String play;
         for (int j = 0; j < 4; j++) {
-            play = players.get(i % 4).getName();
-            playerName.add(play);
+            newPlayers.add(players.get(i % 4));
             i++;
         }
-        return playerName.toArray(new String[0]);
+        return newPlayers.toArray(new Player[0]);
+    }
+
+    public Player findPlayer(String name){
+        for (Player player : gameRoom.getPlayerList()) {
+            if (player.getName().equals(name)) {
+                return player;
+            }
+        }
+        return null;
+    }
+
+    public Tile findTile(int id){
+        return tileLibrary.findTile(id);
     }
 
     public void printHand(String name){
@@ -183,8 +249,8 @@ public class GameStarter {
     }
 
 
-    public String getOwner(){
-        return owner;
+    public String getRoomID(){
+        return roomID;
     }
 
 
