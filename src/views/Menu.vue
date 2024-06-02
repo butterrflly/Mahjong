@@ -1,17 +1,11 @@
-<script setup>
-import GameTitle from '../components/GameTitle.vue'
-import RulesButton from "@/components/RulesButton.vue";
-import MatchingButton from "@/components/MatchingButton.vue";
-import LoginButton from "@/components/LoginButton.vue";
-</script>
-
 <template>
     <div class="background">
         <header>
-            <img alt="Vue logo" class="logo" src="../assets/logo.png" width="150" height="150" />
+            <img alt="logo" class="logo" src="../assets/logo.png" width="150" height="150" />
             <div class="gameTitle">
                 <GameTitle msg="Mahjong Game" />
             </div>
+            <div v-if="selfName"> {{selfName}} </div>
         </header>
 
         <main>
@@ -22,6 +16,36 @@ import LoginButton from "@/components/LoginButton.vue";
 
     </div>
 </template>
+
+<script lang = 'ts'>
+import {defineComponent} from "vue";
+import GameTitle from "../components/GameTitle.vue";
+import RulesButton from "../components/RulesButton.vue";
+import MatchingButton from "../components/MatchingButton.vue";
+import LoginButton from "../components/LoginButton.vue";
+import {mapGetters} from "vuex";
+
+export default defineComponent({
+    components: {LoginButton, MatchingButton, RulesButton, GameTitle},
+
+    data(){
+        return{
+            selfName: this.getName(),
+        }
+    },
+
+    created(){
+        this.selfName = this.getName()
+    },
+
+    methods:{
+        ...mapGetters(['getName', 'getOwner']),
+    },
+
+})
+
+
+</script>
 
 <style scoped>
     @import "../assets/font/font.css";

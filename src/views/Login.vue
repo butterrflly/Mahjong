@@ -62,7 +62,7 @@
 <script lang ='ts'>
 import BackButton from "../components/BackButton.vue";
 import { postData } from '../api.js';
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions,} from 'vuex';
 
 export default {
     components: {BackButton},
@@ -162,7 +162,7 @@ export default {
 
         async signup(name, password) {
             // 保存name
-            await this.updateName(this.name);
+            await this.updateName(this.userName);
             try {
                 // 使用封装的 postData 函数发起 POST 请求
                 const response = await postData('user/signup', { name: name, password: password });
@@ -182,7 +182,7 @@ export default {
 
         async login(name, password) {
             // 保存name
-            await this.updateName(this.name);
+            await this.updateName(this.userName);
             try {
                 // 使用封装的 postData 函数发起 POST 请求
                 const response = await postData('user/login', { name: name, password: password });
