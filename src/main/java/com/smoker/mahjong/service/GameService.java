@@ -60,7 +60,7 @@ public class GameService {
 
 
     /**
-     * @return {"operation" : "getGameRooms", "msg" : {"room number" : int, "room message" : {"room id_1" : player number, "room id_1" : player number, ...}}}
+     * @return {"operation" : "getGameRooms", "msg" : {"room number" : int, "room message" : {"room id_1" : player number, "room id_2" : player number, ...}}}
      */
     public String getGameRooms() {
         Map<String, Object> result = new HashMap<>();
@@ -118,7 +118,7 @@ public class GameService {
 
 
     /**
-     * @return {"operation" : "getHandTile", "mag" : {"self" : {"name" : String, "handTile number" : int, "handTile" : [int, int, ...]}
+     * @return {"operation" : "getHandTile", "msg" : {"self" : {"name" : String, "handTile number" : int, "handTile" : [int, int, ...]}
      *                                                "nextPlayer" : {"name" : String, "handTile number" : int, "handTile" : [int, int, ...]}
      *                                                "oppositePlayer" : {"name" : String, "handTile number" : int, "handTile" : [int, int, ...]}
      *                                                "prevPlayer" : {"name" : String, "handTile number" : int, "handTile" : [int, int, ...]}}}
@@ -147,7 +147,7 @@ public class GameService {
 
 
     /**
-     * @return {"operation" : "getMeld", "mag" : {"self" : {"name" : String, "isHide" : boolean, "meld number" : int, "meld" : [[int, int, int], ...]}
+     * @return {"operation" : "getMeld", "msg" : {"self" : {"name" : String, "isHide" : boolean, "meld number" : int, "meld" : [[int, int, int], ...]}
      *                                            "nextPlayer" : {"name" : String, "isHide" : boolean, "meld number" : int, "meld" : [[int, int, int], ...]}
      *                                            "oppositePlayer" : {"name" : String, "isHide" : boolean, "meld number" : int, "meld" : [[int, int, int], ...]}
      *                                            "prevPlayer" : {"name" : String, "isHide" : boolean, "meld number" : int, "meld" : [[int, int, int], ...]}}}

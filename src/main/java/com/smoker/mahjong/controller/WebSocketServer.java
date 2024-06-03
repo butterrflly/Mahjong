@@ -1,10 +1,11 @@
-package com.smoker.mahjong.compoment;
+package com.smoker.mahjong.controller;
 
 import com.alibaba.fastjson2.JSON;
 import com.smoker.mahjong.doma.User.Player;
 import com.smoker.mahjong.impl.GameStarter;
 import com.alibaba.fastjson2.JSONObject;
 import com.smoker.mahjong.service.GameService;
+import jakarta.annotation.PostConstruct;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnMessage;
 import jakarta.websocket.OnOpen;
@@ -13,6 +14,7 @@ import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
 
@@ -28,8 +30,17 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class WebSocketServer {
 
-    @Autowired // 引用容器中的service
-    private GameService gameService;
+    private static GameService gameService;
+
+    @Autowired
+    private ApplicationContext context;
+
+    @PostConstruct
+    public void init() {
+        gameService = context.getBean(GameService.class);
+    }
+
+
 
     /**
      *  记录当前连接个数
@@ -64,6 +75,7 @@ public class WebSocketServer {
         if(!message.isEmpty()){
             JSONObject jsonObject = JSON.parseObject(message);
             String operation = (String) jsonObject.get("operation");
+            // switch based on key 'operation'
             switch (operation) {
                 case "login" -> {
                     String playerName = (String) jsonObject.get("playerName");
