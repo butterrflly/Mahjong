@@ -11,7 +11,6 @@ public class HandTile {
 
     private ArrayList<Meld> melds;
 
-    private boolean isMeldHide = false;
 
 
     public HandTile() {
@@ -205,7 +204,6 @@ public class HandTile {
 
 
     public void Pang(Tile tile) {
-        isMeldHide = true;
         // 碰牌
         ArrayList<Tile> meld = new ArrayList<>();
 
@@ -217,15 +215,11 @@ public class HandTile {
 
         removeTile(meld);
         meld.add(tile);
-        melds.add(new Meld(meld, "pang"));
+        melds.add(new Meld(meld, "Pang", false));
     }
 
     public void Kong(Tile tile) {
         // 杠牌
-        if (!handTile.contains(tile)){
-            isMeldHide = true;
-        }
-
         ArrayList<Tile> meld = new ArrayList<>();
 
         for (Tile value : handTile) {
@@ -237,22 +231,32 @@ public class HandTile {
         if (meld.size() >= 3) {
             removeTile(meld);
             if (meld.size() == 3) meld.add(tile);
-            melds.add(new Meld(meld, "pang"));
+            melds.add(new Meld(meld, "Kong", handTile.contains(tile)));
         } else {
             for (int i = 0; i < melds.size(); i++) {
                 Meld m = melds.get(i);
-                int num = 0;
-                for (Tile value : m.getMeld()){
-                    if  (tile.getId() / 10 == value.getId() / 10){
-                        num++;
+//                int num = 0;
+//                for (Tile value : m.getMeld()){
+//                    if  (tile.getId() / 10 == value.getId() / 10){
+//                        num++;
+//                    }
+//                }
+//                if (num == 3){
+//                    melds.remove(m);
+//                    meld.addAll(m.getMeld());
+//                    meld.add(tile);
+//                    melds.add(new Meld(meld, "Kong", false));
+//                    break;
+//                }
+
+                if (m.getType().equals("Pang")){
+                    if (tile.getId() / 10 == m.getMeld().get(0).getId() / 10){
+                        melds.remove(m);
+                        meld.addAll(m.getMeld());
+                        meld.add(tile);
+                        melds.add(new Meld(meld, "Kong", false));
+                        break;
                     }
-                }
-                if (num == 3){
-                    melds.remove(m);
-                    meld.addAll(m.getMeld());
-                    meld.add(tile);
-                    melds.add(new Meld(meld, "pang"));
-                    break;
                 }
             }
         }
@@ -264,7 +268,6 @@ public class HandTile {
      * 所以额外的一个数组参数就是吃的组合
      */
     public void Chow(ArrayList<Tile> chowTiles, Tile tile) {
-        isMeldHide = true;
         // 吃牌
         chowTiles.remove(tile);
         Tile tile1 = chowTiles.remove(0);
@@ -274,13 +277,12 @@ public class HandTile {
         chowTiles.add(tile1);
         chowTiles.add(tile);
         chowTiles.add(tile2);
-        melds.add(new Meld(chowTiles, "chow"));
+        melds.add(new Meld(chowTiles, "Chow", false));
     }
 
 
     public void Hu(Tile tile) {
         // 胡牌
-        isMeldHide = true;
     }
 
 
@@ -304,10 +306,6 @@ public class HandTile {
 
     public ArrayList<Meld> getMelds(){
         return melds;
-    }
-
-    public boolean isMeldHide(){
-        return isMeldHide;
     }
 }
 

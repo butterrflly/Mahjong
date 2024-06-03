@@ -82,7 +82,7 @@ public class WebSocketServer {
                     sessionMap.put(playerName, session);
                     playerMap.put(session, playerName);
 
-                    sendMessageToUser(gameService.getGameRooms(), session);
+                    sendMessageToUser(gameService.getGameRooms(playerName), session);
                 }
                 case "createRoom" -> {
                     String playerName = playerMap.get(session);

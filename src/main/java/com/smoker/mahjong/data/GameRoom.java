@@ -14,19 +14,15 @@ public class GameRoom {
     }
 
     public String addPlayer(String player) {
-        if  (playerList.contains(player)) {
-            return "玩家已存在";
-        }
         if (playerList.size() < 4){
-            playerList.add(new  Player(player));
+            playerList.add(new Player(player));
             return "添加成功";
         }
         return "房间已满";
-
     }
 
 
-    public String removePlayer(String player) {
+    public String removePlayer(Player player) {
         if (playerList.contains(player)) {
             playerList.remove(player);
             return "移除成功";

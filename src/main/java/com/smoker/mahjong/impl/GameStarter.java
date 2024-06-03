@@ -63,7 +63,7 @@ public class GameStarter {
         banker = null;
         winner = null;
         loser = null;
-        return gameRoom.removePlayer(name);
+        return gameRoom.removePlayer(findPlayer(name));
     }
 
     public ArrayList<Player> getPlayerList() {

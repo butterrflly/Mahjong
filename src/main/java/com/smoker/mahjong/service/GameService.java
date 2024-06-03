@@ -60,13 +60,14 @@ public class GameService {
 
 
     /**
-     * @return {"operation" : "getGameRooms", "msg" : {"room number" : int, "room message" : {"room id_1" : player number, "room id_2" : player number, ...}}}
+     * @return {"operation" : "getGameRooms", "msg" : {"name" : String, "room number" : int, "room message" : {"room id_1" : player number, "room id_2" : player number, ...}}}
      */
-    public String getGameRooms() {
+    public String getGameRooms(String playerName) {
         Map<String, Object> result = new HashMap<>();
         result.put("operation", "getGameRooms");
 
         Map<String, Object> message = new HashMap<>();
+        result.put("name", playerName);
         message.put("room number", games.size());
 
         Map<String, Object> roomMessage = new HashMap<>();
@@ -118,9 +119,9 @@ public class GameService {
 
 
     /**
-     * @return {"operation" : "getHandTile", "msg" : {"self" : {"name" : String, "handTile number" : int, "handTile" : [int, int, ...]}
-     *                                                "nextPlayer" : {"name" : String, "handTile number" : int, "handTile" : [int, int, ...]}
-     *                                                "oppositePlayer" : {"name" : String, "handTile number" : int, "handTile" : [int, int, ...]}
+     * @return {"operation" : "getHandTile", "msg" : {"self" : {"name" : String, "handTile number" : int, "handTile" : [int, int, ...]},
+     *                                                "nextPlayer" : {"name" : String, "handTile number" : int, "handTile" : [int, int, ...]},
+     *                                                "oppositePlayer" : {"name" : String, "handTile number" : int, "handTile" : [int, int, ...]},
      *                                                "prevPlayer" : {"name" : String, "handTile number" : int, "handTile" : [int, int, ...]}}}
      */
     public String getHandTile(String playerName, String roomID) {
@@ -147,10 +148,10 @@ public class GameService {
 
 
     /**
-     * @return {"operation" : "getMeld", "msg" : {"self" : {"name" : String, "isHide" : boolean, "meld number" : int, "meld" : [[int, int, int], ...]}
-     *                                            "nextPlayer" : {"name" : String, "isHide" : boolean, "meld number" : int, "meld" : [[int, int, int], ...]}
-     *                                            "oppositePlayer" : {"name" : String, "isHide" : boolean, "meld number" : int, "meld" : [[int, int, int], ...]}
-     *                                            "prevPlayer" : {"name" : String, "isHide" : boolean, "meld number" : int, "meld" : [[int, int, int], ...]}}}
+     * @return {"operation" : "getMeld", "msg" : {"self" :           {"name" : String, "meld number" : int, "meld number list" : [int, int, ...], "isHide list" : [boolean, boolean, ...], "melds" : [[int, int, ...], [int, int, ...], ...]},
+     *                                            "nextPlayer" :     {"name" : String, "meld number" : int, "meld number list" : [int, int, ...], "isHide list" : [boolean, boolean, ...], "melds" : [[int, int, ...], [int, int, ...], ...]},
+     *                                            "oppositePlayer" : {"name" : String, "meld number" : int, "meld number list" : [int, int, ...], "isHide list" : [boolean, boolean, ...], "melds" : [[int, int, ...], [int, int, ...], ...]},
+     *                                            "prevPlayer" :     {"name" : String, "meld number" : int, "meld number list" : [int, int, ...], "isHide list" : [boolean, boolean, ...], "melds" : [[int, int, ...], [int, int, ...], ...]}}}
      */
     public String getMeld(String playerName, String roomID) {
         GameStarter gs = games.get(roomID);
@@ -165,16 +166,26 @@ public class GameService {
         for (int i = 0; i < 4; i++) {
             Map<String, Object> playerMessage = new HashMap<>();
             playerMessage.put("name", players[i].getName());
-            playerMessage.put("isHide", players[i].getHandTile().isMeldHide());
-            playerMessage.put("meld number", players[i].getHandTile().getMelds().size());
 
             ArrayList<Meld> melds = players[i].getHandTile().getMelds();
+
+            int meldNumber = melds.size();
+            playerMessage.put("meld number", meldNumber);
+
+            int[] meldNumberList = new int[meldNumber];
+            boolean[] isHideList = new boolean[meldNumber];
             ArrayList<int[]> meldArray = new ArrayList<>();
-            for (Meld meld : melds){
-                meldArray.add(meld.getMeld().stream().mapToInt(Tile :: getId).toArray());
+
+            for (int j = 0; j < meldNumber; j++){
+                meldNumberList[j] = melds.get(j).getMeld().size();
+                isHideList[j] = melds.get(j).getHide();
+                meldArray.add(melds.get(j).getMeld().stream().mapToInt(Tile :: getId).toArray());
             }
 
+            playerMessage.put("meld number list", meldNumberList);
+            playerMessage.put("isHide list", isHideList);
             playerMessage.put("meld", meldArray.toArray());
+
             message.put(positions[i], playerMessage);
         }
 
