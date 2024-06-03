@@ -1,8 +1,6 @@
 package com.smoker.mahjong.controller;
 
 import com.alibaba.fastjson2.JSON;
-import com.smoker.mahjong.doma.User.Player;
-import com.smoker.mahjong.impl.GameStarter;
 import com.alibaba.fastjson2.JSONObject;
 import com.smoker.mahjong.service.GameService;
 import jakarta.annotation.PostConstruct;
@@ -10,7 +8,6 @@ import jakarta.websocket.OnClose;
 import jakarta.websocket.OnMessage;
 import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
-import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +16,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -49,6 +45,8 @@ public class WebSocketServer {
     private static final Map<Session , String> roomMap = new ConcurrentHashMap<>();
     private static final Map<Session , String> playerMap = new ConcurrentHashMap<>();
     private static final Map<String , ArrayList<Session>> roomSession = new ConcurrentHashMap<>();
+    private static final ArrayList<Session> sessionList = new ArrayList<>();
+
 
     private static Session discardPlayer;
     private static int noAffairNum;
@@ -60,7 +58,8 @@ public class WebSocketServer {
      */
     @OnOpen
     public void onOpen(Session session) {
-        log.info("有新用户加入， username = {}， 当前在线人数{}", session.getId(), sessionMap.size());
+        sessionList.add(session);
+        log.info("有新用户加入， sessionId = {}， 当前在线人数{}", session.getId(), sessionList.size());
         System.out.println("WebSocket opened: " + session.getId());
     }
 
@@ -83,6 +82,8 @@ public class WebSocketServer {
                     playerMap.put(session, playerName);
 
                     sendMessageToUser(gameService.getGameRooms(playerName), session);
+
+                    log.info("有一用户登录，player name = {}", playerName);
                 }
                 case "createRoom" -> {
                     String playerName = playerMap.get(session);
@@ -101,6 +102,8 @@ public class WebSocketServer {
                     gameService.addPlayer(playerName, roomID);
 
                     sendMessageToUser(gameService.getRoomPlayerMessage(playerName, roomID), session);
+
+                    log.info("创建房间，player name = {}， 房间 ID = {}", playerName, roomID);
                 }
                 case "intoRoom" -> {
                     String playerName = playerMap.get(session);
@@ -112,6 +115,8 @@ public class WebSocketServer {
                     for (Session s : roomSession.get(roomID)){
                         sendMessageToUser(gameService.getRoomPlayerMessage(playerMap.get(s), roomID), s);
                     }
+
+                    log.info("加入房间，player name = {}， 房间 ID = {}", playerName, roomID);
                 }
                 case "escRoom" -> {
                     String escName = playerMap.get(session);
@@ -130,12 +135,16 @@ public class WebSocketServer {
                     for (Session s : roomSession.get(escRoomID)){
                         sendMessageToUser(gameService.getRoomPlayerMessage(playerMap.get(s), escRoomID), s);
                     }
+
+                    log.info("离开房间，player name = {}， 房间 ID = {}", escName, escRoomID);
                 }
                 case "prepare" -> {
                     String playerName = playerMap.get(session);
                     String roomID = roomMap.get(session);
 
                     gameService.prepare(playerName, roomID);
+
+                    log.info("玩家准备，player name = {}， 房间 ID = {}", playerName, roomID);
 
                     if (gameService.startGame(roomID)){
 
@@ -173,6 +182,9 @@ public class WebSocketServer {
                     String nextCanHu = gameService.canHu(discardPlayerName, roomID);
                     String nextPlayerName = (String) JSON.parseObject(JSON.parseObject(nextCanHu).get("msg").toString()).get("playerName");
                     sendMessageToUser(nextCanHu, sessionMap.get(nextPlayerName));
+
+                    log.info("打张牌，player name = {}， 房间 ID = {}， 牌 ID = {}", playerMap.get(session), roomMap.get(session), tileID);
+
                 }
                 case "noHu" -> {
                     String playerName = playerMap.get(session);
@@ -301,9 +313,14 @@ public class WebSocketServer {
             roomSession.remove(escRoomID);
         }
 
-        escName = playerMap.remove(session);
-        sessionMap.remove(escName);
-        log.info("有一用户离开， username = {}， 当前在线人数{}", session.getId(), sessionMap.size());
+        if (playerMap.containsKey(session)){
+            escName = playerMap.remove(session);
+            sessionMap.remove(escName);
+        }
+
+
+        sessionList.remove(session);
+        log.info("有一用户离开， sessionId = {}， 当前在线人数{}", session.getId(), sessionMap.size());
         System.out.println("WebSocket closed: " + session.getId());
     }
 
@@ -331,6 +348,8 @@ public class WebSocketServer {
         // 给抓牌的玩家 发送一次自我检测
         sendMessageToUser(gameService.getSelfAffair(playerMap.get(dealPlayer), roomID), dealPlayer);
         sendMessageToUser(gameService.discardRequest(), dealPlayer);
+
+        log.info("摸张牌，player name = {}， 房间 ID = {}", playerMap.get(dealPlayer), roomMap.get(dealPlayer));
     }
 
 
