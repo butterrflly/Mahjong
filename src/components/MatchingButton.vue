@@ -1,5 +1,5 @@
 <template>
-    <el-button type="success" id="button" size="large" color="#73ef84" :dark="isDark" plain>
+    <el-button type="success" id="button" size="large" color="#73ef84" plain>
         <el-icon><Search id="document"/></el-icon>
         <h1 id="title">Start Matching!</h1>
     </el-button>

@@ -4,6 +4,8 @@
         <div class="room">
             <button v-if="createRoomButtonIf" v-on:click="createRoom()">creatRoom</button>
             <button v-if="joinRoomButtonIf" v-on:click="joinRoom()">Join in the Room</button>
+            <h2>room number: {{roomNum}}</h2>
+            <h2>room info: {{roomInfo}}</h2>
         </div>
 
         <div v-if="createRoomIf">
@@ -27,18 +29,14 @@
 
 <script lang = 'ts'>
 //创建房间
-import { mapState, mapActions, mapGetters } from 'vuex';
 import { postData } from '../api.js';
+import WebSocketService from '../websocket.js';
 
 export default {
-    computed: {
-        ...mapState(['name', 'owner'])
-    },
-
     data(){
         return{
-            selfName: this.getName(),
             owner: '',
+            // conditions for judgement
             createRoomButtonIf: true,
             createRoomIf: false,
             joinRoomButtonIf: true,
@@ -46,13 +44,33 @@ export default {
             joinedIf: false,
             canStart: false,
             roomExist: false,
+            // message to display
             message: null,
+            roomNum: null,
+            roomInfo: null,
+            // info of four players, {"name" : String, "prepare" : boolean, "score" : int}
+            selfInfo: null,
+            nextInfo: null,
+            oppoInfo: null,
+            prevInfo: null,
         }
     },
 
     methods:{
-        ...mapActions(['updateName', 'updateOwner']),
-        ...mapGetters(['getName', 'getOwner']),
+        // handle the data received by listener
+        handleMessage(data) {
+            if (data.operation == "getGameRooms") {
+                this.roomNum = data.msg["room number"];
+                this.roomInfo = data.msg["room message"];
+            }else if (data.operation == "Duplicate room number") {
+                this.message = "Duplicate room number!"
+            }else if (data.operation == "getRoomPlayerMessage") {
+                this.selfInfo = data.msg["self"];
+                this.nextInfo = data.msg["nextPlayer"];
+                this.oppoInfo = data.msg["oppositePlayer"];
+                this.prevInfo = data.msg["prevPlayer"];
+            }
+        },
 
         async createRoom() {
             this.createRoomButtonIf = false;
@@ -133,6 +151,16 @@ export default {
                 this.canStart = false;
             }
         },
+
+        // 连接 WebSocket 并注册消息处理回调函数
+        created() {
+            WebSocketService.addMessageListener(this.handleMessage);
+        },
+
+        // 移除消息处理回调函数
+        beforeUnmount() {
+            WebSocketService.removeMessageListener(this.handleMessage);
+        }
 
     },
 }

@@ -9,7 +9,7 @@ import GameRules from "./views/GameRules.vue";
 import Matching from "./views/Matching.vue";
 import 'element-plus/dist/index.css'
 import {createRouter, createWebHistory} from 'vue-router'
-import App from "@/App.vue";
+import App from "./App.vue";
 import store from './store'; // 导入 Vuex store
 
 //配置基本路由规则
@@ -34,5 +34,4 @@ const router = createRouter(
 const app = createApp(App)
 app.use(router)
 app.use(ElementPlus)
-app.use(store)
 app.mount('#app')

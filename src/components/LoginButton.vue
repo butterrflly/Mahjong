@@ -1,5 +1,5 @@
 <template>
-    <el-button type="primary" id="button" size="large" color="#000000" :dark="isDark" round text>
+    <el-button type="primary" id="button" size="large" color="#000000"  round text>
         <el-icon><UserFilled id="user"/></el-icon>
         <h1 id="title">Login</h1>
     </el-button>

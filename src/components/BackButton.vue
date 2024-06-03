@@ -1,5 +1,5 @@
 <template>
-  <el-button type="primary" id="button" size="small" color="#a6efaa" :dark="isDark" round text>
+  <el-button type="primary" id="button" size="small" color="#a6efaa" round text>
     <el-icon><Back id="back"/></el-icon>
   </el-button>
 </template>

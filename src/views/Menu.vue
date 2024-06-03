@@ -5,7 +5,6 @@
             <div class="gameTitle">
                 <GameTitle msg="Mahjong Game" />
             </div>
-            <div v-if="selfName"> {{selfName}} </div>
         </header>
 
         <main>
@@ -23,24 +22,28 @@ import GameTitle from "../components/GameTitle.vue";
 import RulesButton from "../components/RulesButton.vue";
 import MatchingButton from "../components/MatchingButton.vue";
 import LoginButton from "../components/LoginButton.vue";
-import {mapGetters} from "vuex";
+import WebSocketService from "../websocket.js";
 
 export default defineComponent({
     components: {LoginButton, MatchingButton, RulesButton, GameTitle},
 
     data(){
         return{
-            selfName: this.getName(),
+            // selfName: this.getName(),
         }
     },
 
-    created(){
-        this.selfName = this.getName()
+    methods:{
+
     },
 
-    methods:{
-        ...mapGetters(['getName', 'getOwner']),
-    },
+    // mounted() {
+    //     try{
+    //         WebSocketService.connect();
+    //     }catch(error){
+    //         console.error('Error during POST:', error);
+    //     }
+    // },
 
 })
 
