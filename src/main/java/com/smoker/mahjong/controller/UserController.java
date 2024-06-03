@@ -1,6 +1,5 @@
 package com.smoker.mahjong.controller;
 
-import com.smoker.mahjong.utils.Result;
 import com.smoker.mahjong.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

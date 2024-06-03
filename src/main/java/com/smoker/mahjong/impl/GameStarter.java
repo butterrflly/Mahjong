@@ -22,6 +22,7 @@ public class GameStarter {
     private String discardName;
     private int dealTileID;
     private int discardTileID;
+    private String HuType;
 
 
     public GameStarter(String roomID) {
@@ -41,6 +42,7 @@ public class GameStarter {
         }
         tileLibrary = new TileLibrary(gameRoom.getPlayerList());
         gaming = true;
+        HuType = null;
         setBanker();
         return true;
     }
@@ -48,7 +50,7 @@ public class GameStarter {
     public void gameOver() {
         gaming = false;
         for(Player player : gameRoom.getPlayerList()){
-            player.scoring(banker, winner, loser);
+            player.scoring(banker, winner, loser, HuType);
             player.setPrepare();
         }
     }
@@ -88,13 +90,9 @@ public class GameStarter {
         return discardTileID;
     }
 
-
-
     public HandTile getHandTile(String name){
         return findPlayer(name).getHandTile();
     }
-
-
 
 
     public void setBanker(){
@@ -118,8 +116,6 @@ public class GameStarter {
     public String getBanker(){
         return banker.getName();
     }
-
-
 
 
     public int deal() {
@@ -157,7 +153,12 @@ public class GameStarter {
     }
 
     public boolean canHu(String name, int tileID) {
-        return findPlayer(name).getHandTile().canHu(findTile(tileID));
+        String result = findPlayer(name).getHandTile().canHu(findTile(tileID));
+        if (result == null){
+            return false;
+        }
+        HuType = result;
+        return true;
     }
 
 
@@ -182,6 +183,7 @@ public class GameStarter {
     public void Hu(String winnerName, int tileID, String loserName) {
         // 胡牌
         winner = findPlayer(winnerName);
+        winner.getHandTile().Hu(findTile(tileID));
         loser = new ArrayList<>();
         if (loserName.equals("allPlayers")) {
             for (Player player : gameRoom.getPlayerList()){
@@ -204,6 +206,7 @@ public class GameStarter {
         if (tileLibrary.getTiles().size() < 16) {
             winner = null;
             loser = null;
+            HuType = null;
             gameOver();
             return true;
         }

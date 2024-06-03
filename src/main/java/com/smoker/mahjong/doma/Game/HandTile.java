@@ -11,9 +11,7 @@ public class HandTile {
 
     private ArrayList<Meld> melds;
 
-    private boolean isMeldHide = true;
-
-
+    private boolean isMeldHide = false;
 
 
     public HandTile() {
@@ -21,13 +19,11 @@ public class HandTile {
         melds = new ArrayList<Meld>();
     }
 
-
     public Tile addTile(Tile tile){
         handTile.add(tile);
         sort();
         return tile;
     }
-
 
     public int removeTile(Tile tile){
         handTile.remove(tile);
@@ -39,12 +35,10 @@ public class HandTile {
         handTile.clear();
     }
 
-
     public void removeTile(ArrayList<Tile> tiles){
         for (Tile tile : tiles)
             handTile.remove(tile);
     }
-
 
     public boolean canPang(int tileID) {
         int num = 0;
@@ -54,7 +48,6 @@ public class HandTile {
 
         return num >= 2;
     }
-
 
     public boolean canKong(int tileID) {
         int numHand = 0;
@@ -155,7 +148,7 @@ public class HandTile {
     }
 
 
-    public boolean canHu(Tile tile) {
+    public String canHu(Tile tile) {
         ArrayList<Tile> tempHandTile = new ArrayList<>(handTile);
         tempHandTile.add(tile);
 
@@ -173,7 +166,9 @@ public class HandTile {
             }
         }
 
-        if (pair.size() == 0) return false;
+        if (pair.size() == 0) return null;
+
+        if (pair.size() == 7) return "seven pairs";
 
         while (pair.size() != 0){
             Tile tile1 = pair.remove(0);
@@ -199,17 +194,18 @@ public class HandTile {
             int triplet = meldUtil1.tripletNum() + meldUtil2.tripletNum() + meldUtil3.tripletNum() + meldUtil4.tripletNum() + meldUtil5.tripletNum();
 
             if (triplet > 0 && result){
-                return true;
+                return "normal";
             }
             tempHandTile.add(tile1);
             tempHandTile.add(tile2);
         }
 
-        return false;
+        return null;
     }
 
 
     public void Pang(Tile tile) {
+        isMeldHide = true;
         // 碰牌
         ArrayList<Tile> meld = new ArrayList<>();
 
@@ -226,6 +222,10 @@ public class HandTile {
 
     public void Kong(Tile tile) {
         // 杠牌
+        if (!handTile.contains(tile)){
+            isMeldHide = true;
+        }
+
         ArrayList<Tile> meld = new ArrayList<>();
 
         for (Tile value : handTile) {
@@ -264,6 +264,7 @@ public class HandTile {
      * 所以额外的一个数组参数就是吃的组合
      */
     public void Chow(ArrayList<Tile> chowTiles, Tile tile) {
+        isMeldHide = true;
         // 吃牌
         chowTiles.remove(tile);
         Tile tile1 = chowTiles.remove(0);
@@ -279,6 +280,7 @@ public class HandTile {
 
     public void Hu(Tile tile) {
         // 胡牌
+        isMeldHide = true;
     }
 
 
@@ -309,205 +311,3 @@ public class HandTile {
     }
 }
 
-class MeldUtil {
-    private ArrayList<Tile> tiles;
-    private ArrayList<ArrayList<Tile>> mayTriplet;
-    private int triplet;
-    private int sequence;
-
-    public MeldUtil(){
-        tiles = new ArrayList<>();
-        mayTriplet = new ArrayList<>();
-    }
-
-    public void addTile(Tile tile){
-        tiles.add(tile);
-    }
-
-    public boolean isHu(){
-        tiles.sort(Comparator.comparingInt(Tile::getId));
-
-        if (tiles.size() == 0) {
-            triplet = 0;
-            sequence = 0;
-            return true;
-        }
-
-        if (tiles.size() % 3 != 0) {
-            return false;
-        }
-
-
-        for (int i = 0; i < tiles.size() - 2; i++) {
-            if (tiles.get(i).getId() / 10 == tiles.get(i + 1).getId() / 10 && tiles.get(i).getId() / 10 == tiles.get(i + 2).getId() / 10){
-                ArrayList<Tile> temp = new ArrayList<>();
-                temp.add(tiles.get(i));
-                temp.add(tiles.get(i + 1));
-                temp.add(tiles.get(i + 2));
-                mayTriplet.add(temp);
-                i = i + 2;
-            }
-        }
-
-
-        if (tiles.get(0).getId() / 100 > 3){
-            if (tiles.size() / 3 == mayTriplet.size()) {
-                triplet = mayTriplet.size();
-                sequence = 0;
-                return true;
-            }
-            return false;
-        }
-
-
-        if (tiles.size() == 12) {
-            if (mayTriplet.size() == 0) return false;
-
-            if (mayTriplet.size() == 1) {
-                ArrayList<Tile> temp = new ArrayList<>(tiles);
-                temp.removeAll(mayTriplet.get(0));
-                triplet = 1;
-                sequence = 3;
-                return isSequence(temp);
-            }
-
-            if (mayTriplet.size() == 2) {
-                ArrayList<Tile> temp1 = new ArrayList<>(tiles);
-                ArrayList<Tile> temp2 = new ArrayList<>(tiles);
-                ArrayList<Tile> temp3 = new ArrayList<>(tiles);
-                temp1.removeAll(mayTriplet.get(0));
-                temp1.removeAll(mayTriplet.get(1));
-                temp2.removeAll(mayTriplet.get(0));
-                temp3.removeAll(mayTriplet.get(1));
-                triplet = 2;
-                sequence = 2;
-                return isSequence(temp1) || isSequence(temp2) || isSequence(temp3);
-            }
-
-            if (mayTriplet.size() == 3) {
-                ArrayList<Tile> temp1 = new ArrayList<>(tiles);
-                ArrayList<Tile> temp2 = new ArrayList<>(tiles);
-                ArrayList<Tile> temp3 = new ArrayList<>(tiles);
-                ArrayList<Tile> temp4 = new ArrayList<>(tiles);
-                temp1.removeAll(mayTriplet.get(0));
-                temp1.removeAll(mayTriplet.get(1));
-                temp1.removeAll(mayTriplet.get(2));
-                temp2.removeAll(mayTriplet.get(0));
-                temp3.removeAll(mayTriplet.get(1));
-                temp4.removeAll(mayTriplet.get(2));
-                triplet = 3;
-                sequence = 1;
-                return isSequence(temp1) || isSequence(temp2) || isSequence(temp3) || isSequence(temp4);
-            }
-
-            if (mayTriplet.size() == 4) {
-                triplet = 4;
-                sequence = 0;
-                return true;
-            }
-        }
-
-
-        if (tiles.size() == 9) {
-            if (mayTriplet.size() == 0) {
-                triplet = 0;
-                sequence = 3;
-                return isSequence(tiles);
-            }
-
-            if (mayTriplet.size() == 1) {
-                ArrayList<Tile> temp = new ArrayList<>(tiles);
-                temp.removeAll(mayTriplet.get(0));
-                triplet = 1;
-                sequence = 2;
-                return isSequence(temp);
-            }
-
-            if (mayTriplet.size() == 2) {
-                ArrayList<Tile> temp1 = new ArrayList<>(tiles);
-                temp1.removeAll(mayTriplet.get(0));
-                temp1.removeAll(mayTriplet.get(1));
-                triplet = 2;
-                sequence = 1;
-                return isSequence(temp1);
-            }
-
-            if (mayTriplet.size() == 3) {
-                triplet = 3;
-                sequence = 0;
-                return true;
-            }
-        }
-
-
-        if (tiles.size() == 6) {
-            if (mayTriplet.size() == 0) {
-                triplet = 0;
-                sequence = 2;
-                return isSequence(tiles);
-            }
-
-            if (mayTriplet.size() == 1) {
-                ArrayList<Tile> temp = new ArrayList<>(tiles);
-                temp.removeAll(mayTriplet.get(0));
-                triplet = 1;
-                sequence = 1;
-                return isSequence(temp);
-            }
-
-            if (mayTriplet.size() == 2) {
-                triplet = 2;
-                sequence = 0;
-                return true;
-            }
-        }
-
-
-        if (tiles.size() == 3) {
-            if (mayTriplet.size() == 0) {
-                triplet = 0;
-                sequence = 1;
-                return isSequence(tiles);
-            }
-
-            if (mayTriplet.size() == 1) {
-                triplet = 1;
-                sequence = 0;
-                return true;
-            }
-
-        }
-
-
-        return false; // buzhidao
-    }
-
-    public boolean isSequence(ArrayList<Tile> tiles){
-        tiles.sort(Comparator.comparingInt(Tile::getId));
-        ArrayList<Integer> tileIds = new ArrayList<>();
-        for (Tile tile : tiles) {
-            tileIds.add(tile.getId() / 10);
-        }
-        while (tileIds.size() != 0) {
-            int id = tileIds.get(0);
-            if (tileIds.contains(id + 1) && tileIds.contains(id + 2)){
-                tileIds.remove(Integer.valueOf(id));
-                tileIds.remove(Integer.valueOf(id + 1));
-                tileIds.remove(Integer.valueOf(id + 2));
-            }
-            else{
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public int tripletNum(){
-        return triplet;
-    }
-
-    public int sequenceNum(){
-        return sequence;
-    }
-
-}
