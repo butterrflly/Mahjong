@@ -2,19 +2,29 @@
     <div class="background">
         <h2>Matching a game</h2>
         <div class="room">
-            <button v-if="createRoomButtonIf" v-on:click="createRoom()">creatRoom</button>
+            <button v-if="createRoomButtonIf" v-on:click="createRoomCheck()">creatRoom</button>
             <button v-if="joinRoomButtonIf" v-on:click="joinRoom()">Join in the Room</button>
-            <h2>room number: {{roomNum}}</h2>
-            <h2>room info: {{roomInfo}}</h2>
+             <h2>Room number: {{ roomNum }}</h2>
+              <h2>Room Info:  {{ displayRoomMap(parseRoomData(roomInfo)) }}</h2>
         </div>
 
-        <div v-if="createRoomIf">
-            <!-- if the room is created and can't start -->
-            <h2 v-if="!canStart">Waiting for players to join...</h2>
-            <!-- can start -->
-            <button v-on:click="startGame(owner)" class="startGameButton">Start Game!</button>
-        </div>
-        <div v-if="joinRoomIf">
+      <div v-if="createRoomIf">
+        <!-- if the room is created and can't start -->
+        <h2 v-if="!canStart">Waiting for players to join...</h2>
+
+        Room ID: <input v-model="createARoom.roomId" ><br />
+
+
+
+
+        <!-- 添加确认按钮 -->
+        <button v-on:click="confirmRoomId" v-on="createRoom()" class="confirmRoomButton" >Confirm</button>
+
+        <!-- can start -->
+        <button v-on:click="startGame(owner)" class="startGameButton">Start Game!</button>
+      </div>
+
+      <div v-if="joinRoomIf">
             <h2>Enter the owner of the room:</h2>
             owner name:<input v-model = "this.owner"/><br />
             <button v-on:click="join(owner)">Join</button>
@@ -34,32 +44,78 @@ import WebSocketService from '../websocket.js';
 
 export default {
     data(){
-        return{
-            owner: '',
-            // conditions for judgement
-            createRoomButtonIf: true,
-            createRoomIf: false,
-            joinRoomButtonIf: true,
-            joinRoomIf: false,
-            joinedIf: false,
-            canStart: false,
-            roomExist: false,
-            // message to display
-            message: null,
-            roomNum: null,
-            roomInfo: null,
-            // info of each player,
-            // {"name" : String, "prepare" : boolean, "score" : int}
-            selfInfo: null,
-            nextInfo: null,
-            oppoInfo: null,
-            prevInfo: null,
-        }
+      return {
+        owner: '',
+        // conditions for judgement
+        confirmRoomId: false,
+        createRoomButtonIf: true,
+        createRoomIf: false,
+        joinRoomButtonIf: true,
+        joinRoomIf: false,
+        joinedIf: false,
+        canStart: false,
+        roomExist: false,
+        // message to create room
+        createARoom: {
+          roomId: null,
+          successMessage:'',
+          errorMessage:'',
+        },
+        // message to join a room
+        joinARoom: {
+          roomId: null,
+          successMessage:'',
+          errorMessage:'',
+        },
+        // message to display
+        message: null,
+        roomNum: null,
+        roomInfo: null,
+        // info of four players, {"name" : String, "prepare" : boolean, "score" : int}
+        selfInfo: null,
+        nextInfo: null,
+        oppoInfo: null,
+        prevInfo: null
+      };
     },
 
+
+
+
     methods:{
+
+      createRoomCheck(){
+        this.createRoomButtonIf = false;
+        this.joinRoomButtonIf = false;
+        this.createRoomIf = true;
+      },
+
+
+      parseRoomData(dataString) {
+        // 首先将接收到的字符串转换为 JavaScript 对象
+        const roomData = JSON.parse(dataString);
+
+        // 返回存储房间ID和玩家人数的键值对对象
+        return roomData;
+        },
+
+
+      displayRoomMap(roomMap) {
+        let displayString = '';
+        for (const roomId in roomMap) {
+          if (roomMap.hasOwnProperty(roomId)) {
+            displayString += `Room ID: ${roomId}, Player Number: ${roomMap[roomId]}\n`;
+          }
+        }
+        return displayString;
+      },
         // handle the data received by listener
+      /**
+       * @return {"operation" : "getGameRooms", "msg" : {"name" : String, "room number" : int, "room message" : {"room id_1" : player number, "room id_2" : player number, ...}}}
+       */
+
         handleMessage(data) {
+
             if (data.operation == "getGameRooms") {
                 this.roomNum = data.msg["room number"];
                 this.roomInfo = data.msg["room message"];
@@ -73,25 +129,28 @@ export default {
             }
         },
 
-        async createRoom() {
-            this.createRoomButtonIf = false;
-            this.joinRoomButtonIf = false;
-            this.createRoomIf = true;
-            try {
-                const response = await postData('game/newRoom', { owner: this.selfName});
-                console.log('Response from POST:', response);
-                this.message = "room created";
-                // 保存owner
-                await this.updateOwner(this.selfName);
-            } catch (error) {
-                console.error('Error during POST:', error);
-            }
+        //info for room
+        async createRoom() {//添加一个房间号输入,已获得房间号,
+          WebSocketService.sendMessage(JSON.stringify({operation: 'createRoom', roomID: this.createARoom.roomId}))
+          try{
+            this.createARoom.successMessage = "success Creating a room."
+          }catch (error) {
+            console.error('Error during POST:', error);
+            this.createARoom.errorMessage = "An error occurred during Creating room. Please try again later.";
+          }
         },
 
         async joinRoom() {
             this.joinRoomButtonIf = false;
             this.createRoomButtonIf = false;
             this.joinRoomIf = true;
+             WebSocketService.sendMessage(JSON.stringify({ operation: 'intoRoom', roomID: this.joinARoom.roomId }));
+             try {
+
+             } catch (error) {
+               console.error('Error during POST:', error);
+               this.joinARoom.errorMessage = "An error occurred while joining the room. Please try again later.";
+             }
         },
 
 
