@@ -3,9 +3,8 @@
         <h2>Matching a game</h2>
         <div class="room">
             <button v-if="createRoomButtonIf" v-on:click="createRoomCheck()">creatRoom</button>
-            <button v-if="joinRoomButtonIf" v-on:click="joinRoom()">Join in the Room</button>
-             <h2>Room number: {{ roomNum }}</h2>
-              <h2>Room Info:  {{ displayRoomMap(roomInfo)}}</h2>
+            <button v-if="joinRoomButtonIf" v-on:click="joinRoomCheck()">Join in the Room</button>
+
         </div>
 
       <div v-if="createRoomIf">
@@ -13,27 +12,57 @@
         <h2 v-if="!canStart">Waiting for players to join...</h2>
 
         Room ID: <input v-model="createARoom.roomId" ><br />
-
-
-
-
-        <!-- 添加确认按钮 -->
+        <!-- 添加确认按d钮 -->
         <button v-on:click="createRoom()" class="confirmRoomButton" >Confirm</button>
 
-        <!-- can start -->
-        <button v-on:click="startGame(owner)" class="startGameButton">Start Game!</button>
+
+        <div v-if="HaveCreateRoomIf">
+          <h2>New Create Room Number: {{ this.createARoom.roomId }}</h2>
+          <h2>Other Room number: {{ roomNum }}</h2>
+          <h2>Room Info:  {{ displayRoomMap(roomInfo)}}</h2>
+
+          <button v-on:click="prepare()">Prepare</button>
+          <!-- 在 errorMessage 不为空时显示错误消息 -->
+          <div v-if="this.preparing.errorMessage" class="error-message">{{ this.preparing.errorMessage }}</div>
+          <!-- 在 successMessage 不为空时显示成功消息 -->
+          <div v-if="this.preparing.successMessage" class="success-message">{{ this.preparing.successMessage }}</div>
+
+        </div>
       </div>
 
+
+
       <div v-if="joinRoomIf">
-            <h2>Enter the owner of the room:</h2>
-            owner name:<input v-model = "this.owner"/><br />
-            <button v-on:click="join(owner)">Join</button>
+
+        <h2>Total Room number: {{ roomNum}}</h2>
+        <h2>Room Info:  {{ displayRoomMap(roomInfo)}}</h2>
+
+            <h2>Enter the ID of the room:</h2>
+            Room Id:<input v-model = "this.joinARoom.roomId"/><br />
+            <button v-on:click="join()">Join</button>
             <!-- if the room is created and can't start-->
-            <h2 v-if="!canStart & joinedIf">Waiting for players to join...</h2>
-            <!-- can start -->
-            <button v-on:click="startGame(owner)" class="startGameButton">Start Game!</button>
+<!--            <h2 v-if="!canStart & joinedIf">Waiting for players to join...</h2>-->
+
+
+
+        <div v-if="joinedIf">
+          <button v-on:click="prepare()">Prepare</button>
+          <!-- 在 errorMessage 不为空时显示错误消息 -->
+          <div v-if="this.preparing.errorMessage" class="error-message">{{ this.preparing.errorMessage }}</div>
+          <!-- 在 successMessage 不为空时显示成功消息 -->
+          <div v-if="this.preparing.successMessage" class="success-message">{{ this.preparing.successMessage }}</div>
         </div>
-        <div v-if="message" class="success-message">{{ message }}</div>
+
+
+        <div v-if="signal">
+          <router-link to="GameTable"></router-link>
+          </div>
+      </div>
+
+
+
+
+
     </div>
 </template>
 
@@ -41,13 +70,15 @@
 //创建房间
 import { postData } from '../api.js';
 import WebSocketService from '../websocket.js';
+import RulesButton from "@/components/RulesButton.vue";
 
 export default {
+  components: {RulesButton},
     data(){
       return {
         owner: '',
         // conditions for judgement
-        confirmRoomId: false,
+        HaveCreateRoomIf:false,
         createRoomButtonIf: true,
         createRoomIf: false,
         joinRoomButtonIf: true,
@@ -67,6 +98,13 @@ export default {
           successMessage:'',
           errorMessage:'',
         },
+        // message of preparing
+        preparing:{
+          successMessage:'',
+          errorMessage:'',
+        },
+        //message to check if game can start
+        signal: null,
         // message to display
         message: null,
         roomNum: null,
@@ -108,18 +146,13 @@ export default {
        */
 
         handleMessage(data) {
-            if (data.operation === "getGameRooms") {
                 this.roomNum = JSON.stringify(data.msg["room number"]);
                 this.roomInfo = JSON.stringify(data.msg["room message"]);
                 console.log(this.roomInfo);
-            }else if (data.operation === "Duplicate room number") {
-                this.message = "Duplicate room number!"
-            }else if (data.operation === "getRoomPlayerMessage") {
-                this.selfInfo = data.msg["self"];
-                this.nextInfo = data.msg["nextPlayer"];
-                this.oppoInfo = data.msg["oppositePlayer"];
-                this.prevInfo = data.msg["prevPlayer"];
-            }
+                if(data.operation == "prepare")
+                this.signal = JSON.stringify(data.msg["handTile number"])
+                console.log(this.roomInfo)
+
         },
 
         //info for room
@@ -127,84 +160,40 @@ export default {
           WebSocketService.sendMessage(JSON.stringify({operation: 'createRoom', roomID: this.createARoom.roomId}))
           try{
             this.createARoom.successMessage = "success Creating a room."
+            this.HaveCreateRoomIf = true
           }catch (error) {
             console.error('Error during POST:', error);
             this.createARoom.errorMessage = "An error occurred during Creating room. Please try again later.";
           }
         },
 
-        async joinRoom() {
+        async joinRoomCheck() {
             this.joinRoomButtonIf = false;
             this.createRoomButtonIf = false;
             this.joinRoomIf = true;
-             WebSocketService.sendMessage(JSON.stringify({ operation: 'intoRoom', roomID: this.joinARoom.roomId }));
-             try {
-
-             } catch (error) {
-               console.error('Error during POST:', error);
-               this.joinARoom.errorMessage = "An error occurred while joining the room. Please try again later.";
-             }
         },
 
 
-        async join(owner) {
-            await this.ifRoomExist(owner);
-            if(this.roomExist){
-                try {
-                    const response = await postData('game/addPlayer', { owner: owner, name: this.selfName});
-                    console.log('Response from POST:', response)
-                    this.owner = owner;
-                    if(response == "玩家已存在"){
-                        this.message = "Player already in the room";
-                    }else if(response == "房间已满"){
-                        this.message = "Room is full";
-                    }else if(response == "添加成功"){
-                        this.message = "Join successful!";
-                        this.joinedIf = true;
-                        // 保存owner
-                        await this.updateOwner(this.owner);
-
-                    }
-                } catch (error) {
-                    console.error('Error during POST:', error);
-                }
-            }else{
-                this.message = "can't find this room!"
-            }
-
+        async join() {
+          try {
+            WebSocketService.sendMessage(JSON.stringify({ operation: 'intoRoom', roomID: this.joinARoom.roomId}));
+            this.joinARoom.successMessage = "The join in has been realize successfully !"
+            this.joinedIf = true;
+          } catch (error) {
+            console.error('Error during POST:', error);
+            this.joinARoom.errorMessage = "An error occurred while joining the room. Please try again later.";
+          }
         },
 
-        async ifRoomExist(owner) {
-            try {
-                const response = await postData('game/findRoom', { owner: owner });
-                console.log('Response from POST:', response);
-                if(response == true){
-                    this.roomExist = true;
-                }else if(response == false){
-                    this.roomExist = false;
-                }
-            } catch (error) {
-                console.error('Error during POST:', error);
-            }
-        },
-
-        async startGame(owner) {
-            try {
-                // 使用封装的 postData 函数发起 POST 请求
-                const response = await postData('game/startGame', { owner: owner });
-                console.log('Response from POST:', response);
-                if(response == "游戏开始"){
-                    this.canStart = true;
-                    this.$router.push({path: '/GameTable'});
-                } else if(response == "人数不足"){
-                    this.canStart = false;
-                }
-            } catch (error) {
-                console.error('Error during POST:', error);
-                this.canStart = false;
-            }
-        },
-
+      async prepare() {
+        try {
+          WebSocketService.sendMessage(JSON.stringify({ operation: 'prepare'}));
+          this.preparing.successMessage = "Prepare success!"
+        } catch (error) {
+          console.error('Error during POST:', error);
+          this.preparing.errorMessage = "An error occurred while preparing. Please try again later.";
+        }
+      },
     },
 
     // 连接 WebSocket 并注册消息处理回调函数
