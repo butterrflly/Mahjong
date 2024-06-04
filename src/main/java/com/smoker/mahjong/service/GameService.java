@@ -71,8 +71,11 @@ public class GameService {
         message.put("room number", games.size());
 
         Map<String, Object> roomMessage = new HashMap<>();
-        for (String key : games.keySet()) {
-            roomMessage.put(key, games.get(key).getPlayerNum());
+
+        if (games.size() != 0) {
+            for (String key : games.keySet()) {
+                roomMessage.put(key, games.get(key).getPlayerNum());
+            }
         }
 
         message.put("room message", roomMessage);
