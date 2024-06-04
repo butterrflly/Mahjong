@@ -194,6 +194,27 @@ public class GameService {
     }
 
 
+    /**
+     * @return {"operation" : "getTableTile", "msg" : {"tableTile" : [tileID_1, tileID_2, ...]}}
+     */
+    public String getTableTile(String roomID) {
+        GameStarter gs = games.get(roomID);
+        ArrayList<Tile> tableTile = gs.getTableTile();
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("operation", "getTableTile");
+
+
+        Map<String, Object> mag = new HashMap<>();
+        int[] tableTileArray = tableTile.stream().mapToInt(Tile :: getId).toArray();
+        mag.put("tableTile", tableTileArray);
+
+        result.put("msg", mag);
+
+        return JSONObject.toJSONString(result);
+    }
+
+
     public void deal(String roomID) {
         GameStarter gs = games.get(roomID);
         gs.deal();
@@ -416,10 +437,7 @@ public class GameService {
             msg.put("playerName", playerName);
             msg.put("KongNum", kongTiles.size());
 
-            int[] KongList = new int[kongTiles.size()];
-            for (int i = 0; i < kongTiles.size(); i++){
-                KongList[i] = kongTiles.get(i).getId();
-            }
+            int[] KongList = kongTiles.stream().mapToInt(Tile :: getId).toArray();
             msg.put("KongList", KongList);
 
             result.put("msg", msg);
@@ -498,5 +516,11 @@ public class GameService {
         result.put("operation", "Draw");
         result.put("msg", "Game Over");
         return JSONObject.toJSONString(result);
+    }
+
+
+    public void addTableTile(String roomID) {
+        GameStarter gs = games.get(roomID);
+        gs.addTableTile();
     }
 }

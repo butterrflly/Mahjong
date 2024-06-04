@@ -239,6 +239,14 @@ public class GameStarter {
         return tileLibrary.findTile(id);
     }
 
+    public void addTableTile(){
+        tileLibrary.addTableTile(findTile(dealTileID));
+    }
+
+    public ArrayList<Tile> getTableTile(){
+        return tileLibrary.getTableTile();
+    }
+
     public void printHand(String name){
         for (Tile tile : findPlayer(name).getHandTile().getHandTile()) {
             System.out.println(tile.getId());

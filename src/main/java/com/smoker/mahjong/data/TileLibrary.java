@@ -13,6 +13,9 @@ public class TileLibrary {
 
     private ArrayList<Tile> totalTiles;
 
+    private ArrayList<Tile> tableTiles;
+
+
 
 
     public TileLibrary(ArrayList<Player> playerList){
@@ -77,6 +80,14 @@ public class TileLibrary {
             }
         }
         return null;
+    }
+
+    public void addTableTile(Tile tile){
+        tableTiles.add(tile);
+    }
+
+    public ArrayList<Tile> getTableTile(){
+        return tableTiles;
     }
 
     public ArrayList<Tile> getTiles(){

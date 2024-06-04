@@ -211,7 +211,12 @@ public class WebSocketServer {
                     noAffairNum++;
                     if (noAffairNum == 3){
                         gameService.deal(roomID);
-                        // huang
+
+                        gameService.addTableTile(roomID);
+                        for (Session s : roomSession.get(roomID)){
+                            sendMessageToUser(gameService.getTableTile(roomID), s);
+                        }
+
                         deal(roomID);
                     }
                 }
