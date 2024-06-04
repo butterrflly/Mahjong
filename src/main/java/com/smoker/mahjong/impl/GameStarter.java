@@ -215,7 +215,9 @@ public class GameStarter {
 
     public Player[] getSequence(String name){
         ArrayList<Player> newPlayers = new ArrayList<>();
-        ArrayList<Player> players = gameRoom.getPlayerList();
+        ArrayList<Player> temp = gameRoom.getPlayerList();
+        ArrayList<Player> players = new ArrayList<>(temp);
+
         while (players.size() < 4)
             players.add(null);
         int i = players.indexOf(findPlayer(name));
