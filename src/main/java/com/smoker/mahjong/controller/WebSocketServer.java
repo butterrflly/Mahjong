@@ -110,6 +110,7 @@ public class WebSocketServer {
                     String playerName = playerMap.get(session);
                     String roomID = (String) jsonObject.get("roomID");
 
+                    roomMap.put(session, roomID);
                     gameService.addPlayer(playerName, roomID);
                     roomSession.get(roomID).add(session);
 
