@@ -102,4 +102,12 @@ public class UserRegistration {
             e.printStackTrace();
         }
     }
+
+    public static String getFilename() {
+        return filename;
+    }
+
+    public static void setFilename(String filename) {
+        UserRegistration.filename = filename;
+    }
 }

@@ -16,4 +16,16 @@ public class Tile {
     public int getId() {
         return id;
     }
+
+    public String getSuit() {
+        return suit;
+    }
+
+    public String getNum() {
+        return num;
+    }
+
+    public boolean isHidden() {
+        return isHidden;
+    }
 }

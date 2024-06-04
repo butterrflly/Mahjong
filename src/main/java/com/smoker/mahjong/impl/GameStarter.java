@@ -9,7 +9,6 @@ import com.smoker.mahjong.doma.User.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-
 public class GameStarter {
     private GameRoom gameRoom;
     private TileLibrary tileLibrary;
