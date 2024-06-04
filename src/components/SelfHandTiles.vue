@@ -7,11 +7,14 @@
             :src="getTileUrl(tile)"
             alt="tile"
             class="tile"
+            v-on:click="discard(tile)"
         />
     </div>
 </template>
 
 <script>
+import WebSocketService from '../websocket.js';
+
 export default {
     name: 'SelfHandTiles',
     props: {
@@ -25,6 +28,15 @@ export default {
             // 获取牌的前两位
             const tilePrefix = String(tile).slice(0, 2);
             return new URL(`../assets/tiles-front/${tilePrefix}.png`, import.meta.url).href;
+        },
+
+        discard(id) {
+            try{
+                WebSocketService.sendMessage(JSON.stringify({operation: "discard", tileID: id}));
+            }catch (error){
+                console.log("Error when discard");
+            }
+
         }
     }
 }

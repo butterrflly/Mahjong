@@ -8,6 +8,39 @@
                 class="Deal"
                 id="selfDeal"
             />
+            <SelfMeldTiles :selfMeldTiles="selfMeldTiles" :selfIfHideMeld="selfIfHideMeld"/>
+            <img
+                :src="discard()"
+                alt="selfDiscard"
+                class="Discard"
+                id="selfDiscard"
+            />
+            <button v-on:click="hu()" v-if="canHu">Hu</button>
+            <button v-on:click="noHu()" v-if="canHu">Skip</button>
+            <button v-on:click="chow()" v-if="canChow">Chow</button>
+            <div>
+                <div v-for="(group, index) in chowList" v-on:click="selectChow(chowList[index])" :key="index" class="chowGroup">
+                    <img
+                        v-for="(tile, tileIndex) in group"
+                        :key="tileIndex"
+                        :src="getTileUrl(tile)"
+                        alt="chowTile"
+                        class="chowTile"
+                    />
+                </div>
+            </div>
+            <button v-on:click="pang()" v-if="canPang">Pang</button>
+            <button v-on:click="kong()" v-if="canKong">Kong</button>
+            <img
+                v-for="tile in kongList"
+                :key="tile"
+                :src="getTileUrl(tile)"
+                alt="kongTile"
+                class="kongTile"
+                v-on:click="selectKong(tile)"
+            />
+            <div v-on:click="selectKong(id)"></div>
+            <button v-on:click="noAffair()" v-if="canChow||canPang||canKong">Skip</button>
         </div>
         <div class="left">  <!--left tiles-->
             <NextHandTiles />
@@ -16,6 +49,13 @@
                 alt="nextDeal"
                 class="Deal"
                 id="nextDeal"
+            />
+            <NextMeldTiles :nextMeldTiles="nextMeldTiles" :nextIfHideMeld="nextIfHideMeld"/>
+            <img
+                :src="discard()"
+                alt="nextDiscard"
+                class="Discard"
+                id="nextDiscard"
             />
         </div>
         <div class="opposite">  <!--opposite tiles-->
@@ -26,14 +66,28 @@
                 class="Deal"
                 id="oppoDeal"
             />
+            <OppoMeldTiles :oppoMeldTiles="oppoMeldTiles" :oppoIfHideMeld="oppoIfHideMeld"/>
+            <img
+                :src="discard()"
+                alt="oppoDiscard"
+                class="Discard"
+                id="oppoDiscard"
+            />
         </div>
         <div class="right">  <!--right tiles-->
             <PrevHandTiles />
             <img
                 :src="deal()"
-                alt="rightDeal"
+                alt="prevDeal"
                 class="Deal"
-                id="oppoDeal"
+                id="prevDeal"
+            />
+            <PrevMeldTiles :prevMeldTiles="prevMeldTiles" :prevIfHideMeld="prevIfHideMeld"/>
+            <img
+                :src="discard()"
+                alt="prevDiscard"
+                class="Discard"
+                id="prevDiscard"
             />
         </div>
     </div>
@@ -46,12 +100,20 @@ import SelfHandTiles from "@/components/SelfHandTiles.vue";
 import NextHandTiles from "@/components/NextHandTiles.vue";
 import OppoHandTiles from "@/components/OppoHandTiles.vue";
 import PrevHandTiles from "@/components/PrevHandTiles.vue";
+import SelfMeldTiles from "@/components/SelfMeldTiles.vue";
+import OppoMeldTiles from "@/components/OppoMeldTiles.vue";
+import PrevMeldTiles from "@/components/PrevMeldTiles.vue";
+import NextMeldTiles from "@/components/NextMeldTiles.vue";
 
 
 export default {
     name: "GameTable",
 
     components: {
+        PrevMeldTiles,
+        OppoMeldTiles,
+        NextMeldTiles,
+        SelfMeldTiles,
         PrevHandTiles,
         OppoHandTiles,
         NextHandTiles,
@@ -89,8 +151,19 @@ export default {
             oppoIfHideMeld:'',
             prevIfHideMeld:'',
 
-            canHuMsg:'',
-            affairMsg:'',
+            canHu:false,
+            canChow:false,
+            canPang:false,
+            canKong:false,
+
+            ifHu:false,
+            ifChow:false,
+            ifPang:false,
+            ifKong:false,
+
+            huName:'',
+            kongList:'',  // [TileID_1, TileID_2, ...]
+            chowList:'',  // [[TileID_1, TileID_2, TileID_3], ...]
             message:'',
         }
     },
@@ -99,100 +172,132 @@ export default {
         // handle the data received by listener
         handleMessage(data) {
             if (data.operation === "getRoomPlayerMessage") {
-                this.selfName = data.msg["self"]["name"];
-                this.nextName = data.msg["nextPlayer"]["name"];
-                this.oppoName = data.msg["oppositePlayer"]["name"];
-                this.prevName = data.msg["prevPlayer"]["name"];
+                this.selfName = JSON.stringify(data.msg["self"]["name"]);
+                this.nextName = JSON.stringify(data.msg["nextPlayer"]["name"]);
+                this.oppoName = JSON.stringify(data.msg["oppositePlayer"]["name"]);
+                this.prevName = JSON.stringify(data.msg["prevPlayer"]["name"]);
             } else if (data.operation === "discard") {
-                this.discardPosition = data.msg["position"];
-                this.discardID = data.msg["tileID"];
+                this.discard(data.msg["position"], data.msg["tileID"])
             } else if (data.operation === "getHandTile") {
-                this.selfHandTiles = data.msg["self"]["handTile"];
-                this.nextHandTiles = data.msg["nextPlayer"]["handTile"];
-                this.oppoHandTiles = data.msg["oppositePlayer"]["handTile"];
-                this.prevHandTiles = data.msg["prevPlayer"]["handTile"];
+                this.selfHandTiles = JSON.stringify(data.msg["self"]["handTile"]);
+                this.nextHandTiles = JSON.stringify(data.msg["nextPlayer"]["handTile"]);
+                this.oppoHandTiles = JSON.stringify(data.msg["oppositePlayer"]["handTile"]);
+                this.prevHandTiles = JSON.stringify(data.msg["prevPlayer"]["handTile"]);
             } else if (data.operation === "getMeld") {
-                this.selfMeldTiles = data.msg["self"]["melds"];
-                this.nextMeldTiles = data.msg["nextPlayer"]["melds"];
-                this.oppoMeldTiles = data.msg["oppositePlayer"]["melds"];
-                this.prevMeldTiles = data.msg["prevPlayer"]["melds"];
-                this.selfIfHideMeld = data.msg["self"]["isHide list"];
-                this.nextIfHideMeld = data.msg["nextPlayer"]["isHide list"];
-                this.oppoIfHideMeld = data.msg["oppositePlayer"]["isHide list"];
-                this.prevIfHideMeld = data.msg["prevPlayer"]["isHide list"];
+                this.selfMeldTiles = JSON.stringify(data.msg["self"]["melds"]);
+                this.nextMeldTiles = JSON.stringify(data.msg["nextPlayer"]["melds"]);
+                this.oppoMeldTiles = JSON.stringify(data.msg["oppositePlayer"]["melds"]);
+                this.prevMeldTiles = JSON.stringify(data.msg["prevPlayer"]["melds"]);
+                this.selfIfHideMeld = JSON.stringify(data.msg["self"]["isHide list"]);
+                this.nextIfHideMeld = JSON.stringify(data.msg["nextPlayer"]["isHide list"]);
+                this.oppoIfHideMeld = JSON.stringify(data.msg["oppositePlayer"]["isHide list"]);
+                this.prevIfHideMeld = JSON.stringify(data.msg["prevPlayer"]["isHide list"]);
             } else if (data.operation === "deal") {
                 this.deal(data.msg["position"], data.msg["tileID"])
             } else if (data.operation === "canHu") {
-                this.canHuMsg = data.msg;
+                this.canHu = data.msg["canHu"];
             } else if (data.operation === "getAffair") {
-                this.affairMsg = data.msg;
+                this.canChow = data.msg["canChow"];
+                this.canPang = data.msg["canPang"];
+                this.canKong = data.msg["canKong"];
+            } else if (data.operation === "Hu") {
+                this.huName = JSON.stringify(data.msg["playerName"]);
+            } else if (data.operation === "Kong") {
+                this.kongList = JSON.stringify(data.msg["KongList"]);
+            } else if (data.operation === "Chow") {
+                this.chowList = JSON.stringify(data.msg["ChowList"]);
             }
         },
 
-        deal(dealPosition, dealID){
+        deal(dealPosition, dealID) {
             // 清空之前发的牌
-            this.clearTileImages(".deal")
+            this.clearTileImages(".Deal")
             // 获取牌的前两位
             const tilePrefix = String(dealID).slice(0, 2);
             if (dealPosition === "self") {
                 return new URL(`../assets/tiles-front/${tilePrefix}.png`, import.meta.url).href;
             } else if (dealPosition === "nextPlayer") {
-                return new URL(`../assets/tiles-left/${tilePrefix}.png`, import.meta.url).href;
+                return new URL(`../assets/tiles-left/handin.png`, import.meta.url).href;
             } else if (dealPosition === "oppositePlayer") {
-                return new URL(`../assets/tiles-opposite/${tilePrefix}.png`, import.meta.url).href;
+                return new URL(`../assets/tiles-opposite/handin.png`, import.meta.url).href;
             } else if (dealPosition === "prevPlayer") {
-                return new URL(`../assets/tiles-right/${tilePrefix}.png`, import.meta.url).href;
+                return new URL(`../assets/tiles-right/handin.png`, import.meta.url).href;
             }
         },
 
         // 出牌
-        async discard(owner, name, id){
-            try {
-                const response = await postData('/game/discard', { owner: owner, name: name, tileID: id});
-                console.log('Response from POST:', response);
-            } catch (error) {
-                console.error('Error during POST:', error);
+        discard(discardPosition, discardID) {
+            // 清空之前出的牌
+            this.clearTileImages(".Discard")
+            // 获取牌的前两位
+            const tilePrefix = String(discardID).slice(0, 2);
+            if (discardPosition === "self") {
+                return new URL(`../assets/tiles-me/${tilePrefix}.png`, import.meta.url).href;
+            } else if (discardPosition === "nextPlayer") {
+                return new URL(`../assets/tiles-left/${tilePrefix}.png`, import.meta.url).href;
+            } else if (discardPosition === "oppositePlayer") {
+                return new URL(`../assets/tiles-opposite/${tilePrefix}.png`, import.meta.url).href;
+            } else if (discardPosition === "prevPlayer") {
+                return new URL(`../assets/tiles-right/${tilePrefix}.png`, import.meta.url).href;
             }
         },
 
-        // return boolean
-        async canPang(owner, name){
-
-            try {
-                // 是否可以碰
-                const response = await postData('/game/canPang', { owner: owner, name: name, tileID: id});
-                console.log('Response from POST:', response);
-                return response;
-            } catch (error) {
-                console.error('Error during POST:', error);
-            }
+        pang() {
+            WebSocketService.sendMessage(JSON.stringify({operation: "Pang"}));
+            // 清空之前出的牌
+            this.clearTileImages(".Discard")
+            // 清空吃碰杠按钮
+            this.canPang = false;
+            this.canKong = false;
+            this.canChow = false;
         },
 
-        // 碰牌
-        async pang(owner, name, id){
-            try {
-                // 是否可以碰
-                const response = await postData('/game/canPang', { owner: owner, name: name, tileID: id});
-                console.log('Response from POST:', response);
-            } catch (error) {
-                console.error('Error during POST:', error);
-            }
+        kong() {
+            WebSocketService.sendMessage(JSON.stringify({operation: "Kong"}));
+            // 清空之前出的牌
+            this.clearTileImages(".Discard")
+            // 清空吃碰杠按钮
+            this.canKong = false;
+            this.canPang = false;
+            this.canChow = false;
         },
 
-        async kong(owner, name, id){
-
+        selectKong(id){
+            WebSocketService.sendMessage(JSON.stringify({operation: "selectKong", tileID: id}));
         },
 
-        async chow(owner, name, id){
-
+        chow() {
+            WebSocketService.sendMessage(JSON.stringify({operation: "Chow"}));
+            // 清空之前出的牌
+            this.clearTileImages(".Discard")
+            // 清空吃碰杠按钮
+            this.canChow = false;
+            this.canPang = false;
+            this.canKong = false;
         },
 
-        async hu(owner, name, id){
-
+        selectChow(list) {
+            WebSocketService.sendMessage(JSON.stringify({operation: "selectChow", tileIDList: list}));
         },
 
-        async draw(owner, name){
+        hu() {
+            WebSocketService.sendMessage(JSON.stringify({operation: "Hu"}));
+            this.canHu = false;
+            this.canPang = false;
+            this.canKong = false;
+            this.canChow = false;
+        },
 
+        noHu() {
+            WebSocketService.sendMessage(JSON.stringify({operation: "noHu"}));
+            this.canHu = false;
+        },
+
+        noAffair() {
+            WebSocketService.sendMessage(JSON.stringify({operation: "noAffair"}));
+            this.canChow = false;
+            this.canPang = false;
+            this.canKong = false;
         },
 
         // helper method
@@ -205,6 +310,13 @@ export default {
             tileImages.forEach(img => {
                 img.src = '';
             });
+        },
+
+        // 根据牌编号生成相应的图片 URL
+        getTileUrl(tile) {
+            // 获取牌的前两位
+            const tilePrefix = String(tile).slice(0, 2);
+            return new URL(`../assets/tiles-me/${tilePrefix}.png`, import.meta.url).href;
         }
 
     },

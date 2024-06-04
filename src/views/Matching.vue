@@ -93,6 +93,7 @@ export default {
 
       displayRoomMap(roomMap) {
         roomMap = JSON.parse(roomMap);
+        console.log(roomMap);
         let displayString = '';
         for (const roomId in roomMap) {
           if (roomMap.hasOwnProperty(roomId)) {
@@ -110,6 +111,7 @@ export default {
             if (data.operation === "getGameRooms") {
                 this.roomNum = JSON.stringify(data.msg["room number"]);
                 this.roomInfo = JSON.stringify(data.msg["room message"]);
+                console.log(this.roomInfo);
             }else if (data.operation === "Duplicate room number") {
                 this.message = "Duplicate room number!"
             }else if (data.operation === "getRoomPlayerMessage") {
