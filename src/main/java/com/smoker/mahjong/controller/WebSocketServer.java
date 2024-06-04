@@ -82,7 +82,7 @@ public class WebSocketServer {
                     sessionMap.put(playerName, session);
                     playerMap.put(session, playerName);
 
-                    sendMessageToUser(gameService.getGameRooms(playerName), session);
+                    sendMessageToAll(gameService.getGameRooms(playerName));
 
                     log.info("有一用户登录，player name = {}", playerName);
                 }
@@ -356,6 +356,17 @@ public class WebSocketServer {
         sendMessageToUser(gameService.discardRequest(), dealPlayer);
 
         log.info("摸张牌，player name = {}， 房间 ID = {}", playerMap.get(dealPlayer), roomMap.get(dealPlayer));
+    }
+
+    public void sendMessageToAll(String message) {
+        try {
+            for (Session session : sessionMap.values()) {
+                log.info("Sending message to all clients: " +  message);
+                session.getBasicRemote().sendText(message);
+            }
+        } catch (Exception e) {
+            log.error("Error sending message to all clients: " + e);
+        }
     }
 
 
