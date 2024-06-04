@@ -62,15 +62,10 @@
 <script lang ='ts'>
 import BackButton from "../components/BackButton.vue";
 import { postData } from '../api.js';
-import { mapState, mapActions,} from 'vuex';
 import WebSocketService from '../websocket.js';
 
 export default {
     components: {BackButton},
-
-    computed: {
-        ...mapState(['name', 'owner'])
-    },
 
     data(){
         return{
@@ -93,7 +88,6 @@ export default {
     },
 
     methods: {
-        ...mapActions(['updateName', 'updateOwner']),
 
         register() {
             // 初始化，控制四个表单和按钮的出现
@@ -181,7 +175,7 @@ export default {
 
         async login(name, password) {
             // 向服务器保存name，并在之后的页面接收返回信息
-            WebSocketService.sendMessage({operation: 'login', playerName: name})
+            WebSocketService.sendMessage(JSON.stringify({operation: "login", playerName: name}))
             try {
                 // 使用封装的 postData 函数发起 POST 请求
                 const response = await postData('user/login', { name: name, password: password });
@@ -235,14 +229,14 @@ export default {
 
     // 在生命钩子函数中处理websocket服务
     // 连接 WebSocket 并注册消息处理回调函数
-    created() {
-        WebSocketService.addMessageListener(this.handleMessage);
-    },
+    // created() {
+    //     WebSocketService.addMessageListener(this.handleMessage);
+    // },
 
-    // 移除消息处理回调函数
-    beforeUnmount() {
-        WebSocketService.removeMessageListener(this.handleMessage);
-    }
+    // // 移除消息处理回调函数
+    // beforeUnmount() {
+    //     WebSocketService.removeMessageListener(this.handleMessage);
+    // }
 }
 
 </script>

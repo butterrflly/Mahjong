@@ -37,14 +37,6 @@ export default defineComponent({
 
     },
 
-    // mounted() {
-    //     try{
-    //         WebSocketService.connect();
-    //     }catch(error){
-    //         console.error('Error during POST:', error);
-    //     }
-    // },
-
 })
 
 

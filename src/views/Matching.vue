@@ -48,7 +48,8 @@ export default {
             message: null,
             roomNum: null,
             roomInfo: null,
-            // info of four players, {"name" : String, "prepare" : boolean, "score" : int}
+            // info of each player,
+            // {"name" : String, "prepare" : boolean, "score" : int}
             selfInfo: null,
             nextInfo: null,
             oppoInfo: null,
