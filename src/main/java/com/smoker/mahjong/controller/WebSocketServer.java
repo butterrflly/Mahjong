@@ -82,7 +82,7 @@ public class WebSocketServer {
                     sessionMap.put(playerName, session);
                     playerMap.put(session, playerName);
 
-                    sendMessageToAll(gameService.getGameRooms(playerName));
+                    sendMessageToUser(gameService.getGameRooms(playerName), session);
 
                     log.info("有一用户登录，player name = {}", playerName);
                 }
@@ -101,7 +101,7 @@ public class WebSocketServer {
                     roomSession.get(roomID).add(session);
 
                     gameService.addPlayer(playerName, roomID);
-
+                    sendMessageToAll(gameService.getGameRooms(playerName));
                     sendMessageToUser(gameService.getRoomPlayerMessage(playerName, roomID), session);
 
                     log.info("创建房间，player name = {}， 房间 ID = {}", playerName, roomID);
@@ -116,6 +116,7 @@ public class WebSocketServer {
                     for (Session s : roomSession.get(roomID)){
                         sendMessageToUser(gameService.getRoomPlayerMessage(playerMap.get(s), roomID), s);
                     }
+                    sendMessageToAll(gameService.getGameRooms(playerName));
 
                     log.info("加入房间，player name = {}， 房间 ID = {}", playerName, roomID);
                 }
