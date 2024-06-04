@@ -5,7 +5,7 @@
             <button v-if="createRoomButtonIf" v-on:click="createRoomCheck()">creatRoom</button>
             <button v-if="joinRoomButtonIf" v-on:click="joinRoom()">Join in the Room</button>
              <h2>Room number: {{ roomNum }}</h2>
-              <h2>Room Info:  {{ displayRoomMap(parseRoomData(roomInfo)) }}</h2>
+              <h2>Room Info:  {{ displayRoomMap(roomInfo)}}</h2>
         </div>
 
       <div v-if="createRoomIf">
@@ -18,7 +18,7 @@
 
 
         <!-- 添加确认按钮 -->
-        <button v-on:click="confirmRoomId" v-on="createRoom()" class="confirmRoomButton" >Confirm</button>
+        <button v-on:click="createRoom()" class="confirmRoomButton" >Confirm</button>
 
         <!-- can start -->
         <button v-on:click="startGame(owner)" class="startGameButton">Start Game!</button>
@@ -91,16 +91,8 @@ export default {
       },
 
 
-      parseRoomData(dataString) {
-        // 首先将接收到的字符串转换为 JavaScript 对象
-        const roomData = JSON.parse(dataString);
-
-        // 返回存储房间ID和玩家人数的键值对对象
-        return roomData;
-        },
-
-
       displayRoomMap(roomMap) {
+        roomMap = JSON.parse(roomMap);
         let displayString = '';
         for (const roomId in roomMap) {
           if (roomMap.hasOwnProperty(roomId)) {
@@ -115,13 +107,12 @@ export default {
        */
 
         handleMessage(data) {
-
-            if (data.operation == "getGameRooms") {
-                this.roomNum = data.msg["room number"];
-                this.roomInfo = data.msg["room message"];
-            }else if (data.operation == "Duplicate room number") {
+            if (data.operation === "getGameRooms") {
+                this.roomNum = JSON.stringify(data.msg["room number"]);
+                this.roomInfo = JSON.stringify(data.msg["room message"]);
+            }else if (data.operation === "Duplicate room number") {
                 this.message = "Duplicate room number!"
-            }else if (data.operation == "getRoomPlayerMessage") {
+            }else if (data.operation === "getRoomPlayerMessage") {
                 this.selfInfo = data.msg["self"];
                 this.nextInfo = data.msg["nextPlayer"];
                 this.oppoInfo = data.msg["oppositePlayer"];
@@ -212,17 +203,17 @@ export default {
             }
         },
 
-        // 连接 WebSocket 并注册消息处理回调函数
-        created() {
-            WebSocketService.addMessageListener(this.handleMessage);
-        },
-
-        // 移除消息处理回调函数
-        beforeUnmount() {
-            WebSocketService.removeMessageListener(this.handleMessage);
-        }
-
     },
+
+    // 连接 WebSocket 并注册消息处理回调函数
+    mounted() {
+        WebSocketService.addMessageListener(this.handleMessage);
+    },
+
+    // 移除消息处理回调函数
+    beforeUnmount() {
+        WebSocketService.removeMessageListener(this.handleMessage);
+    }
 }
 
 </script>

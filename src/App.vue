@@ -16,7 +16,6 @@ export default {
 
     // 组件挂载时建立 WebSocket 连接
     mounted() {
-        console.log("1111111");
         WebSocketService.connect();
     },
 

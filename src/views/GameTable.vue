@@ -76,12 +76,19 @@ export default {
             nextHandTiles:'',
             oppoHandTiles:'',
             prevHandTiles:'',
-            // meld tiles of each player,
-            // {"name" : String, "isHide" : boolean, "meld number" : int, "meld" : [[int, int, int], ...]}
+            // meld tiles of each player, 2D array
+            // [[int, int, int], ...]
             selfMeldTiles:'',
             nextMeldTiles:'',
             oppoMeldTiles:'',
             prevMeldTiles:'',
+            // if meld tiles hide, a boolean for a group
+            // [boolean, boolean, ...]
+            selfIfHideMeld:'',
+            nextIfHideMeld:'',
+            oppoIfHideMeld:'',
+            prevIfHideMeld:'',
+
             canHuMsg:'',
             affairMsg:'',
             message:'',
@@ -105,10 +112,14 @@ export default {
                 this.oppoHandTiles = data.msg["oppositePlayer"]["handTile"];
                 this.prevHandTiles = data.msg["prevPlayer"]["handTile"];
             } else if (data.operation === "getMeld") {
-                this.selfMeldTiles = data.msg["self"];
-                this.nextMeldTiles = data.msg["nextPlayer"];
-                this.oppoMeldTiles = data.msg["oppositePlayer"];
-                this.prevMeldTiles = data.msg["prevPlayer"];
+                this.selfMeldTiles = data.msg["self"]["melds"];
+                this.nextMeldTiles = data.msg["nextPlayer"]["melds"];
+                this.oppoMeldTiles = data.msg["oppositePlayer"]["melds"];
+                this.prevMeldTiles = data.msg["prevPlayer"]["melds"];
+                this.selfIfHideMeld = data.msg["self"]["isHide list"];
+                this.nextIfHideMeld = data.msg["nextPlayer"]["isHide list"];
+                this.oppoIfHideMeld = data.msg["oppositePlayer"]["isHide list"];
+                this.prevIfHideMeld = data.msg["prevPlayer"]["isHide list"];
             } else if (data.operation === "deal") {
                 this.deal(data.msg["position"], data.msg["tileID"])
             } else if (data.operation === "canHu") {
