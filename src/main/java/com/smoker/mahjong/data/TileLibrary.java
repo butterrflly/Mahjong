@@ -19,6 +19,7 @@ public class TileLibrary {
 
 
     public TileLibrary(ArrayList<Player> playerList){
+        this.tableTiles = new ArrayList<>();
         this.playerList = playerList;
         tiles = new ArrayList<>();
         createTiles();
@@ -32,7 +33,7 @@ public class TileLibrary {
      * 牌的 id 可以精准找到牌的 类型 大小 第几张牌
      * id 一定是一个三位数
      *
-     * 百位是牌的类型  1 对应 筒， 2 对应 条， 3 对应 万， 4 对应 风牌（东南西北）， 5 对应 字牌 （中发白）
+     * 百位是牌的类型  1 对应 万， 2 对应 条， 3 对应 饼， 4 对应 风牌（东南西北）， 5 对应 字牌 （中发白）
      * 十位是牌的大小  其中 筒、条、万 数字就是其对应的大小   风牌中 1，2，3，4 对应东南西北， 字牌中 1，2，3 对应中发白
      * 个位代表这是第几张牌  因为每种类型的牌有 4个 ，所以个位就用来记录 这是4张一样的牌中的第几个 大小范围是 1 ~ 4
      */

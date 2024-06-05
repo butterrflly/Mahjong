@@ -266,7 +266,7 @@ public class GameService {
         Map<String, Object> msg = new HashMap<>();
         msg.put("playerName", playerName);
 
-        msg.put("canKong", gs.canKong(playerName).size() == 0);
+        msg.put("canKong", gs.canKong(playerName).size() != 0);
         msg.put("canHu", gs.canHu(playerName, gs.getDealTileID()));
 
         result.put("msg", msg);
@@ -281,7 +281,7 @@ public class GameService {
      */
     public String discardRequest(){
         Map<String, Object> result = new HashMap<>();
-        result.put("operation", "discard");
+        result.put("operation", "discardRequest");
         result.put("msg", "你怎么还不出牌啊，我等的花都谢了");
 
         return JSONObject.toJSONString(result);
@@ -350,7 +350,7 @@ public class GameService {
 
         Map<String, Object> msg = new HashMap<>();
         msg.put("playerName", nextPlayer.getName());
-        msg.put("canPang", games.get(roomID).canHu(nextPlayer.getName(), discardTileID));
+        msg.put("canHu", games.get(roomID).canHu(nextPlayer.getName(), discardTileID));
 
         result.put("msg", msg);
 
@@ -377,7 +377,7 @@ public class GameService {
         msg.put("canKong", gs.canKong(playerName, discardTileID));
 
         if (players[3].getName().equals(gs.getDiscardPlayerName()))
-            msg.put("canChow", gs.canChow(playerName, discardTileID).size() == 0);
+            msg.put("canChow", gs.canChow(playerName, discardTileID).size() != 0);
         else
             msg.put("canChow", false);
 
@@ -450,7 +450,7 @@ public class GameService {
         }
         else {
             gs.Kong(playerName, gs.getDiscardTileID());
-            return null;
+            return "null";
         }
     }
 
