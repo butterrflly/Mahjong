@@ -51,14 +51,21 @@ public class HandTile {
     public boolean canKong(int tileID) {
         int numHand = 0;
         int numMelds = 0;
+        boolean contain = false;
+
 
         for (Tile tile : handTile) {
             if (tile.getId() == tileID) {
+                contain = true;
                 continue;
             }
             if (tile.getId() / 10 == tileID / 10) {
                 numHand++;
             }
+        }
+
+        if (contain){
+            return numHand >= 3;
         }
 
         for (Meld meld : melds) {

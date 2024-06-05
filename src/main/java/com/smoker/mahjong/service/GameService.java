@@ -153,10 +153,14 @@ public class GameService {
 
 
     /**
-     * @return {"operation" : "getMeld", "msg" : {"self" :           {"name" : String, "meld number" : int, "meld number list" : [int, int, ...], "isHide list" : [boolean, boolean, ...], "melds" : [[int, int, ...], [int, int, ...], ...]},
-     *                                            "nextPlayer" :     {"name" : String, "meld number" : int, "meld number list" : [int, int, ...], "isHide list" : [boolean, boolean, ...], "melds" : [[int, int, ...], [int, int, ...], ...]},
-     *                                            "oppositePlayer" : {"name" : String, "meld number" : int, "meld number list" : [int, int, ...], "isHide list" : [boolean, boolean, ...], "melds" : [[int, int, ...], [int, int, ...], ...]},
-     *                                            "prevPlayer" :     {"name" : String, "meld number" : int, "meld number list" : [int, int, ...], "isHide list" : [boolean, boolean, ...], "melds" : [[int, int, ...], [int, int, ...], ...]}}}
+     * @return {"operation" : "getMeld", "msg" : {"self" :                 {"name" : String, "meld number" : int, "meld number list" : [int, int, ...], "isHide list" : [boolean, boolean, ...]},
+     *                                            "selfMelds" :            [[int, int, ...], [int, int, ...], ...],
+     *                                            "nextPlayer" :           {"name" : String, "meld number" : int, "meld number list" : [int, int, ...], "isHide list" : [boolean, boolean, ...]},
+     *                                            "nextPlayerMelds" :      [[int, int, ...], [int, int, ...], ...],
+     *                                            "oppositePlayer" :       {"name" : String, "meld number" : int, "meld number list" : [int, int, ...], "isHide list" : [boolean, boolean, ...]},
+     *                                            "oppositePlayerMelds" :  [[int, int, ...], [int, int, ...], ...],
+     *                                            "prevPlayer" :           {"name" : String, "meld number" : int, "meld number list" : [int, int, ...], "isHide list" : [boolean, boolean, ...]}
+     *                                            "prevPlayerMelds" :      [[int, int, ...], [int, int, ...], ...]}}
      */
     public String getMeld(String playerName, String roomID) {
         GameStarter gs = games.get(roomID);
@@ -185,14 +189,17 @@ public class GameService {
                 meldNumberList[j] = melds.get(j).getMeld().size();
                 isHideList[j] = melds.get(j).getHide();
                 meldArray.add(melds.get(j).getMeld().stream().mapToInt(Tile :: getId).toArray());
+
             }
 
             playerMessage.put("meld number list", meldNumberList);
             playerMessage.put("isHide list", isHideList);
-            playerMessage.put("meld", JSONObject.toJSONString(meldArray));
+
 
             message.put(positions[i], playerMessage);
+            message.put(positions[i] + "Melds", meldArray);
         }
+
 
         result.put("msg", message);
         return JSONObject.toJSONString(result);

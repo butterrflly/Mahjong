@@ -169,8 +169,12 @@ public class GameStarter {
 
     public void Kong(String name, int tileID) {
         // 杠牌
+        System.out.println(name);
+        System.out.println(dealPlayName);
         findPlayer(name).getHandTile().Kong(findTile(tileID));
         dealPlayName = getSequence(name)[3].getName();
+        System.out.println(dealPlayName);
+        //dealPlayName = name;
     }
 
     public void Chow(ArrayList<Tile> chowTiles, String name, int tileID) {
