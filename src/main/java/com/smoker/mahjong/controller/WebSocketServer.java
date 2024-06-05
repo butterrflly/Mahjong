@@ -51,7 +51,7 @@ public class WebSocketServer {
 
 
     private static Session discardPlayer;
-    private static int noAffairNum;
+    private static int noPangOrKong;
 
 
 
@@ -198,31 +198,38 @@ public class WebSocketServer {
                     String nextPlayerName = (String) JSON.parseObject(JSON.parseObject(nextCanHu).get("msg").toString()).get("playerName");
 
                     if (nextPlayerName.equals("null")){
+                        noPangOrKong = 0;
                         for (Session s : roomSession.get(roomID)){
                             if (s == discardPlayer)
                                 continue;
-                            sendMessageToUser(gameService.getAffair(playerMap.get(s), roomID), s);
-                            noAffairNum = 0;
+                            sendMessageToUser(gameService.canPangOrKong(playerMap.get(s), roomID), s);
                         }
                         return;
                     }
 
                     sendMessageToUser(nextCanHu, sessionMap.get(nextPlayerName));
                 }
-                case "noAffair" -> {
+                case "noPangOrKong" -> {
                     String roomID = roomMap.get(session);
 
-                    noAffairNum++;
-                    if (noAffairNum == 3){
-                        gameService.deal(roomID);
-
-                        gameService.addTableTile(roomID);
-                        for (Session s : roomSession.get(roomID)){
-                            sendMessageToUser(gameService.getTableTile(roomID), s);
-                        }
-
-                        deal(roomID);
+                    noPangOrKong++;
+                    if (noPangOrKong == 3){
+                        String canChow = gameService.canChow(roomID);
+                        String playerName = (String) JSON.parseObject(JSON.parseObject(canChow).get("msg").toString()).get("playerName");
+                        sendMessageToUser(canChow, sessionMap.get(playerName));
                     }
+                }
+                case "noChow" -> {
+                    String roomID = roomMap.get(session);
+
+                    gameService.deal(roomID);
+                    gameService.addTableTile(roomID);
+
+                    for (Session s : roomSession.get(roomID)){
+                        sendMessageToUser(gameService.getTableTile(roomID), s);
+                    }
+
+                    deal(roomID);
                 }
                 case "Hu" -> {
                     String playerName = playerMap.get(session);
@@ -447,14 +454,6 @@ public class WebSocketServer {
 
     public static void setDiscardPlayer(Session discardPlayer) {
         WebSocketServer.discardPlayer = discardPlayer;
-    }
-
-    public static int getNoAffairNum() {
-        return noAffairNum;
-    }
-
-    public static void setNoAffairNum(int noAffairNum) {
-        WebSocketServer.noAffairNum = noAffairNum;
     }
 
 }

@@ -1,8 +1,6 @@
 package com.smoker.mahjong.service;
 
-import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
-import com.smoker.mahjong.doma.Game.HandTile;
 import com.smoker.mahjong.doma.Game.Meld;
 import com.smoker.mahjong.doma.Game.Tile;
 import com.smoker.mahjong.doma.User.Player;
@@ -10,7 +8,6 @@ import com.smoker.mahjong.impl.GameStarter;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -369,25 +366,44 @@ public class GameService {
 
 
     /**
-     * @return {"operation" : "getAffair", "msg" : {"playerName" : String, "canPang" : boolean, "canKong" : boolean, "canChow" : boolean}}
+     * @return {"operation" : "canPangOrKong", "msg" : {"playerName" : String, "canPang" : boolean, "canKong" : boolean}}
      */
-    public String getAffair(String playerName, String roomID){
+    public String canPangOrKong(String playerName, String roomID){
         GameStarter gs = games.get(roomID);
-        Player[] players = gs.getSequence(playerName);
+
         int discardTileID = gs.getDiscardTileID();
 
         Map<String, Object> result = new HashMap<>();
-        result.put("operation", "getAffair");
+        result.put("operation", "canPangOrKong");
 
         Map<String, Object> msg = new HashMap<>();
         msg.put("playerName", playerName);
         msg.put("canPang", gs.canPang(playerName, discardTileID));
         msg.put("canKong", gs.canKong(playerName, discardTileID));
 
-        if (players[3].getName().equals(gs.getDiscardPlayerName()))
-            msg.put("canChow", gs.canChow(playerName, discardTileID).size() != 0);
-        else
-            msg.put("canChow", false);
+        result.put("msg", msg);
+
+        return JSONObject.toJSONString(result);
+    }
+
+
+
+    /**
+     * @return {"operation" : "canChow", "msg" : {"playerName" : String, "canChow" : boolean}}
+     */
+    public String canChow(String roomID){
+        GameStarter gs = games.get(roomID);
+
+        String playerName = gs.getSequence(gs.getDiscardPlayerName())[1].getName();
+        int discardTileID = gs.getDiscardTileID();
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("operation", "canChow");
+
+        Map<String, Object> msg = new HashMap<>();
+
+        msg.put("playerName", playerName);
+        msg.put("canChow", gs.canChow(playerName, discardTileID).size() != 0);
 
         result.put("msg", msg);
 
@@ -534,5 +550,12 @@ public class GameService {
     public void addTableTile(String roomID) {
         GameStarter gs = games.get(roomID);
         gs.addTableTile();
+    }
+
+    public static void main(String[] args) {
+        int[][] KongList = new int[0][3];
+        Map<String, Object> result = new HashMap<>();
+        result.put("operation", KongList);
+        System.out.println(JSONObject.toJSONString(result));
     }
 }
