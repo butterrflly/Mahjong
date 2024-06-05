@@ -10,10 +10,6 @@ import WebSocketService from "@/websocket.js";
 export default {
     name: "App",
 
-    method: {
-
-    },
-
     // 组件挂载时建立 WebSocket 连接
     mounted() {
         WebSocketService.connect();

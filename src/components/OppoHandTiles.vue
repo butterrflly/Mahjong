@@ -6,18 +6,20 @@
             :key="index"
             alt="opp"
             class="tile"
-            :src="setUrl()"
+            src="../assets/tiles-opposite/handin.png"
         />
+    </div>
+    <div v-if="ifDeal">
+        <img alt="tile" class="tile" src="../assets/tiles-opposite/handin.png"/>
     </div>
 </template>
 
 <script>
 export default {
     name: 'OppoHandTiles',
-
-    methods: {
-        setUrl(){
-            return new URL(`../assets/tiles-opposite/opp_wall.png`, import.meta.url).href
+    props: {
+        ifDeal: {
+            required: true,
         }
     }
 }
@@ -29,10 +31,14 @@ export default {
     left: 50%;
     top: 20%;
     transform: translate(-50%, 0);
+    display: flex; /* 使用 flex 布局 */
+    gap: 0; /* 设置图片之间的间距 */
 }
 
 .tile {
     width: 38px;
     height: 60px;
+    margin: 0; /* 清除默认的 margin */
+    padding: 0; /* 清除默认的 padding */
 }
 </style>

@@ -21,12 +21,6 @@
           <h2>Other Room number: {{ roomNum }}</h2>
           <h2>Room Info:  {{ displayRoomMap(roomInfo)}}</h2>
 
-          <button v-on:click="prepare()">Prepare</button>
-          <!-- 在 errorMessage 不为空时显示错误消息 -->
-          <div v-if="this.preparing.errorMessage" class="error-message">{{ this.preparing.errorMessage }}</div>
-          <!-- 在 successMessage 不为空时显示成功消息 -->
-          <div v-if="this.preparing.successMessage" class="success-message">{{ this.preparing.successMessage }}</div>
-
         </div>
       </div>
 
@@ -40,23 +34,7 @@
             <h2>Enter the ID of the room:</h2>
             Room Id:<input v-model = "this.joinARoom.roomId"/><br />
             <button v-on:click="join()">Join</button>
-            <!-- if the room is created and can't start-->
-<!--            <h2 v-if="!canStart & joinedIf">Waiting for players to join...</h2>-->
 
-
-
-        <div v-if="joinedIf">
-          <button v-on:click="prepare()">Prepare</button>
-          <!-- 在 errorMessage 不为空时显示错误消息 -->
-          <div v-if="this.preparing.errorMessage" class="error-message">{{ this.preparing.errorMessage }}</div>
-          <!-- 在 successMessage 不为空时显示成功消息 -->
-          <div v-if="this.preparing.successMessage" class="success-message">{{ this.preparing.successMessage }}</div>
-        </div>
-
-
-        <div v-if="signal">
-          <router-link to="GameTable"></router-link>
-          </div>
       </div>
 
 
@@ -68,9 +46,8 @@
 
 <script lang = 'ts'>
 //创建房间
-import { postData } from '../api.js';
 import WebSocketService from '../websocket.js';
-import RulesButton from "@/components/RulesButton.vue";
+import RulesButton from "../components/RulesButton.vue";
 
 export default {
   components: {RulesButton},
@@ -117,9 +94,6 @@ export default {
       };
     },
 
-
-
-
     methods:{
 
       createRoomCheck(){
@@ -148,10 +122,9 @@ export default {
         handleMessage(data) {
                 this.roomNum = JSON.stringify(data.msg["room number"]);
                 this.roomInfo = JSON.stringify(data.msg["room message"]);
-                console.log(this.roomInfo);
-                if(data.operation == "prepare")
-                this.signal = JSON.stringify(data.msg["handTile number"])
-                console.log(this.roomInfo)
+                if(data.operation == "getHandTile")
+                this.signal = JSON.stringify(data.msg)
+                console.log(this.signal);
 
         },
 
@@ -160,7 +133,8 @@ export default {
           WebSocketService.sendMessage(JSON.stringify({operation: 'createRoom', roomID: this.createARoom.roomId}))
           try{
             this.createARoom.successMessage = "success Creating a room."
-            this.HaveCreateRoomIf = true
+            this.HaveCreateRoomIf = true;
+            this.$router.push('/GameTable');
           }catch (error) {
             console.error('Error during POST:', error);
             this.createARoom.errorMessage = "An error occurred during Creating room. Please try again later.";
@@ -179,21 +153,12 @@ export default {
             WebSocketService.sendMessage(JSON.stringify({ operation: 'intoRoom', roomID: this.joinARoom.roomId}));
             this.joinARoom.successMessage = "The join in has been realize successfully !"
             this.joinedIf = true;
+            this.$router.push('/GameTable');
           } catch (error) {
             console.error('Error during POST:', error);
             this.joinARoom.errorMessage = "An error occurred while joining the room. Please try again later.";
           }
         },
-
-      async prepare() {
-        try {
-          WebSocketService.sendMessage(JSON.stringify({ operation: 'prepare'}));
-          this.preparing.successMessage = "Prepare success!"
-        } catch (error) {
-          console.error('Error during POST:', error);
-          this.preparing.errorMessage = "An error occurred while preparing. Please try again later.";
-        }
-      },
     },
 
     // 连接 WebSocket 并注册消息处理回调函数

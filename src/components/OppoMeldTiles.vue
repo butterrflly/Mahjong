@@ -2,11 +2,11 @@
     <div class="tile-container">
         <div v-for="(group, index) in oppoMeldTiles" :key="index" class="tile-group">
             <img
-                    v-for="(tile, tileIndex) in group"
-                    :key="tileIndex"
-                    :src="getTileUrl(tile, index)"
-                    alt="tile"
-                    class="tile"
+                v-for="(tile, tileIndex) in group"
+                :key="tileIndex"
+                :src="getTileUrl(tile, index)"
+                alt="tile"
+                class="tile"
             />
         </div>
     </div>

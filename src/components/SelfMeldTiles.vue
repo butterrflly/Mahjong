@@ -5,7 +5,7 @@
                 v-for="(tile, tileIndex) in group"
                 :key="tileIndex"
                 :src="getTileUrl(tile, index)"
-                alt="tile"
+                alt="meldTile"
                 class="tile"
             />
         </div>

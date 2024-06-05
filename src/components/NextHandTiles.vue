@@ -2,11 +2,19 @@
     <div class="hand-tiles">
         <img alt="left" id="l_wall" src="../assets/tiles-left/l_wall.png"/>
     </div>
+    <div v-if="ifDeal">
+        <img alt="tile" id="tile" src="../assets/tiles-left/handin.png"/>
+    </div>
 </template>
 
 <script>
 export default {
     name: 'NextHandTiles',
+    props: {
+        ifDeal: {
+            required: true,
+        }
+    }
 }
 </script>
 
@@ -23,4 +31,9 @@ export default {
     bottom: 50%;
     transform: translate(0, 50%);
 }
+
+#tile {
+
+}
+
 </style>

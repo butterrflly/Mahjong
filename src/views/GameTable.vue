@@ -1,16 +1,17 @@
 <template>
     <div class="background">
+        <div >
+            <button v-on:click="prepare()">Prepare</button>
+<!--            &lt;!&ndash; 在 errorMessage 不为空时显示错误消息 &ndash;&gt;-->
+<!--            <div v-if="error" class="error-message">{{ this.error }}</div>-->
+<!--            &lt;!&ndash; 在 successMessage 不为空时显示成功消息 &ndash;&gt;-->
+<!--            <div v-if="message" class="success-message">{{ this.message }}</div>-->
+        </div>
         <div class="me">  <!--my tiles-->
-            <SelfHandTiles :handTiles="selfHandTiles" />
+            <SelfHandTiles :handTiles="selfHandTiles" :dealID="selfDealID" :canDiscard="canDiscard"/>
+            <SelfMeldTiles :selfMeldTiles="selfMeldTiles" :selfIfHideMeld="selfIfHideMeld" />
             <img
-                :src="deal()"
-                alt="selfDeal"
-                class="Deal"
-                id="selfDeal"
-            />
-            <SelfMeldTiles :selfMeldTiles="selfMeldTiles" :selfIfHideMeld="selfIfHideMeld"/>
-            <img
-                :src="discard()"
+                :src="selfDiscardUrl"
                 alt="selfDiscard"
                 class="Discard"
                 id="selfDiscard"
@@ -39,52 +40,33 @@
                 class="kongTile"
                 v-on:click="selectKong(tile)"
             />
-            <div v-on:click="selectKong(id)"></div>
             <button v-on:click="noAffair()" v-if="canChow||canPang||canKong">Skip</button>
         </div>
         <div class="left">  <!--left tiles-->
-            <NextHandTiles />
-            <img
-                :src="deal()"
-                alt="nextDeal"
-                class="Deal"
-                id="nextDeal"
-            />
+            <NextHandTiles :ifDeal="nextDeal"/>
             <NextMeldTiles :nextMeldTiles="nextMeldTiles" :nextIfHideMeld="nextIfHideMeld"/>
             <img
-                :src="discard()"
+                :src="nextDiscardUrl"
                 alt="nextDiscard"
                 class="Discard"
                 id="nextDiscard"
             />
         </div>
         <div class="opposite">  <!--opposite tiles-->
-            <OppoHandTiles />
-            <img
-                :src="deal()"
-                alt="oppoDeal"
-                class="Deal"
-                id="oppoDeal"
-            />
+            <OppoHandTiles :ifDeal="oppoDeal"/>
             <OppoMeldTiles :oppoMeldTiles="oppoMeldTiles" :oppoIfHideMeld="oppoIfHideMeld"/>
             <img
-                :src="discard()"
+                :src="oppoDiscardUrl"
                 alt="oppoDiscard"
                 class="Discard"
                 id="oppoDiscard"
             />
         </div>
         <div class="right">  <!--right tiles-->
-            <PrevHandTiles />
-            <img
-                :src="deal()"
-                alt="prevDeal"
-                class="Deal"
-                id="prevDeal"
-            />
+            <PrevHandTiles :ifDeal="prevDeal"/>
             <PrevMeldTiles :prevMeldTiles="prevMeldTiles" :prevIfHideMeld="prevIfHideMeld"/>
             <img
-                :src="discard()"
+                :src="prevDiscardUrl"
                 alt="prevDiscard"
                 class="Discard"
                 id="prevDiscard"
@@ -94,7 +76,6 @@
 </template>
 
 <script>
-import {postData} from "@/api.js";
 import WebSocketService from '../websocket.js';
 import SelfHandTiles from "@/components/SelfHandTiles.vue";
 import NextHandTiles from "@/components/NextHandTiles.vue";
@@ -131,25 +112,25 @@ export default {
             discardPosition:'',
             dealPosition:'',
             // int
-            discardID:'',
-            dealID:'',
+            discardID: null,
+            dealID: null,
             // hand tiles of each player, [int, int, ...]
-            selfHandTiles:'',
-            nextHandTiles:'',
-            oppoHandTiles:'',
-            prevHandTiles:'',
+            selfHandTiles:[],
+            nextHandTiles:[],
+            oppoHandTiles:[],
+            prevHandTiles:[],
             // meld tiles of each player, 2D array
             // [[int, int, int], ...]
-            selfMeldTiles:'',
-            nextMeldTiles:'',
-            oppoMeldTiles:'',
-            prevMeldTiles:'',
+            selfMeldTiles:[],
+            nextMeldTiles:[],
+            oppoMeldTiles:[],
+            prevMeldTiles:[],
             // if meld tiles hide, a boolean for a group
             // [boolean, boolean, ...]
-            selfIfHideMeld:'',
-            nextIfHideMeld:'',
-            oppoIfHideMeld:'',
-            prevIfHideMeld:'',
+            selfIfHideMeld:[],
+            nextIfHideMeld:[],
+            oppoIfHideMeld:[],
+            prevIfHideMeld:[],
 
             canHu:false,
             canChow:false,
@@ -161,10 +142,23 @@ export default {
             ifPang:false,
             ifKong:false,
 
+            selfDiscardUrl:'',
+            nextDiscardUrl:'',
+            oppoDiscardUrl:'',
+            prevDiscardUrl:'',
+
+            selfDealID:null,
+            nextDeal:false,
+            oppoDeal:false,
+            prevDeal:false,
+
             huName:'',
-            kongList:'',  // [TileID_1, TileID_2, ...]
-            chowList:'',  // [[TileID_1, TileID_2, TileID_3], ...]
+            kongList:[],  // [TileID_1, TileID_2, ...]
+            chowList:[],  // [[TileID_1, TileID_2, TileID_3], ...]
+            canDiscard:false,
             message:'',
+            // error:'',
+
         }
     },
 
@@ -177,23 +171,27 @@ export default {
                 this.oppoName = JSON.stringify(data.msg["oppositePlayer"]["name"]);
                 this.prevName = JSON.stringify(data.msg["prevPlayer"]["name"]);
             } else if (data.operation === "discard") {
-                this.discard(data.msg["position"], data.msg["tileID"])
+                // 出牌的返回值，包括位置和牌id，用于把出的牌展示在桌面
+                this.showDiscard(data.msg["position"], data.msg["tileID"]);
+                this.canDiscard = false;  // 已经出过牌，不允许再出牌
             } else if (data.operation === "getHandTile") {
-                this.selfHandTiles = JSON.stringify(data.msg["self"]["handTile"]);
-                this.nextHandTiles = JSON.stringify(data.msg["nextPlayer"]["handTile"]);
-                this.oppoHandTiles = JSON.stringify(data.msg["oppositePlayer"]["handTile"]);
-                this.prevHandTiles = JSON.stringify(data.msg["prevPlayer"]["handTile"]);
+                this.selfDealID = '';
+                this.nextDeal = this.oppoDeal = this.prevDeal = false;
+                this.selfHandTiles = data.msg["self"]["handTile"];
+                this.nextHandTiles = data.msg["nextPlayer"]["handTile"];
+                this.oppoHandTiles = data.msg["oppositePlayer"]["handTile"];
+                this.prevHandTiles = data.msg["prevPlayer"]["handTile"];
             } else if (data.operation === "getMeld") {
-                this.selfMeldTiles = JSON.stringify(data.msg["self"]["melds"]);
-                this.nextMeldTiles = JSON.stringify(data.msg["nextPlayer"]["melds"]);
-                this.oppoMeldTiles = JSON.stringify(data.msg["oppositePlayer"]["melds"]);
-                this.prevMeldTiles = JSON.stringify(data.msg["prevPlayer"]["melds"]);
-                this.selfIfHideMeld = JSON.stringify(data.msg["self"]["isHide list"]);
-                this.nextIfHideMeld = JSON.stringify(data.msg["nextPlayer"]["isHide list"]);
-                this.oppoIfHideMeld = JSON.stringify(data.msg["oppositePlayer"]["isHide list"]);
-                this.prevIfHideMeld = JSON.stringify(data.msg["prevPlayer"]["isHide list"]);
+                this.selfMeldTiles = data.msg["self"]["melds"];
+                this.nextMeldTiles = data.msg["nextPlayer"]["melds"];
+                this.oppoMeldTiles = data.msg["oppositePlayer"]["melds"];
+                this.prevMeldTiles = data.msg["prevPlayer"]["melds"];
+                this.selfIfHideMeld = data.msg["self"]["isHide list"];
+                this.nextIfHideMeld = data.msg["nextPlayer"]["isHide list"];
+                this.oppoIfHideMeld = data.msg["oppositePlayer"]["isHide list"];
+                this.prevIfHideMeld = data.msg["prevPlayer"]["isHide list"];
             } else if (data.operation === "deal") {
-                this.deal(data.msg["position"], data.msg["tileID"])
+                // this.deal(data.msg["position"], data.msg["tileID"])
             } else if (data.operation === "canHu") {
                 this.canHu = data.msg["canHu"];
             } else if (data.operation === "getAffair") {
@@ -206,39 +204,63 @@ export default {
                 this.kongList = JSON.stringify(data.msg["KongList"]);
             } else if (data.operation === "Chow") {
                 this.chowList = JSON.stringify(data.msg["ChowList"]);
+            } else if (data.operation === "discardRequest") {
+                this.message = JSON.stringify(data.msg);
+                this.canDiscard = true;
             }
         },
 
+        prepare() {
+            try {
+                WebSocketService.sendMessage(JSON.stringify({ operation: 'prepare'}));
+                this.message = "Prepare success!"
+            } catch (error) {
+                console.error('Error during POST:', error);
+                this.message = "An error occurred while preparing. Please try again later.";
+            }
+        },
+
+        // 给玩家发牌，即返回这个位置发的牌的url，对应在手牌组件中展示
         deal(dealPosition, dealID) {
-            // 清空之前发的牌
-            this.clearTileImages(".Deal")
-            // 获取牌的前两位
-            const tilePrefix = String(dealID).slice(0, 2);
-            if (dealPosition === "self") {
-                return new URL(`../assets/tiles-front/${tilePrefix}.png`, import.meta.url).href;
-            } else if (dealPosition === "nextPlayer") {
-                return new URL(`../assets/tiles-left/handin.png`, import.meta.url).href;
-            } else if (dealPosition === "oppositePlayer") {
-                return new URL(`../assets/tiles-opposite/handin.png`, import.meta.url).href;
-            } else if (dealPosition === "prevPlayer") {
-                return new URL(`../assets/tiles-right/handin.png`, import.meta.url).href;
+            try{
+                // 清空之前出的牌
+                this.clearTileImages(".Discard")
+
+                if (dealPosition === "self") {
+                    this.selfDealID = dealID;
+                } else if (dealPosition === "nextPlayer") {
+                    this.nextDeal = true;
+                } else if (dealPosition === "oppositePlayer") {
+                    this.oppoDeal = true;
+                } else if (dealPosition === "prevPlayer") {
+                    this.prevDeal = true;
+                }
+                console.log("this.selfDealID:" + this.selfDealID)
+                console.log("this.nextDeal:" + this.nextDeal)
+                console.log("this.oppoDeal:" + this.oppoDeal)
+                console.log("this.prevDeal:" + this.prevDeal)
+            }catch(error){
+                console.log("Error when deal");
             }
+
         },
 
-        // 出牌
-        discard(discardPosition, discardID) {
-            // 清空之前出的牌
-            this.clearTileImages(".Discard")
-            // 获取牌的前两位
-            const tilePrefix = String(discardID).slice(0, 2);
-            if (discardPosition === "self") {
-                return new URL(`../assets/tiles-me/${tilePrefix}.png`, import.meta.url).href;
-            } else if (discardPosition === "nextPlayer") {
-                return new URL(`../assets/tiles-left/${tilePrefix}.png`, import.meta.url).href;
-            } else if (discardPosition === "oppositePlayer") {
-                return new URL(`../assets/tiles-opposite/${tilePrefix}.png`, import.meta.url).href;
-            } else if (discardPosition === "prevPlayer") {
-                return new URL(`../assets/tiles-right/${tilePrefix}.png`, import.meta.url).href;
+        // 把出的牌展示在桌面上，即返回一个discardUrl
+        showDiscard(discardPosition, discardID) {
+            try{
+                // 获取牌的前两位
+                const tilePrefix = Math.floor(discardID / 10);
+                if (discardPosition === "self") {
+                    this.selfDiscardUrl =  new URL(`../assets/tiles-me/${tilePrefix}.png`, import.meta.url).href;
+                } else if (discardPosition === "nextPlayer") {
+                    this.nextDiscardUrl = new URL(`../assets/tiles-left/${tilePrefix}.png`, import.meta.url).href;
+                } else if (discardPosition === "oppositePlayer") {
+                    this.oppoDiscardUrl = new URL(`../assets/tiles-opposite/${tilePrefix}.png`, import.meta.url).href;
+                } else if (discardPosition === "prevPlayer") {
+                    this.prevDiscardUrl = new URL(`../assets/tiles-right/${tilePrefix}.png`, import.meta.url).href;
+                }
+            }catch(error){
+                console.log("Error when discard");
             }
         },
 
@@ -322,7 +344,7 @@ export default {
     },
 
     // 连接 WebSocket 并注册消息处理回调函数
-    created() {
+    mounted() {
         WebSocketService.addMessageListener(this.handleMessage);
     },
 
@@ -347,61 +369,112 @@ export default {
         height: 100vh;
     }
 
-    /* my single hand tile */
-    .hand {
-        width: 38px;
-        height: 60px;
+    .error-message {
+        color: red; /* 设置文字颜色为红色 */
+        text-align: center; /* 居中对齐文字 */
+        font-weight: bold; /* 使文字加粗（可选） */
+        background-color: #ffe6e6; /* 设置背景颜色为浅红色（可选） */
+        padding: 10px; /* 添加内边距 */
+        margin: 10px auto; /* 设置外边距，并使元素居中 */
+        border: 1px solid red; /* 添加红色边框（可选） */
+        width: fit-content; /* 自动适应内容宽度 */
     }
 
-    /* opposite single hand tile */
-    .opp_hand {
-        width: 38px;
-        height: 60px;
+    .success-message {
+
     }
 
-    .me {
-        display: flex;
-        justify-content: center; /* 水平居中 */
-        align-items: center;    /* 垂直居中 */
-        height: 100vh;          /* 满屏高度 */
-    }
-
-    /* opposite hand tiles */
-    .opposite_hand {
+    #selfDiscard {
         position: fixed;
         left: 50%;
-        top: 20%;
+        bottom: 30%;
         transform: translate(-50%, 0);
+        width: 46px;
+        height: 64px;
     }
 
-    .left_table {
-        display: flex;
-        /*flex-direction: column; !* 纵向排列 *!*/
-        align-items: center; /* 水平居中对齐，可选 */
-        gap: 20px; /* 图片之间的间距 */
+    #nextDiscard {
         position: fixed;
-        left: 10%;
-        bottom: 0;
+        left: 30%;
+        top: 50%;
         transform: translate(0, -50%);
+        width: 59px;
+        height: 48px;
     }
 
-    #l_wall {
-        width: 80px;
-        height: 320px;
+    #oppoDiscard {
         position: fixed;
-        left: 20%;
-        bottom: 50%;
-        transform: translate(0, 50%);
+        left: 50%;
+        top: 30%;
+        transform: translate(-50%, 0);
+        width: 42px;
+        height: 60px;
     }
 
-    #r_wall {
-        width: 80px;
-        height: 320px;
+    #prevDiscard {
         position: fixed;
-        right: 20%;
-        bottom: 50%;
-        transform: translate(0, 50%);
+        right: 30%;
+        top: 50%;
+        transform: translate(0, -50%);
+        width: 59px;
+        height: 48px;
     }
+
+    /*!* my single hand tile *!*/
+    /*.hand {*/
+    /*    width: 38px;*/
+    /*    height: 60px;*/
+    /*}*/
+
+    /*!* opposite single hand tile *!*/
+    /*.opp_hand {*/
+    /*    width: 38px;*/
+    /*    height: 60px;*/
+    /*}*/
+
+    /*.me {*/
+    /*    display: flex;*/
+    /*    justify-content: center; !* 水平居中 *!*/
+    /*    align-items: center;    !* 垂直居中 *!*/
+    /*    height: 100vh;          !* 满屏高度 *!*/
+    /*}*/
+
+    /*!* opposite hand tiles *!*/
+    /*.opposite_hand {*/
+    /*    position: fixed;*/
+    /*    left: 50%;*/
+    /*    top: 20%;*/
+    /*    transform: translate(-50%, 0);*/
+    /*}*/
+
+    /*.left_table {*/
+    /*    display: flex;*/
+    /*    !*flex-direction: column; !* 纵向排列 *!*!*/
+    /*    align-items: center; !* 水平居中对齐，可选 *!*/
+    /*    gap: 20px; !* 图片之间的间距 *!*/
+    /*    position: fixed;*/
+    /*    left: 10%;*/
+    /*    bottom: 0;*/
+    /*    transform: translate(0, -50%);*/
+    /*}*/
+
+    /*#l_wall {*/
+    /*    width: 80px;*/
+    /*    height: 320px;*/
+    /*    position: fixed;*/
+    /*    left: 20%;*/
+    /*    bottom: 50%;*/
+    /*    transform: translate(0, 50%);*/
+    /*}*/
+
+    /*#r_wall {*/
+    /*    width: 80px;*/
+    /*    height: 320px;*/
+    /*    position: fixed;*/
+    /*    right: 20%;*/
+    /*    bottom: 50%;*/
+    /*    transform: translate(0, 50%);*/
+    /*}*/
 
 
 </style>

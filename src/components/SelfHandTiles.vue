@@ -7,8 +7,11 @@
             :src="getTileUrl(tile)"
             alt="tile"
             class="tile"
-            v-on:click="discard(tile)"
+            v-on:click="discard(tile, canDiscard)"
         />
+    </div>
+    <div>
+        <img alt="deal" class="tile" id="deal" :src="getTileUrl(dealID)" v-on:click="discard(dealID, canDiscard)"/>
     </div>
 </template>
 
@@ -20,23 +23,36 @@ export default {
     props: {
         handTiles: {
             required: true
+        },
+        dealID: {
+            required: true
+        },
+        canDiscard: {
+            required: true,
         }
     },
     methods: {
         // 根据牌编号生成相应的图片 URL
         getTileUrl(tile) {
-            // 获取牌的前两位
-            const tilePrefix = String(tile).slice(0, 2);
-            return new URL(`../assets/tiles-front/${tilePrefix}.png`, import.meta.url).href;
+            if (tile === Number){
+                // 获取牌的前两位
+                const tilePrefix = Math.floor(tile / 10);
+                console.log(tilePrefix);
+                console.log(this.dealID);
+                return new URL(`../assets/tiles-front/${tilePrefix}.png`, import.meta.url).href;
+            }else{
+                return ''
+            }
         },
 
-        discard(id) {
-            try{
-                WebSocketService.sendMessage(JSON.stringify({operation: "discard", tileID: id}));
-            }catch (error){
-                console.log("Error when discard");
+        discard(id, canDiscard) {
+            if (canDiscard === true){
+                try{
+                    WebSocketService.sendMessage(JSON.stringify({operation: "discard", tileID: id}));
+                }catch (error){
+                    console.log("Error when discard");
+                }
             }
-
         }
     }
 }
@@ -46,12 +62,18 @@ export default {
 .hand-tiles {
     position: fixed;
     left: 50%;
-    bottom: 10%;
+    bottom: 5%;
     transform: translate(-50%, 0);
 }
 
 .tile {
     width: 38px;
     height: 60px;
+}
+
+#deal {
+    position: fixed;
+    right: 25%;
+    bottom:5%;
 }
 </style>
