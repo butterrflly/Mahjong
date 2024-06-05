@@ -1,5 +1,6 @@
 package com.smoker.mahjong.service;
 
+import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.smoker.mahjong.doma.Game.HandTile;
 import com.smoker.mahjong.doma.Game.Meld;
@@ -188,7 +189,7 @@ public class GameService {
 
             playerMessage.put("meld number list", meldNumberList);
             playerMessage.put("isHide list", isHideList);
-            playerMessage.put("meld", meldArray.toArray());
+            playerMessage.put("meld", JSONObject.toJSONString(meldArray));
 
             message.put(positions[i], playerMessage);
         }

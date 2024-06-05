@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -277,7 +278,9 @@ public class WebSocketServer {
                 case "selectChow" -> {
                     String playerName = playerMap.get(session);
                     String roomID = roomMap.get(session);
-                    int[] tileIDList = (int[]) jsonObject.get("tileIDList");
+                    String tileIDListString = (String) jsonObject.get("tileIDList");
+                    int[] tileIDList = Arrays.stream(tileIDListString.substring(1, 12).split(",")).mapToInt(Integer :: parseInt).toArray();
+
 
                     gameService.Chow(playerName, roomID, tileIDList);
 

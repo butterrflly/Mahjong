@@ -271,7 +271,7 @@ public class HandTile {
         // 吃牌
         chowTiles.remove(tile);
         Tile tile1 = chowTiles.remove(0);
-        Tile tile2 = chowTiles.remove(1);
+        Tile tile2 = chowTiles.remove(0);
         handTile.remove(tile1);
         handTile.remove(tile2);
         chowTiles.add(tile1);
