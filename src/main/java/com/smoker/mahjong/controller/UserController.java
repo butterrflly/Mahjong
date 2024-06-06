@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
-@CrossOrigin(origins = "http://172.20.10.2:5173")
+@CrossOrigin(origins = "*")
 public class UserController {
 
     @Autowired // 引用容器中的service
