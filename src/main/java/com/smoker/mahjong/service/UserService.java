@@ -18,6 +18,11 @@ public class UserService {
         return handleResult(result);
     }
 
+    public String logout(String name) {
+        String result = UserRegistration.logout(name);
+        return handleResult(result);
+    }
+
     public String deleteUser(String name, String password) {
         String result = UserRegistration.deleteUser(name, password);
         return handleResult(result);

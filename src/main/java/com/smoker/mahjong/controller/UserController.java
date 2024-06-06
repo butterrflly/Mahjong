@@ -19,6 +19,12 @@ public class UserController {
         return userService.signup(name, password);
     }
 
+    @RequestMapping(value = "/logout", method = RequestMethod.POST)
+    public String logout(@RequestParam("name") String name)
+    {
+        return userService.logout(name);
+    }
+
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public String login(@RequestParam("name") String name,
