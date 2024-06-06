@@ -3,6 +3,7 @@ package com.smoker.mahjong.controller;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.smoker.mahjong.service.GameService;
+import com.smoker.mahjong.data.UserRegistration;
 import jakarta.annotation.PostConstruct;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnMessage;
@@ -14,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -86,6 +86,15 @@ public class WebSocketServer {
                     sendMessageToUser(gameService.getGameRooms(playerName), session);
 
                     log.info("有一用户登录，player name = {}", playerName);
+                }
+                case "logout" -> {
+                    String playerName = playerMap.get(session);
+
+                    sessionMap.remove(playerName);
+                    playerMap.remove(session);
+
+                    UserRegistration.logout(playerName);
+                    log.info("有一用户登出，player name = {}", playerName);
                 }
                 case "createRoom" -> {
                     String playerName = playerMap.get(session);
@@ -331,6 +340,7 @@ public class WebSocketServer {
         if (playerMap.containsKey(session)){
             escName = playerMap.remove(session);
             sessionMap.remove(escName);
+            UserRegistration.logout(escName);
         }
 
 

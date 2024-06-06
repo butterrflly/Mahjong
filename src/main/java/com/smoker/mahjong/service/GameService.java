@@ -551,11 +551,4 @@ public class GameService {
         GameStarter gs = games.get(roomID);
         gs.addTableTile();
     }
-
-    public static void main(String[] args) {
-        int[][] KongList = new int[0][3];
-        Map<String, Object> result = new HashMap<>();
-        result.put("operation", KongList);
-        System.out.println(JSONObject.toJSONString(result));
-    }
 }

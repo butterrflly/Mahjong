@@ -37,19 +37,12 @@ public class Player {
      * @param winner 赢家，可能是null
      * @param loser  输家，可能是null
      */
-    public void scoring(Player banker, Player winner, ArrayList<Player> loser, String HuTYpe) {
-        int points = 100;
+    public void scoring(Player banker, Player winner, ArrayList<Player> loser, int HuTYpe) {
+        int points = 100 * HuTYpe;
         // 荒牌
         if (winner == null) {
             return;
         }
-
-        if (HuTYpe.equals("normal")) {
-            points = 100;
-        } else if (HuTYpe.equals("seven pairs")) {
-            points = 200;
-        }
-
 
         if (winner == this) {
             // 胡牌

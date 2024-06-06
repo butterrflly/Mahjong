@@ -1,9 +1,8 @@
 package com.smoker.mahjong.doma.Game;
 
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class HandTile {
 
@@ -154,61 +153,86 @@ public class HandTile {
     }
 
 
-    public String canHu(Tile tile) {
+    public int canHu(Tile tile) {
         ArrayList<Tile> tempHandTile = new ArrayList<>(handTile);
-        tempHandTile.add(tile);
+
+        if (!tempHandTile.contains(tile)) {
+            tempHandTile.add(tile);
+        }
+
+        tempHandTile.sort(Comparator.comparingInt(Tile::getId));
 
         ArrayList<Tile> pair = new ArrayList<>();
 
-        int jump = 0;
-        for (int i = 0; i < tempHandTile.size() - 1; i++) {
-
-            if (tempHandTile.get(i).getId() / 10 == jump)  continue;
-
+        for (int i = 0; i < tempHandTile.size(); i += 2) {
             if (tempHandTile.get(i).getId() / 10 == tempHandTile.get(i + 1).getId() / 10){
                 pair.add(tempHandTile.get(i));
                 pair.add(tempHandTile.get(i + 1));
-                jump = tempHandTile.get(i).getId() / 10;
             }
         }
 
-        if (pair.size() == 0) return null;
 
-        if (pair.size() == 7) return "seven pairs";
+        if (pair.size() == 0) return 0;
 
-        while (pair.size() != 0){
-            Tile tile1 = pair.remove(0);
-            Tile tile2 = pair.remove(0);
-            tempHandTile.remove(tile1);
-            tempHandTile.remove(tile2);
 
-            MeldUtil meldUtil1 = new MeldUtil();
-            MeldUtil meldUtil2 = new MeldUtil();
-            MeldUtil meldUtil3 = new MeldUtil();
-            MeldUtil meldUtil4 = new MeldUtil();
-            MeldUtil meldUtil5 = new MeldUtil();
-
-            for (Tile t : tempHandTile) {
-                if (t.getId() / 100 == 1) meldUtil1.addTile(t);
-                if (t.getId() / 100 == 2) meldUtil2.addTile(t);
-                if (t.getId() / 100 == 3) meldUtil3.addTile(t);
-                if (t.getId() / 100 == 4) meldUtil4.addTile(t);
-                if (t.getId() / 100 == 5) meldUtil5.addTile(t);
+        // 7 small pair
+        if (pair.size() == 14) {
+            Map<Integer, Integer> countMap = new HashMap<>();
+            for (Tile tempTile : pair) {
+                int currentID = tempTile.getId() / 10;
+                countMap.put(currentID, countMap.getOrDefault(currentID, 0) + 1);
             }
 
-            boolean result = meldUtil1.isHu() & meldUtil2.isHu() & meldUtil3.isHu() & meldUtil4.isHu() & meldUtil5.isHu();
-            int triplet = meldUtil1.tripletNum() + meldUtil2.tripletNum() + meldUtil3.tripletNum() + meldUtil4.tripletNum() + meldUtil5.tripletNum();
-
-            if (triplet > 0 && result){
-                return "normal";
+            // big 7 pair
+            for (int count : countMap.values()) {
+                if (count >= 4) {
+                    return 8;
+                }
             }
-            tempHandTile.add(tile1);
-            tempHandTile.add(tile2);
+            return 4;
         }
 
-        return null;
+
+        int meldTripletNum = 0;
+        for (Meld meld : melds){
+            if (meld.getType().equals("Pang") || meld.getType().equals("Kong")){
+                meldTripletNum++;
+            }
+        }
+
+        while (pair.size() != 0) {
+            ArrayList <Tile> temp = new ArrayList<>(tempHandTile);
+            temp.remove(pair.remove(0));
+            temp.remove(pair.remove(0));
+
+            ArrayList<Integer> tileIDs = new ArrayList<>(temp.stream().map(Tile :: getId).map(id -> id / 10).toList());
+            int tripletNum = 0;
+            boolean canHu = false;
+
+            while (tileIDs.size() >= 3) {
+                if (tileIDs.get(0).equals(tileIDs.get(1)) && tileIDs.get(0).equals(tileIDs.get(2))) {
+                    tileIDs.subList(0, 3).clear();  // Remove first three elements
+                    tripletNum++;
+                } else if (tileIDs.contains(tileIDs.get(0) + 1) && tileIDs.contains(tileIDs.get(0) + 2)) {
+                    if (tileIDs.get(0) / 10 > 3){
+                        continue;
+                    }
+                    tileIDs.remove(Integer.valueOf(tileIDs.get(0) + 2));
+                    tileIDs.remove(Integer.valueOf(tileIDs.get(0) + 1));
+                    tileIDs.remove(0);
+                } else {
+                    canHu = false;
+                    break;
+                }
+                canHu = true;
+            }
+            if (canHu && tripletNum + meldTripletNum >= 1){
+                return 2;
+            }
+        }
+
+        return 0;
     }
-
 
     public void Pang(Tile tile) {
         // 碰牌
@@ -288,8 +312,31 @@ public class HandTile {
     }
 
 
-    public void Hu(Tile tile) {
+    public int Hu(Tile tile) {
         // 胡牌
+        if (!handTile.contains(tile)){
+            handTile.add(tile);
+        }
+
+        // 大 单吊
+        if (handTile.size() == 2){
+            return 2;
+        }
+
+
+
+
+        // 清一色
+        int type = handTile.get(0).getId() / 100;
+
+        for (Tile value : handTile) {
+            if (value.getId() / 100 != type){
+                return 1;
+            }
+
+        }
+
+        return 6;
     }
 
 
