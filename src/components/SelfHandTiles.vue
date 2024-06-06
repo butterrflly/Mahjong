@@ -1,17 +1,22 @@
 <template>
-    <div class="hand-tiles">
-        <!-- 迭代 handTiles.handTile 数组中的每个元素，为每个牌生成一个 <img> 标签 -->
-        <img
-            v-for="tile in handTiles"
-            :key="tile"
-            :src="getTileUrl(tile)"
-            alt="tile"
-            class="tile"
-            v-on:click="discard(tile, canDiscard)"
-        />
-    </div>
-    <div>
-        <img alt="deal" class="tile" id="deal" :src="getTileUrl(dealID)" v-on:click="discard(dealID, canDiscard)"/>
+    <div v-if="gameStatus" class="container">
+        <div class="hand-tiles">
+            <!-- 迭代 handTiles.handTile 数组中的每个元素，为每个牌生成一个 <img> 标签 -->
+            <img
+                v-for="tile in handTiles"
+                :key="tile"
+                :src="getTileUrl(tile)"
+                alt="tile"
+                class="tile"
+                v-on:click="discard(tile, canDiscard)"
+            />
+        </div>
+        <div class="deal-tiles">
+            <img v-if="getTileUrl(dealID)!== ''"
+                 alt="dealTile" class="tile"
+                 :src="getTileUrl(dealID)"
+                 v-on:click="discard(dealID, canDiscard)"/>
+        </div>
     </div>
 </template>
 
@@ -21,12 +26,19 @@ import WebSocketService from '../websocket.js';
 export default {
     name: 'SelfHandTiles',
     props: {
+        gameStatus: {
+            required: true,
+            type: Boolean
+        },
+
         handTiles: {
             required: true
         },
+
         dealID: {
             required: true
         },
+
         canDiscard: {
             required: true,
         }
@@ -34,24 +46,25 @@ export default {
     methods: {
         // 根据牌编号生成相应的图片 URL
         getTileUrl(tile) {
-            if (tile === Number){
+            if (tile != null && Math.abs(tile) !== 0){
                 // 获取牌的前两位
                 const tilePrefix = Math.floor(tile / 10);
-                console.log(tilePrefix);
-                console.log(this.dealID);
                 return new URL(`../assets/tiles-front/${tilePrefix}.png`, import.meta.url).href;
-            }else{
+            }else {
                 return ''
             }
         },
 
         discard(id, canDiscard) {
+            console.log(canDiscard)
             if (canDiscard === true){
                 try{
                     WebSocketService.sendMessage(JSON.stringify({operation: "discard", tileID: id}));
                 }catch (error){
                     console.log("Error when discard");
                 }
+            }else{
+                console.log("can't discard")
             }
         }
     }
@@ -59,21 +72,41 @@ export default {
 </script>
 
 <style scoped>
-.hand-tiles {
+.container {
+    display: flex;
+    align-items: center;
     position: fixed;
     left: 50%;
     bottom: 5%;
     transform: translate(-50%, 0);
 }
 
-.tile {
-    width: 38px;
-    height: 60px;
+.hand-tiles {
+    position: relative;
+    box-shadow: 3px -6px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
 }
 
-#deal {
-    position: fixed;
-    right: 25%;
-    bottom:5%;
+.deal-tiles {
+    position: relative;
+    margin-left: 20px;
+    box-shadow: 3px -6px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+}
+
+.hand-tiles img {
+    transition: transform 0.3s; /* 动画效果 */
+}
+.hand-tiles img:hover {
+    transform: translateY(-15px); /* 悬停时上浮 */
+}
+.deal-tiles img {
+    transition: transform 0.3s; /* 动画效果 */
+}
+.deal-tiles img:hover {
+    transform: translateY(-15px); /* 悬停时上浮 */
+}
+
+.tile {
+    width: 44px;
+    height: 70px;
 }
 </style>

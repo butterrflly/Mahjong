@@ -2,6 +2,10 @@
 
 // Encapsulates the logic of connecting, sending messages and processing messages for WebSocket.
 
+import ipConfig from "@/ipConfig.js";
+
+const ip = ipConfig.LAN_IP_BACK;
+
 class WebSocketService {
     constructor() {
         this.socket = null;
@@ -13,7 +17,7 @@ class WebSocketService {
 
     connect() {
         console.log("successful connect!");
-        this.socket = new WebSocket("ws://localhost:8080/ws");
+        this.socket = new WebSocket(`ws://${ip}/ws`);
 
         this.socket.onopen = () => {
             console.log('WebSocket connection opened');
@@ -63,4 +67,5 @@ class WebSocketService {
 }
 
 const webSocketService = new WebSocketService();
+
 export default webSocketService;

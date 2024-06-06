@@ -22,33 +22,20 @@ import GameTitle from "../components/GameTitle.vue";
 import RulesButton from "../components/RulesButton.vue";
 import MatchingButton from "../components/MatchingButton.vue";
 import LoginButton from "../components/LoginButton.vue";
-import WebSocketService from "../websocket.js";
 
 export default defineComponent({
     components: {LoginButton, MatchingButton, RulesButton, GameTitle},
-
-    data(){
-        return{
-            // selfName: this.getName(),
-        }
-    },
-
-    methods:{
-
-    },
-
 })
 
 
 </script>
 
 <style scoped>
-    @import "../assets/font/font.css";
     header {
     display: flex;
     place-items: center;
     padding-right: calc(var(--section-gap) / 2);
-    font-family: "阿里妈妈灵动体 VF Thin";
+    font-family: Arial, sans-serif;
     }
 
     .logo {

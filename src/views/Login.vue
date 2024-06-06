@@ -175,13 +175,14 @@ export default {
 
         async login(name, password) {
             // 向服务器保存name，并在之后的页面接收返回信息
-            WebSocketService.sendMessage(JSON.stringify({operation: "login", playerName: name}))
+
             try {
                 // 使用封装的 postData 函数发起 POST 请求
                 const response = await postData('user/login', { name: name, password: password });
                 console.log('Response from POST:', response);
                 if (response=="登录成功") {
                     this.successMessage = "success!"
+                    WebSocketService.sendMessage(JSON.stringify({operation: "login", playerName: name}))
                     // this.$router.push({path: '/'});
                 } else if (response === "密码错误") {
                     this.errorMessage = "wrong password！";

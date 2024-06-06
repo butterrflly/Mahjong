@@ -29,11 +29,11 @@ export default {
         getTileUrl(tile, groupIndex) {
             // 检查当前组的状态
             if (this.oppoIfHideMeld[groupIndex] === true) {
-                return new URL('../assets/tiles-oppo/back.png', import.meta.url).href;
+                return new URL('../assets/tiles-opposite/back.png', import.meta.url).href;
             }
             // 获取牌的前两位
             const tilePrefix = String(tile).slice(0, 2);
-            return new URL(`../assets/tiles-oppo/${tilePrefix}.png`, import.meta.url).href;
+            return new URL(`../assets/tiles-opposite/${tilePrefix}.png`, import.meta.url).href;
         }
     }
 }
@@ -44,6 +44,10 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: fixed;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, 0);
 }
 
 .tile-group {
@@ -53,9 +57,9 @@ export default {
 }
 
 .tile {
-    width: 50px; /* 根据需要调整图片的宽度 */
-    height: 50px; /* 根据需要调整图片的高度 */
-    margin: 0; /* 图片之间的间距 */
+    width: 42px; /* 根据需要调整图片的宽度 */
+    height: 60px; /* 根据需要调整图片的高度 */
+    margin: -1px; /* 图片之间的间距 */
 }
 </style>
 

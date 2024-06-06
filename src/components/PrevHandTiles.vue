@@ -1,9 +1,9 @@
 <template>
-    <div class="hand-tiles">
-        <img alt="right" id="r_wall" src="../assets/tiles-right/r_wall.png"/>
+    <div v-if="gameStatus" class="hand-tiles">
+        <img alt="right" id="r_wall" src="../assets/tiles-left/l_wall.png"/>
     </div>
     <div v-if="ifDeal">
-        <img alt="tile" id="tile" src="../assets/tiles-right/handin.png"/>
+        <img alt="dealTile" id="tile" src="../assets/tiles-left/handin.png"/>
     </div>
 </template>
 
@@ -11,6 +11,11 @@
 export default {
     name: 'PrevHandTiles',
     props: {
+        gameStatus: {
+            required: true,
+            type: Boolean
+        },
+
         ifDeal: {
             required: true,
             type: Boolean
@@ -28,16 +33,16 @@ export default {
     width: 80px;
     height: 320px;
     position: fixed;
-    right: 20%;
+    left: 20%;
     bottom: 50%;
     transform: translate(0, 50%);
 }
 
 #tile {
-    width: 38px;
-    height: 60px;
+    width: 31px;
+    height: 50px;
     position: fixed;
-    right: 20%;
-    bottom: 30%;
+    left: 19.7%;
+    bottom: 26.5%;
 }
 </style>
