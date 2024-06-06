@@ -222,13 +222,14 @@ public class WebSocketServer {
                 case "noChow" -> {
                     String roomID = roomMap.get(session);
 
-                    gameService.deal(roomID);
+
                     gameService.addTableTile(roomID);
 
                     for (Session s : roomSession.get(roomID)){
                         sendMessageToUser(gameService.getTableTile(roomID), s);
                     }
 
+                    gameService.deal(roomID);
                     deal(roomID);
                 }
                 case "Hu" -> {
@@ -255,6 +256,7 @@ public class WebSocketServer {
                             sendMessageToUser(gameService.getMeld(playerMap.get(s), roomID), s);
                         }
 
+                        gameService.deal(roomID);
                         deal(roomID);
                     }
                     else {

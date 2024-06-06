@@ -245,7 +245,7 @@ public class GameStarter {
     }
 
     public void addTableTile(){
-        tileLibrary.addTableTile(findTile(dealTileID));
+        tileLibrary.addTableTile(findTile(discardTileID));
     }
 
     public ArrayList<Tile> getTableTile(){
