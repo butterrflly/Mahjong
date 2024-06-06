@@ -20,6 +20,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
 
 
 @Slf4j
@@ -51,7 +55,7 @@ public class WebSocketServer {
 
 
     private static Session discardPlayer;
-    private static int noPangOrKong;
+    private static AtomicInteger noPangOrKong = new AtomicInteger(0);
 
 
 
@@ -207,7 +211,7 @@ public class WebSocketServer {
                     String nextPlayerName = (String) JSON.parseObject(JSON.parseObject(nextCanHu).get("msg").toString()).get("playerName");
 
                     if (nextPlayerName.equals("null")){
-                        noPangOrKong = 0;
+                        noPangOrKong.set(0);
                         for (Session s : roomSession.get(roomID)){
                             if (s == discardPlayer)
                                 continue;
@@ -221,8 +225,8 @@ public class WebSocketServer {
                 case "noPangOrKong" -> {
                     String roomID = roomMap.get(session);
 
-                    noPangOrKong++;
-                    if (noPangOrKong == 3){
+                    int count = noPangOrKong.incrementAndGet();
+                    if (count == 3){
                         String canChow = gameService.canChow(roomID);
                         String playerName = (String) JSON.parseObject(JSON.parseObject(canChow).get("msg").toString()).get("playerName");
                         sendMessageToUser(canChow, sessionMap.get(playerName));
@@ -398,15 +402,42 @@ public class WebSocketServer {
         }
     }
 
+//    public static void sendMessageAsync(Session session, String message, long timeoutMillis) {
+//        // 异步发送消息
+//        Future<Void> future = session.getAsyncRemote().sendText(message);
+//
+//        try {
+//            // 等待发送完成，超时时间为timeoutMillis毫秒
+//            future.get(timeoutMillis, TimeUnit.MILLISECONDS);
+//        } catch (Exception e) {
+//            // 发送超时或其他异常处理
+//            log.error("Error sending message to user: " + e);
+//        }
+//    }
+
+
 
     public void sendMessageToUser(String message, Session session) {
+        long timeoutMillis = 1000;
+        Future<Void> future = session.getAsyncRemote().sendText(message);
+
         try {
-            if (session != null) {
-                log.info("Sending message to user: " +  message);
-                session.getBasicRemote().sendText(message);
-            }
+            // 等待发送完成，超时时间为timeoutMillis毫秒
+            future.get(timeoutMillis, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
+            // 发送超时或其他异常处理
             log.error("Error sending message to user: " + e);
         }
     }
+
+//    public void sendMessageToUser(String message, Session session) {
+//        try {
+//            if (session != null) {
+//                log.info("Sending message to user: " +  message);
+//                session.getBasicRemote().sendText(message);
+//            }
+//        } catch (Exception e) {
+//            log.error("Error sending message to user: " + e);
+//        }
+//    }
 }
