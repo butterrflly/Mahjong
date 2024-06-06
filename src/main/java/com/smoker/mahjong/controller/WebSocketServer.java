@@ -326,16 +326,21 @@ public class WebSocketServer {
         String escName;
         String escRoomID;
 
-        if (roomMap.containsKey(session)){
-            escRoomID = roomMap.remove(session);
-            roomSession.remove(escRoomID);
-        }
-
         if (playerMap.containsKey(session)){
             escName = playerMap.remove(session);
             sessionMap.remove(escName);
         }
 
+
+        if (roomMap.containsKey(session)) {
+            escRoomID = roomMap.remove(session);
+            roomSession.get(escRoomID).remove(session);
+
+            if (roomSession.get(escRoomID).size() == 0) {
+                gameService.removeRoom(escRoomID);
+                roomSession.remove(escRoomID);
+            }
+        }
 
         sessionList.remove(session);
         log.info("有一用户离开， sessionId = {}， 当前在线人数{}", session.getId(), sessionMap.size());
@@ -392,68 +397,4 @@ public class WebSocketServer {
             log.error("Error sending message to user: " + e);
         }
     }
-
-    public static GameService getGameService() {
-        return gameService;
-    }
-
-    public static void setGameService(GameService gameService) {
-        WebSocketServer.gameService = gameService;
-    }
-
-    public static Map<String, Session> getSessionMap() {
-        return new ConcurrentHashMap<>(sessionMap);
-    }
-
-    public static void setSessionMap(Map<String, Session> sessionMap) {
-        WebSocketServer.sessionMap.clear();
-        WebSocketServer.sessionMap.putAll(sessionMap);
-    }
-
-    public static Map<Session, String> getRoomMap() {
-        return new ConcurrentHashMap<>(roomMap);
-    }
-
-    public static void setRoomMap(Map<Session, String> roomMap) {
-        WebSocketServer.roomMap.clear();
-        WebSocketServer.roomMap.putAll(roomMap);
-    }
-
-    public static Map<Session, String> getPlayerMap() {
-        return new ConcurrentHashMap<>(playerMap);
-    }
-
-    public static void setPlayerMap(Map<Session, String> playerMap) {
-        WebSocketServer.playerMap.clear();
-        WebSocketServer.playerMap.putAll(playerMap);
-    }
-
-    public static Map<String, ArrayList<Session>> getRoomSession() {
-        Map<String, ArrayList<Session>> copy = new ConcurrentHashMap<>();
-        roomSession.forEach((key, value) -> copy.put(key, new ArrayList<>(value)));
-        return copy;
-    }
-
-    public static void setRoomSession(Map<String, ArrayList<Session>> roomSession) {
-        WebSocketServer.roomSession.clear();
-        WebSocketServer.roomSession.putAll(roomSession);
-    }
-
-    public static ArrayList<Session> getSessionList() {
-        return new ArrayList<>(sessionList);
-    }
-
-    public static void setSessionList(ArrayList<Session> sessionList) {
-        WebSocketServer.sessionList.clear();
-        WebSocketServer.sessionList.addAll(sessionList);
-    }
-
-    public static Session getDiscardPlayer() {
-        return discardPlayer;
-    }
-
-    public static void setDiscardPlayer(Session discardPlayer) {
-        WebSocketServer.discardPlayer = discardPlayer;
-    }
-
 }
