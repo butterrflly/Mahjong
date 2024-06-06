@@ -198,11 +198,11 @@ public class WebSocketServer {
                     String nextPlayerName = (String) JSON.parseObject(JSON.parseObject(nextCanHu).get("msg").toString()).get("playerName");
 
                     if (nextPlayerName.equals("null")){
+                        noAffairNum = 0;
                         for (Session s : roomSession.get(roomID)){
                             if (s == discardPlayer)
                                 continue;
                             sendMessageToUser(gameService.getAffair(playerMap.get(s), roomID), s);
-                            noAffairNum = 0;
                         }
                         return;
                     }
@@ -213,14 +213,15 @@ public class WebSocketServer {
                     String roomID = roomMap.get(session);
 
                     noAffairNum++;
-                    if (noAffairNum == 3){
-                        gameService.deal(roomID);
+                    if (noAffairNum >= 3){
 
                         gameService.addTableTile(roomID);
+
                         for (Session s : roomSession.get(roomID)){
                             sendMessageToUser(gameService.getTableTile(roomID), s);
                         }
 
+                        gameService.deal(roomID);
                         deal(roomID);
                     }
                 }
@@ -248,6 +249,7 @@ public class WebSocketServer {
                             sendMessageToUser(gameService.getMeld(playerMap.get(s), roomID), s);
                         }
 
+                        gameService.deal(roomID);
                         deal(roomID);
                     }
                     else {
