@@ -186,9 +186,11 @@ public class HandTile {
             // big 7 pair
             for (int count : countMap.values()) {
                 if (count >= 4) {
+                    System.out.println("big 7 pair");
                     return 8;
                 }
             }
+            System.out.println("7 small pair");
             return 4;
         }
 
@@ -227,6 +229,7 @@ public class HandTile {
                 canHu = true;
             }
             if (canHu && tripletNum + meldTripletNum >= 1){
+                System.out.println("normal");
                 return 2;
             }
         }
@@ -313,30 +316,62 @@ public class HandTile {
 
 
     public int Hu(Tile tile) {
+        ArrayList<Tile> tempHandTile = new ArrayList<>(handTile);
+
         // 胡牌
-        if (!handTile.contains(tile)){
-            handTile.add(tile);
+        int HuType;
+
+        HuType = canHu(tile);
+
+        if (!tempHandTile.contains(tile)){
+            tempHandTile.add(tile);
         }
 
         // 大 单吊
-        if (handTile.size() == 2){
-            return 2;
+        if (tempHandTile.size() == 2){
+            System.out.println("大 单吊");
+            HuType *= 2;
         }
 
 
+
+        // 一条龙
+        ArrayList<Integer> tileIDs = new ArrayList<>(tempHandTile.stream().map(Tile :: getId).map(id -> id / 10).distinct().toList());
+
+        System.out.println(tileIDs.toString());
+
+        boolean hasAllSuites = true;
+        for (int i = 1; i <= 3; i++) {
+            hasAllSuites = true;
+            for (int j = 1; j <= 9; j++) {
+                int tileID = i * 10 + j;
+                if (!tileIDs.contains(tileID)) {
+                    hasAllSuites = false;
+                    break;
+                }
+            }
+            if (hasAllSuites) {
+                break;
+            }
+        }
+
+        if (hasAllSuites) {
+            System.out.println("一条龙");
+            HuType *= 2;
+        }
 
 
         // 清一色
-        int type = handTile.get(0).getId() / 100;
-
-        for (Tile value : handTile) {
-            if (value.getId() / 100 != type){
-                return 1;
-            }
-
+        for (Meld meld : melds){
+            tempHandTile.addAll(meld.getMeld());
         }
 
-        return 6;
+        if (tempHandTile.stream().map(Tile :: getId).map(id -> id / 100).distinct().count() == 1){
+            System.out.println("清一色");
+            HuType *= 2;
+        }
+
+        return HuType;
     }
 
 

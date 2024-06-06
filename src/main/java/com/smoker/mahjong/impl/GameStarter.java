@@ -21,6 +21,7 @@ public class GameStarter {
     private String discardName;
     private int dealTileID;
     private int discardTileID;
+
     private int HuType = 1;
     private int KongNum = 1;
     private String KongName;
@@ -135,8 +136,6 @@ public class GameStarter {
             KongNum = 1;
         }
 
-        HuType = 1;
-
         return dealTileID;
     }
 
@@ -144,8 +143,6 @@ public class GameStarter {
         // 打一张牌
         discardName = name;
         discardTileID = tileID;
-
-        HuType = 1;
 
         return findPlayer(name).getHandTile().removeTile(findTile(tileID));
     }
@@ -167,13 +164,7 @@ public class GameStarter {
     }
 
     public boolean canHu(String name, int tileID) {
-        int result = findPlayer(name).getHandTile().canHu(findTile(tileID));
-        System.out.println("----------------------------     " + result);
-        if (result == 0){
-            return false;
-        }
-        HuType = result;
-        return true;
+        return findPlayer(name).getHandTile().canHu(findTile(tileID)) != 0;
     }
 
 
@@ -191,6 +182,8 @@ public class GameStarter {
         findPlayer(name).getHandTile().Kong(findTile(tileID));
         dealPlayName = getSequence(name)[3].getName();
 
+        // 杠牌后，如果之前已经杠过，则需要更新杠的数量
+        // 如果不是则初始化Kong
         if(!KongName.equals(name)){
             KongName = null;
             KongNum = 1;
@@ -212,7 +205,7 @@ public class GameStarter {
     public void Hu(String winnerName, int tileID, String loserName) {
         // 胡牌
         winner = findPlayer(winnerName);
-        HuType *= winner.getHandTile().Hu(findTile(tileID));
+        HuType = winner.getHandTile().Hu(findTile(tileID));
         loser = new ArrayList<>();
         if (loserName.equals("allPlayers")) {
             for (Player player : gameRoom.getPlayerList()){
@@ -221,13 +214,20 @@ public class GameStarter {
                 }
             }
 
-            // 杠上开花
-            HuType *= KongNum;
-
+            // 海底捞月
+            if (tileLibrary.getTiles().size() < 16) {
+                HuType *= 2;
+            }
         }
         else {
             loser.add(findPlayer(loserName));
         }
+
+        // 杠上开花
+        HuType *= KongNum;
+
+        System.out.println("KongNum" + "  :  " + KongNum);
+        System.out.println(HuType);
         gameOver();
     }
 
@@ -240,7 +240,7 @@ public class GameStarter {
             winner = null;
             loser = null;
 
-            HuType = 0;
+            HuType = 1;
             KongName = null;
             KongNum = 1;
 
@@ -359,28 +359,42 @@ public class GameStarter {
                 }
                 case "canHu" -> {
                     int[] exTile = {
-                            111,
-                            112,
-                            121,
+                            311,
+                            312,
+                            313,
+                            321,
+                            331,
+                            341,
+                            351,
+                            361,
+                            371,
+                            381,
+                            391,
                             122,
-                            131,
-                            132,
-                            153,
-                            141,
-                            142,
-                            151,
-                            161,
-                            162,
-                            113
+                            314,
                     };
                     handTile.cleanTile();
                     for (int i : exTile) {
                         handTile.addTile(gameStarter.findTile(i));
                     }
+
+//                    ArrayList<Tile> tiles = new ArrayList<>();
+//                    tiles.add(gameStarter.findTile(321));
+//                    tiles.add(gameStarter.findTile(322));
+//                    tiles.add(gameStarter.findTile(323));
+//                    handTile.getMelds().add(new Meld(tiles, "Pang", false));
+//
+//                    tiles = new ArrayList<>();
+//                    tiles.add(gameStarter.findTile(111));
+//                    tiles.add(gameStarter.findTile(121));
+//                    tiles.add(gameStarter.findTile(131));
+//                    handTile.getMelds().add(new Meld(tiles, "Chow", false));
+
                     gameStarter.printHand(name);
                     System.out.println("tileID: ");
                     tileID = scanner.nextInt();
                     System.out.println(gameStarter.canHu(name, tileID));
+                    gameStarter.Hu("butterfly", tileID, "666");
                 }
                 case "Pang" -> {
                     System.out.println("tileID: ");
