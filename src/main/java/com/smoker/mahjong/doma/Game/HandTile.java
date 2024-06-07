@@ -164,10 +164,11 @@ public class HandTile {
 
         ArrayList<Tile> pair = new ArrayList<>();
 
-        for (int i = 0; i < tempHandTile.size(); i += 2) {
-            if (tempHandTile.get(i).getId() / 10 == tempHandTile.get(i + 1).getId() / 10){
+        for (int i = 1; i < tempHandTile.size(); i++) {
+            if (tempHandTile.get(i - 1).getId() / 10 == tempHandTile.get(i).getId() / 10){
+                pair.add(tempHandTile.get(i - 1));
                 pair.add(tempHandTile.get(i));
-                pair.add(tempHandTile.get(i + 1));
+                i++;
             }
         }
 

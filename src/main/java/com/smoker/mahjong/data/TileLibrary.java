@@ -59,6 +59,7 @@ public class TileLibrary {
     public void dealInitialHand(){
         // 发牌算法
         for(Player player : playerList){
+            player.cleanHandTile();
             for(int i = 0; i < 13; i++){
                 player.addInitialHand(tiles.remove(0));
             }

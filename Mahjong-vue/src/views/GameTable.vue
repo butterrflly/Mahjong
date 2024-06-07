@@ -305,7 +305,7 @@ export default {
                 this.chowList = data.msg["ChowList"];
                 // 一种吃法不选择，直接开吃
                 if (this.chowList.length === 1) {
-                    this.chow(this.chowList[0])
+                    this.selectChow(this.chowList[0])
                 }
                 console.log("chowList:" + this.chowList);
 

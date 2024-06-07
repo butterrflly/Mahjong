@@ -210,11 +210,17 @@ public class WebSocketServer {
                     String nextCanHu = gameService.canHu(playerName, roomID);
                     String nextPlayerName = (String) JSON.parseObject(JSON.parseObject(nextCanHu).get("msg").toString()).get("playerName");
 
+                    System.out.println(nextPlayerName);
+
                     if (nextPlayerName.equals("null")){
                         noPangOrKong.set(0);
+
+                        System.out.println(noPangOrKong.get());
+
                         for (Session s : roomSession.get(roomID)){
                             if (s == discardPlayer)
                                 continue;
+                            System.out.println("canPangOrKong");
                             sendMessageToUser(gameService.canPangOrKong(playerMap.get(s), roomID), s);
                         }
                         return;
@@ -226,6 +232,10 @@ public class WebSocketServer {
                     String roomID = roomMap.get(session);
 
                     int count = noPangOrKong.incrementAndGet();
+
+                    System.out.println(count);
+
+
                     if (count == 3){
                         String canChow = gameService.canChow(roomID);
                         String playerName = (String) JSON.parseObject(JSON.parseObject(canChow).get("msg").toString()).get("playerName");
@@ -289,6 +299,7 @@ public class WebSocketServer {
                         sendMessageToUser(gameService.getMeld(playerMap.get(s), roomID), s);
                     }
 
+                    gameService.deal(roomID);
                     deal(roomID);
                 }
                 case "Chow" -> {
@@ -420,6 +431,7 @@ public class WebSocketServer {
     public void sendMessageToUser(String message, Session session) {
         long timeoutMillis = 1000;
         Future<Void> future = session.getAsyncRemote().sendText(message);
+        log.info("Sending message to all clients: " +  message);
 
         try {
             // 等待发送完成，超时时间为timeoutMillis毫秒

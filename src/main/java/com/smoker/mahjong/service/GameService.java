@@ -366,7 +366,7 @@ public class GameService {
 
 
     /**
-     * @return {"operation" : "canPangOrKong", "msg" : {"playerName" : String, "canPang" : boolean, "canKong" : boolean}}
+     * @return {"operation" : "getPangOrKong", "msg" : {"playerName" : String, "canPang" : boolean, "canKong" : boolean}}
      */
     public String canPangOrKong(String playerName, String roomID){
         GameStarter gs = games.get(roomID);
@@ -374,7 +374,7 @@ public class GameService {
         int discardTileID = gs.getDiscardTileID();
 
         Map<String, Object> result = new HashMap<>();
-        result.put("operation", "canPangOrKong");
+        result.put("operation", "getPangOrKong");
 
         Map<String, Object> msg = new HashMap<>();
         msg.put("playerName", playerName);

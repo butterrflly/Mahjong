@@ -22,6 +22,11 @@ public class Player {
         this.prepare = false;
     }
 
+    public void cleanHandTile() {
+        this.handTile = new HandTile();
+        this.melds = new ArrayList<Meld>();
+    }
+
 
     public void addInitialHand(Tile tile) {
         //Distribute the initial hand
