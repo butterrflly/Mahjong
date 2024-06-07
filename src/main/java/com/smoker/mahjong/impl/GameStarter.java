@@ -131,8 +131,8 @@ public class GameStarter {
         discardName = null;
         discardTileID = 0;
 
-        if(KongName != null && !KongName.equals(dealPlayName)){
-            KongName = null;
+        if(!KongName.equals(dealPlayName)){
+            KongName = "";
             KongNum = 1;
         }
 
@@ -173,7 +173,7 @@ public class GameStarter {
         findPlayer(name).getHandTile().Pang(findTile(tileID));
         dealPlayName = name;
 
-        KongName = null;
+        KongName = "";
         KongNum = 1;
     }
 
@@ -184,8 +184,8 @@ public class GameStarter {
 
         // 杠牌后，如果之前已经杠过，则需要更新杠的数量
         // 如果不是则初始化Kong
-        if(KongName != null && !KongName.equals(name)){
-            KongName = null;
+        if(!KongName.equals(name)){
+            KongName = "";
             KongNum = 1;
         }
 
@@ -198,7 +198,7 @@ public class GameStarter {
         findPlayer(name).getHandTile().Chow(chowTiles, findTile(tileID));
         dealPlayName = name;
 
-        KongName = null;
+        KongName = "";
         KongNum = 1;
     }
 
@@ -241,7 +241,7 @@ public class GameStarter {
             loser = null;
 
             HuType = 1;
-            KongName = null;
+            KongName = "";
             KongNum = 1;
 
             gameOver();
