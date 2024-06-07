@@ -317,16 +317,16 @@ public class HandTile {
 
 
     public int Hu(Tile tile) {
-        ArrayList<Tile> tempHandTile = new ArrayList<>(handTile);
-
         // 胡牌
         int HuType;
 
         HuType = canHu(tile);
 
-        if (!tempHandTile.contains(tile)){
-            tempHandTile.add(tile);
+        if (!handTile.contains(tile)){
+            handTile.add(tile);
         }
+
+        ArrayList<Tile> tempHandTile = new ArrayList<>(handTile);
 
         // 大 单吊
         if (tempHandTile.size() == 2){

@@ -263,6 +263,8 @@ public class WebSocketServer {
 
                     for (Session s : roomSession.get(roomID)){
                         sendMessageToUser(gameService.Hu(playerMap.get(s), roomID, playerName), s);
+                        sendMessageToUser(gameService.getHandTile(playerMap.get(s), roomID), s);
+                        sendMessageToUser(gameService.getMeld(playerMap.get(s), roomID), s);
                         sendMessageToUser(gameService.getRoomPlayerMessage(playerMap.get(s), roomID), s);
                     }
                 }
