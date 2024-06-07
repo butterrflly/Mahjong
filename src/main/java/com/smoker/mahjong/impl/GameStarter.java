@@ -24,7 +24,7 @@ public class GameStarter {
 
     private int HuType = 1;
     private int KongNum = 1;
-    private String KongName;
+    private String KongName = "";
 
 
 
