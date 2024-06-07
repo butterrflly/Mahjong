@@ -10,7 +10,7 @@ public class UserRegistration {
 
     private static String filename = "users.txt";
 
-    public static String register(String name, String password) {
+    public static String signup(String name, String password) {
         ArrayList<String> users = readFile(filename);
         for (String user : users) {
             String[] userInfo = user.split(" ");
@@ -21,7 +21,7 @@ public class UserRegistration {
 
         ArrayList<String> newUser = new ArrayList<>();
 
-        newUser.add(name + " " + password);
+        newUser.add(name + " " + password + " off-line");
 
         writeFile(filename, newUser, true);
 
@@ -36,7 +36,33 @@ public class UserRegistration {
                 if (!Objects.equals(userInfo[1], password)) {
                     return "密码错误";
                 }
+                if (Objects.equals(userInfo[2], "on-line")){
+                    return "用户已登录";
+                }
+
+                users.remove(user);
+                users.add(name + " " + password + " on-line");
+                writeFile(filename, users, false);
+
                 return "登录成功";
+            }
+        }
+        return  "用户不存在";
+    }
+
+    public static String logout(String name) {
+        ArrayList<String> users = readFile(filename);
+        for (String user : users) {
+            String[] userInfo = user.split(" ");
+            if (Objects.equals(userInfo[0], name)) {
+                if (Objects.equals(userInfo[2], "off-line")){
+                    return "用户未登录";
+                }
+
+                users.remove(user);
+                users.add(name + " " + userInfo[1] + " off-line");
+                writeFile(filename, users, false);
+                return "退出成功";
             }
         }
         return  "用户不存在";
@@ -69,7 +95,7 @@ public class UserRegistration {
                 }
                 // 修改操作
                 users.remove(user);
-                users.add(name + " " + newPassword);
+                users.add(name + " " + newPassword + " " + userInfo[2]);
                 writeFile(filename, users, false);
                 return "修改成功";
             }
@@ -88,7 +114,9 @@ public class UserRegistration {
                     lines.add(line);
                 }
             }
-        } catch (IOException e){}
+        } catch (IOException e){
+            e.printStackTrace();
+        }
         return lines;
     }
 
@@ -101,5 +129,21 @@ public class UserRegistration {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static String getFilename() {
+        return filename;
+    }
+
+    public static void setFilename(String filename) {
+        UserRegistration.filename = filename;
+    }
+
+    public static void main(String[] args) {
+        // System.out.println(login("3", "3"));
+        System.out.println(logout("5"));
+        // System.out.println(login("1", "1"));
+        // System.out.println(login("4", "4"));
+        // System.out.println(changePassword("songhao", "1", "1234"));
     }
 }
