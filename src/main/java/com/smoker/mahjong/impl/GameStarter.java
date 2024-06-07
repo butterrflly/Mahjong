@@ -131,7 +131,7 @@ public class GameStarter {
         discardName = null;
         discardTileID = 0;
 
-        if(!KongName.equals(dealPlayName)){
+        if(KongName != null && !KongName.equals(dealPlayName)){
             KongName = null;
             KongNum = 1;
         }
@@ -184,7 +184,7 @@ public class GameStarter {
 
         // 杠牌后，如果之前已经杠过，则需要更新杠的数量
         // 如果不是则初始化Kong
-        if(!KongName.equals(name)){
+        if(KongName != null && !KongName.equals(name)){
             KongName = null;
             KongNum = 1;
         }
