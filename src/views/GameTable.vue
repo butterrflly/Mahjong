@@ -197,12 +197,15 @@ export default {
             prevDeal:false,
 
             huName:'',
+            huPosition:'',
             kongList:[],  // [TileID_1, TileID_2, ...]
             chowList:[],  // [[TileID_1, TileID_2, TileID_3], ...]
             tableTiles:[],
             canDiscard:false,
             message:'',
             error:'',
+
+            showTiles: false,
 
         }
     },
@@ -285,6 +288,10 @@ export default {
 
             } else if (data.operation === "Hu") {
                 this.huName = JSON.stringify(data.msg["playerName"]);
+                this.huPosition = JSON.stringify(data.msg["position"]);
+                this.message = this.huName + "has HU!!!!!"
+                this.showTiles = true;
+                this.restart();
 
             } else if (data.operation === "Kong") {
                 this.kongList = data.msg["KongList"];
@@ -313,7 +320,8 @@ export default {
 
             } else if (data.operation === "Draw") {
                 this.message = "Draw, game over";
-                this.gameStart = false;
+                this.showTiles = true;
+                this.restart();
             }
         },
 
@@ -430,6 +438,32 @@ export default {
         noChow() {
             WebSocketService.sendMessage(JSON.stringify({operation: "noChow"}));
             this.canChow = false;
+        },
+
+        restart() {
+            this.gameStart = false;
+            this.tableTiles = [];
+            this.selfHandTiles = this.nextHandTiles = this.oppoHandTiles = this.prevHandTiles = [];
+            this.selfPrepare = this.nextPrepare = this.oppoPrepare = this.prevPrepare = false;
+            this.message = '';
+            this.selfMeldTiles = this.nextMeldTiles = this.oppoMeldTiles = this.prevMeldTiles = [];
+            this.canHu = false;
+            this.canChow = false;
+            this.canPang = false;
+            this.canKong = false;
+            this.selfDiscardUrl = '';
+            this.nextDiscardUrl = '';
+            this.oppoDiscardUrl = '';
+            this.prevDiscardUrl = '';
+            this.selfDealID = null;
+            this.nextDeal = false;
+            this.oppoDeal = false;
+            this.prevDeal = false;
+            this.huName = '';
+            this.huPosition = '';
+            this.kongList = [];  // [TileID_1, TileID_2, ...]
+            this.chowList = [];  // [[TileID_1, TileID_2, TileID_3], ...]
+            this.canDiscard = false;
         },
 
         // helper method

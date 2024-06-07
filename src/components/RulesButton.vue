@@ -16,8 +16,8 @@ export default defineComponent({
 
 <style scoped>
     #document{
-        width: 40px;
-        height: 40px;
+        width: 20px;
+        height: 20px;
         margin-left: -40px;
         color: hsl(0, 3%, 33%);
     }
@@ -25,7 +25,7 @@ export default defineComponent({
     #title{
         color: hsl(0, 3%, 33%);
         margin-right: -40px;
-        font-size: 40px;
+        font-size: larger;
         font-family: "Times New Roman",serif;
     }
 

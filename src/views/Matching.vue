@@ -34,12 +34,6 @@
         </div>
 
       </div>
-
-
-
-
-
-
     </div>
 </template>
 
@@ -217,20 +211,11 @@ export default {
     left:0;
     width: 100%;
     height: 100vh;
-  background-image: url('@/assets/background.png');
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
 }
 
 .container {

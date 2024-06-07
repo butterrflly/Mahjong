@@ -89,8 +89,8 @@ import MatchingButton from "../components/MatchingButton.vue";
 import LoginButton from "../components/LoginButton.vue";
 import { postData } from '../api.js';
 import WebSocketService from '../websocket.js';
-import BackButton from "@/components/BackButton.vue";
-import logoutButton from "@/components/LogoutButton.vue";
+import BackButton from "../components/BackButton.vue";
+import logoutButton from "../components/LogoutButton.vue";
 
 
 
@@ -324,12 +324,12 @@ export default defineComponent({
     font-family: Arial, sans-serif;
     }
 
-.logo {
-  margin: 10rem 0 0 0;
-  position: fixed;
-  left: 300px;
-  top: -100px;
-}
+    .logo {
+      margin: 10rem 0 0 0;
+      position: fixed;
+      left: 300px;
+      top: -100px;
+    }
 
     .background {
         background-image: url('../assets/background.png');
@@ -343,89 +343,89 @@ export default defineComponent({
         height: 100vh;
     }
 
-.register {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 50%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
-}
+    .register {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
 
-.register header {
-  width: 100%;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  margin-bottom: 20px;
-}
+    .register header {
+      width: 100%;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      margin-bottom: 20px;
+    }
 
-.register .backButton {
-  background-color: #d9534f;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-}
+    .register .backButton {
+      background-color: #d9534f;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
 
-.register button {
-  background-color: #0f8a3c;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  margin: 10px 0;
-  border-radius: 5px;
-  cursor: pointer;
-  width: 100%;
-}
+    .register button {
+      background-color: #0f8a3c;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin: 10px 0;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+    }
 
-.register button:hover {
-  background-color: #0f8a3c;
-}
+    .register button:hover {
+      background-color: #0f8a3c;
+    }
 
-.register h2 {
-  font-size: 1.5em;
-  margin-bottom: 10px;
-}
+    .register h2 {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
 
-.register input {
-  width: calc(100% - 22px);
-  padding: 10px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
+    .register input {
+      width: calc(100% - 22px);
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
 
-.register .error-message {
-  color: #d9534f;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
+    .register .error-message {
+      color: #d9534f;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
 
-.register .success-message {
-  color: #5cb85c;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
+    .register .success-message {
+      color: #5cb85c;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
 
-.rulesButton {
-  position: absolute;
-  top: calc(100% + 20px); /* 20px的间距，你可以根据需要调整 */
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #5bc0de;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  z-index: 20;
-}
+    .rulesButton {
+      position: absolute;
+      top: calc(100% + 20px); /* 20px的间距，你可以根据需要调整 */
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #5bc0de;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      z-index: 20;
+    }
 
 </style>
 
