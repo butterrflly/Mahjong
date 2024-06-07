@@ -29,9 +29,9 @@
                 class="Discard"
                 id="selfDiscard"
             />
-            <button v-on:click="hu()" v-if="canHu">Hu</button>
-            <button v-on:click="noHu()" v-if="canHu">Skip</button>
-            <button v-on:click="chow()" v-if="canChow">Chow</button>
+            <button v-on:click="hu()" v-if="canHu" class="Hu">Hu</button>
+            <button v-on:click="noHu()" v-if="canHu" class="HuSkip">Skip</button>
+            <button v-on:click="chow()" v-if="canChow" class="Chow">Chow</button>
             <div>
                 <div v-if="chowList.length > 1"
                      v-for="(group, index) in chowList"
@@ -46,8 +46,8 @@
                     />
                 </div>
             </div>
-            <button v-on:click="pang()" v-if="canPang">Pang</button>
-            <button v-on:click="kong()" v-if="canKong">Kong</button>
+            <button v-on:click="pang()" v-if="canPang" class="Pang">Pang</button>
+            <button v-on:click="kong()" v-if="canKong" class="Kong">Kong</button>
             <img
                 v-if="kongList > 1"
                 v-for="tile in kongList"
@@ -57,7 +57,8 @@
                 class="kongTile"
                 v-on:click="selectKong(tile)"
             />
-            <button v-on:click="noAffair()" v-if="canChow||canPang||canKong">Skip</button>
+            <button v-on:click="noPangOrKong()" v-if="canPang||canKong" class="PangKongSkip">Skip</button>
+            <button v-on:click="noChow()" v-if="canChow" class="ChowSkip">Skip</button>
         </div>
 
         <div class="left">  <!--left tiles-->
@@ -113,15 +114,15 @@
 
 <script>
 import WebSocketService from '../websocket.js';
-import SelfHandTiles from "@/components/SelfHandTiles.vue";
-import NextHandTiles from "@/components/NextHandTiles.vue";
-import OppoHandTiles from "@/components/OppoHandTiles.vue";
-import PrevHandTiles from "@/components/PrevHandTiles.vue";
-import SelfMeldTiles from "@/components/SelfMeldTiles.vue";
-import OppoMeldTiles from "@/components/OppoMeldTiles.vue";
-import PrevMeldTiles from "@/components/PrevMeldTiles.vue";
-import NextMeldTiles from "@/components/NextMeldTiles.vue";
-import TableTiles from "@/components/TableTiles.vue";
+import SelfHandTiles from "../components/SelfHandTiles.vue";
+import NextHandTiles from "../components/NextHandTiles.vue";
+import OppoHandTiles from "../components/OppoHandTiles.vue";
+import PrevHandTiles from "../components/PrevHandTiles.vue";
+import SelfMeldTiles from "../components/SelfMeldTiles.vue";
+import OppoMeldTiles from "../components/OppoMeldTiles.vue";
+import PrevMeldTiles from "../components/PrevMeldTiles.vue";
+import NextMeldTiles from "../components/NextMeldTiles.vue";
+import TableTiles from "../components/TableTiles.vue";
 
 
 export default {
@@ -260,13 +261,19 @@ export default {
                     WebSocketService.sendMessage(JSON.stringify({ operation: 'noHu'}));
                 }
 
-            } else if (data.operation === "getAffair") {
+            } else if (data.operation === "getPangOrKong") {
                 console.log("receive affair")
-                this.canChow = data.msg["canChow"];
+
                 this.canPang = data.msg["canPang"];
                 this.canKong = data.msg["canKong"];
-                if (this.canChow === false && this.canPang === false && this.canKong === false) {
-                    WebSocketService.sendMessage(JSON.stringify({ operation: 'noAffair'}));
+                if (this.canPang === false && this.canKong === false) {
+                    WebSocketService.sendMessage(JSON.stringify({ operation: 'noPangOrKong'}));
+                }
+
+            } else if (data.operation === "canChow") {
+                this.canChow = data.msg["canChow"];
+                if (this.canChow === false) {
+                    WebSocketService.sendMessage(JSON.stringify({ operation: 'noChow'}));
                 }
 
             } else if (data.operation === "getSelfAffair") {
@@ -414,11 +421,15 @@ export default {
             this.canHu = false;
         },
 
-        noAffair() {
-            WebSocketService.sendMessage(JSON.stringify({operation: "noAffair"}));
-            this.canChow = false;
+        noPangOrKong() {
+            WebSocketService.sendMessage(JSON.stringify({operation: "noPangOrKong"}));
             this.canPang = false;
             this.canKong = false;
+        },
+
+        noChow() {
+            WebSocketService.sendMessage(JSON.stringify({operation: "noChow"}));
+            this.canChow = false;
         },
 
         // helper method
@@ -462,7 +473,7 @@ export default {
 
 <style scoped>
     .background {
-        background-image: url('@/assets/table.jpg');
+        background-image: url('../assets/table.jpg');
         background-size: cover;
         background-repeat: no-repeat;
         background-position: center;
@@ -503,7 +514,6 @@ export default {
         top:45%;
         left:45%;
     }
-
     .ready-button:hover {
         transform: scale(1.1); /* 鼠标悬停时按钮放大为原来的 1.1 倍 */
     }
@@ -579,13 +589,13 @@ export default {
         left: 50%;
     }
 
-    /* 左侧玩家 */
+    /* left player */
     .left {
         top: 50%;
         left: 5%;
     }
 
-    /* 右侧玩家 */
+    /* right player */
     .right {
         top: 50%;
         right: 5%;
@@ -628,6 +638,68 @@ export default {
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
+    }
+
+    .Chow {
+        background-color: #007bff; /* 按钮背景颜色 */
+        color: #fff; /* 按钮文字颜色 */
+        padding: 5px 10px; /* 按钮内边距 */
+        border: none; /* 去除边框 */
+        border-radius: 5px; /* 圆角边框 */
+        font-size: 1.5em; /* 字体大小 */
+        font-weight: bold; /* 字体加粗 */
+        text-align: center; /* 文本居中 */
+        cursor: pointer; /* 鼠标悬停时显示为指针 */
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+        transition: 0.1s ease; /* 动画过渡效果 */
+        position: fixed;
+        top:70%;
+        left:45%;
+    }
+    .Chow:hover {
+        transform: scale(1.1); /* 鼠标悬停时按钮放大为原来的 1.1 倍 */
+    }
+
+    .Pang {
+
+    }
+    .Pang:hover {
+        transform: scale(1.1); /* 鼠标悬停时按钮放大为原来的 1.1 倍 */
+    }
+
+    .Kong {
+
+    }
+    .Kong:hover {
+        transform: scale(1.1); /* 鼠标悬停时按钮放大为原来的 1.1 倍 */
+    }
+
+    .Hu {
+
+    }
+    .Hu:hover {
+        transform: scale(1.1); /* 鼠标悬停时按钮放大为原来的 1.1 倍 */
+    }
+
+    .HuSkip {
+
+    }
+    .HuSkip:hover {
+        transform: scale(1.1); /* 鼠标悬停时按钮放大为原来的 1.1 倍 */
+    }
+
+    .PangKongSkip {
+
+    }
+    .PangKongSkip:hover {
+        transform: scale(1.1); /* 鼠标悬停时按钮放大为原来的 1.1 倍 */
+    }
+
+    .ChowSkip {
+
+    }
+    .ChowSkip:hover {
+        transform: scale(1.1); /* 鼠标悬停时按钮放大为原来的 1.1 倍 */
     }
 
     .hidden {

@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import WebSocketService from "@/websocket.js";
+import WebSocketService from "./websocket.js";
 
 export default {
     name: "App",

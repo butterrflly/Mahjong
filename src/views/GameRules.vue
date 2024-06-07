@@ -71,25 +71,14 @@
             </section>
 
             <img alt="Mahjong" class="logo" src="../assets/mahjong.png" width="334" height="240"/>
-<!--            <el-button-group class="buttonGroup">-->
-<!--                <el-button type="primary" color="#73ef84" plain>-->
-<!--                    Rules<el-icon><Collection /></el-icon>-->
-<!--                </el-button>-->
-<!--                <el-button type="primary" color="#efb652" plain>-->
-<!--                    Tiles<el-icon><Postcard /></el-icon>-->
-<!--                </el-button>-->
-<!--                <el-button type="primary" color="#60a6ef" plain onclick="openTab('operations')">-->
-<!--                    Operation<el-icon><GoldMedal /></el-icon>-->
-<!--                </el-button>-->
-<!--            </el-button-group>-->
         </div>
 
     </div>
 </template>
 
 <script>
-import BackButton from "@/components/BackButton.vue";
-import RulesButton from "@/components/RulesButton.vue";
+import BackButton from "../components/BackButton.vue";
+import RulesButton from "../components/RulesButton.vue";
 import {Collection, Postcard, GoldMedal} from "@element-plus/icons-vue";
 
 export default {

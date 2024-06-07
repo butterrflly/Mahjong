@@ -2,9 +2,9 @@
 
 // Encapsulates the logic of connecting, sending messages and processing messages for WebSocket.
 
-import ipConfig from "@/ipConfig.js";
+import ipAddress from "../ipAddress.js";
 
-const ip = ipConfig.LAN_IP_BACK;
+const ip = ipAddress.LAN_IP_BACK;
 
 class WebSocketService {
     constructor() {
