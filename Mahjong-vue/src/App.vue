@@ -10,12 +10,12 @@ import WebSocketService from "./websocket.js";
 export default {
     name: "App",
 
-    // 组件挂载时建立 WebSocket 连接
+    // A WebSocket connection is established when a component is mounted
     mounted() {
         WebSocketService.connect();
     },
 
-    // 组件销毁之前关闭 WebSocket 连接
+    //Close the WebSocket connection before the component is destroyed
     beforeUnmount() {
         WebSocketService.close();
     }

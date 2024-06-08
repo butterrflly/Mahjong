@@ -30,13 +30,13 @@ export default {
         },
     },
     methods: {
-        // 根据牌编号生成相应的图片 URL
+        // Generate the corresponding image URL based on the tile number
         getTileUrl(tile, groupIndex) {
-            // 检查当前组的状态
+            // Check the status of the current group
             if (this.selfIfHideMeld[groupIndex] === true) {
                 return new URL('../assets/tiles-me/back.png', import.meta.url).href;
             }
-            // 获取牌的前两位
+            // The first two digits of the tile
             const tilePrefix = String(tile).slice(0, 2);
             return new URL(`../assets/tiles-me/${tilePrefix}.png`, import.meta.url).href;
         }
@@ -58,13 +58,13 @@ export default {
 .tile-group {
     display: flex;
     justify-content: center;
-    margin-right: 20px; /* 组与组之间的固定间距 */
+    margin-right: 20px;
 }
 
 .tile {
-    width: 36px; /* 根据需要调整图片的宽度 */
-    height: 50px; /* 根据需要调整图片的高度 */
-    margin: -1px; /* 图片之间的间距 */
+    width: 36px;
+    height: 50px;
+    margin: -1px;
 }
 </style>
 

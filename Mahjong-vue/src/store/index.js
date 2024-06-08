@@ -3,10 +3,10 @@ import { createStore } from 'vuex';
 
 export default createStore({
     state: {
-        name: '',    // 这里存储 name 数据
-        owner: ''    // 这里存储 owner 数据
+        name: '',    // This is where the name data is stored
+        owner: ''    // This is where the owner data is stored
     },
-    // 同步方法
+    // Synchronization method
     mutations: {
         setName(state, newName) {
             state.name = newName;
@@ -15,7 +15,7 @@ export default createStore({
             state.owner = newOwner;
         }
     },
-    // 异步方法
+    // Asynchronous methods
     actions: {
         updateName({ commit }, newName) {
             commit('setName', newName);
@@ -24,7 +24,7 @@ export default createStore({
             commit('setOwner', newOwner);
         }
     },
-    // 获取器
+    // acquirer
     getters: {
         getName: state => state.name,
         getOwner: state => state.owner

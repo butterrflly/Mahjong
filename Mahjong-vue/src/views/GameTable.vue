@@ -618,62 +618,62 @@ export default {
 
     /* player name container style */
     .player-name {
-        background-color: rgba(255, 0, 0, 0); /* 使用 rgba() 函数设置透明的背景颜色 */
-        color: #ffffff; /* 文本颜色为白色 */
-        border-radius: 5px; /* 圆角边框 */
-        padding: 10px; /* 内边距 */
-        margin: 10px 0; /* 上下外边距 */
-        text-align: center; /* 文本居中 */
-        font-size: 1.2em; /* 字体大小 */
-        font-weight: bold; /* 字体加粗 */
-        width: fit-content; /* 宽度自动适应内容 */
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 添加阴影 */
+        background-color: rgba(255, 0, 0, 0);
+        color: #ffffff;
+        border-radius: 5px;
+        padding: 10px;
+        margin: 10px 0;
+        text-align: center;
+        font-size: 1.2em;
+        font-weight: bold;
+        width: fit-content;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
 
     /* ready button style */
     .ready-button {
-        background-color: #007bff; /* 按钮背景颜色 */
-        color: #fff; /* 按钮文字颜色 */
-        padding: 15px 30px; /* 按钮内边距 */
-        border: none; /* 去除边框 */
-        border-radius: 5px; /* 圆角边框 */
-        font-size: 1.5em; /* 字体大小 */
-        font-weight: bold; /* 字体加粗 */
-        text-align: center; /* 文本居中 */
-        cursor: pointer; /* 鼠标悬停时显示为指针 */
-        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
-        transition: 0.1s ease; /* 动画过渡效果 */
+        background-color: #007bff;
+        color: #fff;
+        padding: 15px 30px;
+        border: none;
+        border-radius: 5px;
+        font-size: 1.5em;
+        font-weight: bold;
+        text-align: center;
+        cursor: pointer;
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1);
+        transition: 0.1s ease;
         position: fixed;
         top:45%;
         left:45%;
     }
     .ready-button:hover {
-        transform: scale(1.1); /* 鼠标悬停时按钮放大为原来的 1.1 倍 */
+        transform: scale(1.1);
     }
 
     /* error message style */
     .error-message {
-        color: red; /* 设置文字颜色为红色 */
-        text-align: center; /* 居中对齐文字 */
-        font-weight: bold; /* 使文字加粗 */
-        background-color: #ffe6e6; /* 设置背景颜色为浅红色 */
-        padding: 10px; /* 添加内边距 */
-        margin: 10px auto; /* 设置外边距，并使元素居中 */
-        border: 1px solid red; /* 添加红色边框 */
-        width: fit-content; /* 自动适应内容宽度 */
+        color: red;
+        text-align: center;
+        font-weight: bold;
+        background-color: #ffe6e6;
+        padding: 10px;
+        margin: 10px auto;
+        border: 1px solid red;
+        width: fit-content;
     }
 
     /* info message style */
     .info-message {
-        color: #155724; /* 设置文字颜色为深绿色 */
-        text-align: center; /* 居中对齐文字 */
-        font-weight: bold; /* 使文字加粗 */
-        background-color: #d4edda; /* 设置背景颜色为浅绿色 */
-        padding: 10px; /* 添加内边距 */
-        margin: 10px auto; /* 设置外边距，并使元素居中 */
-        border: 1px solid #c3e6cb; /* 添加绿色边框 */
-        width: fit-content; /* 自动适应内容宽度 */
-        border-radius: 5px; /* 添加圆角 */
+        color: #155724;
+        text-align: center;
+        font-weight: bold;
+        background-color: #d4edda;
+        padding: 10px;
+        margin: 10px auto;
+        border: 1px solid #c3e6cb;
+        width: fit-content;
+        border-radius: 5px;
     }
 
     /* top player name */
@@ -776,147 +776,143 @@ export default {
     }
 
     .Chow {
-        background-color: #007bff; /* 按钮背景颜色 */
-        color: #fff; /* 按钮文字颜色 */
-        padding: 5px 10px; /* 按钮内边距 */
-        border: none; /* 去除边框 */
-        border-radius: 5px; /* 圆角边框 */
-        font-size: 1.5em; /* 字体大小 */
-        font-weight: bold; /* 字体加粗 */
-        text-align: center; /* 文本居中 */
-        cursor: pointer; /* 鼠标悬停时显示为指针 */
-        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
-        transition: 0.1s ease; /* 动画过渡效果 */
+        background-color: #007bff;
+        color: #fff;
+        padding: 5px 10px;
+        border: none;
+        border-radius: 5px;
+        font-size: 1.5em;
+        font-weight: bold;
+        text-align: center;
+        cursor: pointer;
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1);
+        transition: 0.1s ease;
         position: fixed;
         bottom: 18%;
         left: 45%;
     }
     .Chow:hover {
-        transform: scale(1.1); /* 鼠标悬停时按钮放大为原来的 1.1 倍 */
+        transform: scale(1.1);
     }
 
     .ChowSkip {
-      background-color: #007bff; /* 按钮背景颜色 */
-      color: #fff; /* 按钮文字颜色 */
-      padding: 5px 10px; /* 按钮内边距 */
-      border: none; /* 去除边框 */
-      border-radius: 5px; /* 圆角边框 */
-      font-size: 1.5em; /* 字体大小 */
-      font-weight: bold; /* 字体加粗 */
-      text-align: center; /* 文本居中 */
-      cursor: pointer; /* 鼠标悬停时显示为指针 */
-      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
-      transition: 0.1s ease; /* 动画过渡效果 */
+      background-color: #007bff;
+      color: #fff;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 5px;
+      font-size: 1.5em;
+      font-weight: bold;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1);
+      transition: 0.1s ease;
       position: fixed;
       bottom: 18%;
       left: 53%;
     }
     .ChowSkip:hover {
-      transform: scale(1.1); /* 鼠标悬停时按钮放大为原来的 1.1 倍 */
+      transform: scale(1.1);
     }
 
     .Pang {
-        background-color: #007bff; /* 按钮背景颜色 */
-        color: #fff; /* 按钮文字颜色 */
-        padding: 5px 10px; /* 按钮内边距 */
-        border: none; /* 去除边框 */
-        border-radius: 5px; /* 圆角边框 */
-        font-size: 1.5em; /* 字体大小 */
-        font-weight: bold; /* 字体加粗 */
-        text-align: center; /* 文本居中 */
-        cursor: pointer; /* 鼠标悬停时显示为指针 */
-        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
-        transition: 0.1s ease; /* 动画过渡效果 */
+        background-color: #007bff;
+        color: #fff;
+        padding: 5px 10px;
+        border: none;
+        border-radius: 5px;
+        font-size: 1.5em;
+        font-weight: bold;
+        text-align: center;
+        cursor: pointer;
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1);
+        transition: 0.1s ease;
         position: fixed;
         bottom:18%;
         left:60%;
     }
     .Pang:hover {
-        transform: scale(1.1); /* 鼠标悬停时按钮放大为原来的 1.1 倍 */
+        transform: scale(1.1);
     }
 
     .Kong {
-        background-color: #007bff; /* 按钮背景颜色 */
-        color: #fff; /* 按钮文字颜色 */
-        padding: 5px 10px; /* 按钮内边距 */
-        border: none; /* 去除边框 */
-        border-radius: 5px; /* 圆角边框 */
-        font-size: 1.5em; /* 字体大小 */
-        font-weight: bold; /* 字体加粗 */
-        text-align: center; /* 文本居中 */
-        cursor: pointer; /* 鼠标悬停时显示为指针 */
-        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
-        transition: 0.1s ease; /* 动画过渡效果 */
+        background-color: #007bff;
+        color: #fff;
+        padding: 5px 10px;
+        border: none;
+        border-radius: 5px;
+        font-size: 1.5em;
+        font-weight: bold;
+        text-align: center;
+        cursor: pointer;
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1);
+        transition: 0.1s ease;
         position: fixed;
         bottom: 18%;
         left: 70%;
     }
     .Kong:hover {
-        transform: scale(1.1); /* 鼠标悬停时按钮放大为原来的 1.1 倍 */
+        transform: scale(1.1);
     }
 
     .PangKongSkip {
-      background-color: #007bff; /* 按钮背景颜色 */
-      color: #fff; /* 按钮文字颜色 */
-      padding: 5px 10px; /* 按钮内边距 */
-      border: none; /* 去除边框 */
-      border-radius: 5px; /* 圆角边框 */
-      font-size: 1.5em; /* 字体大小 */
-      font-weight: bold; /* 字体加粗 */
-      text-align: center; /* 文本居中 */
-      cursor: pointer; /* 鼠标悬停时显示为指针 */
-      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
-      transition: 0.1s ease; /* 动画过渡效果 */
+      background-color: #007bff;
+      color: #fff;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 5px;
+      font-size: 1.5em;
+      font-weight: bold;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1);
+      transition: 0.1s ease;
       position: fixed;
       bottom: 18%;
       left: 65%;
     }
     .PangKongSkip:hover {
-      transform: scale(1.1); /* 鼠标悬停时按钮放大为原来的 1.1 倍 */
+      transform: scale(1.1);
     }
 
     .Hu {
-        background-color: #e30606; /* 按钮背景颜色 */
-        color: #fff; /* 按钮文字颜色 */
-        padding: 5px 10px; /* 按钮内边距 */
-        border: none; /* 去除边框 */
-        border-radius: 5px; /* 圆角边框 */
-        font-size: 1.5em; /* 字体大小 */
-        font-weight: bold; /* 字体加粗 */
-        text-align: center; /* 文本居中 */
-        cursor: pointer; /* 鼠标悬停时显示为指针 */
-        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
-        transition: 0.1s ease; /* 动画过渡效果 */
+        background-color: #e30606;
+        color: #fff;
+        padding: 5px 10px;
+        border: none;
+        border-radius: 5px;
+        font-size: 1.5em;
+        font-weight: bold;
+        text-align: center;
+        cursor: pointer;
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1);
+        transition: 0.1s ease;
         position: fixed;
         bottom: 18%;
         left: 40%;
     }
     .Hu:hover {
-        transform: scale(1.1); /* 鼠标悬停时按钮放大为原来的 1.1 倍 */
+        transform: scale(1.1);
     }
 
     .HuSkip {
-      background-color: #e30606; /* 按钮背景颜色 */
-      color: #fff; /* 按钮文字颜色 */
-      padding: 5px 10px; /* 按钮内边距 */
-      border: none; /* 去除边框 */
-      border-radius: 5px; /* 圆角边框 */
-      font-size: 1.5em; /* 字体大小 */
-      font-weight: bold; /* 字体加粗 */
-      text-align: center; /* 文本居中 */
-      cursor: pointer; /* 鼠标悬停时显示为指针 */
-      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
-      transition: 0.1s ease; /* 动画过渡效果 */
+      background-color: #e30606;
+      color: #fff;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 5px;
+      font-size: 1.5em;
+      font-weight: bold;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1);
+      transition: 0.1s ease;
       position: fixed;
       bottom: 18%;
       left: 50%;
     }
     .HuSkip:hover {
-        transform: scale(1.1); /* 鼠标悬停时按钮放大为原来的 1.1 倍 */
-    }
-
-    .hidden {
-        display: none;
+        transform: scale(1.1);
     }
 
     #selfDiscard {

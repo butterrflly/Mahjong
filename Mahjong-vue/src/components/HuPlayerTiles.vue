@@ -40,10 +40,10 @@ export default {
   },
 
   methods: {
-    // 根据牌编号生成相应的图片 URL
+    // Generate the corresponding image URL based on the card number
     getTileUrl(tile) {
       if (tile != null && Math.abs(tile) !== 0){
-        // 获取牌的前两位
+        // The first two digits of the tiles
         const tilePrefix = Math.floor(tile / 10);
         return new URL(`../assets/tiles-me/${tilePrefix}.png`, import.meta.url).href;
       }else {
@@ -77,12 +77,12 @@ export default {
 .tile-group {
   display: flex;
   justify-content: center;
-  margin-bottom: 20px; /* 组与组之间的固定间距 */
+  margin-bottom: 20px;
 }
 
 .tile {
-  width: 46px; /* 根据需要调整图片的宽度 */
-  height: 64px; /* 根据需要调整图片的高度 */
-  margin: -1px; /* 图片之间的间距 */
+  width: 46px;
+  height: 64px;
+  margin: -1px;
 }
 </style>

@@ -1,16 +1,16 @@
 import axios from 'axios';
 
-const BASE_URL = '/api'; // 后端 URL
+const BASE_URL = '/api'; // Backend URL
 
 /**
- * POST 请求函数
- * @param {string} endpoint - API 的终端路径
- * @param {Object} data - 要发送到服务器的数据
- * @returns {Promise<Object>} - 响应数据
+ * POST Request function
+ * @param {string} endpoint - The terminal path of the API
+ * @param {Object} data - Data to be sent to the server
+ * @returns {Promise<Object>} - Response data
  */
 export const postData = async (endpoint, data) => {
     try {
-        // 将数据作为表单形式传递
+        // Pass the data as a form
         const formData = new FormData();
         for (const key in data) {
             formData.append(key, data[key]);

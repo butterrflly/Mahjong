@@ -25,10 +25,10 @@ export default {
     },
 
     methods: {
-        // 根据牌编号生成相应的图片 URL
+        // Generate the corresponding image URL based on the tile number
         getTileUrl(tile) {
             if (tile != null && Math.abs(tile) !== 0){
-                // 获取牌的前两位
+                // The first two digits of the tile
                 const tilePrefix = Math.floor(tile / 10);
                 return new URL(`../assets/tiles-me/${tilePrefix}.png`, import.meta.url).href;
             }else {
@@ -41,12 +41,12 @@ export default {
 
 <style scoped>
 .container {
-    width: 300px; /* 固定宽度 */
-    height: 200px; /* 固定高度 */
+    width: 300px;
+    height: 200px;
     display: flex;
     align-items: center;
-    flex-wrap: wrap; /* 使图片自动换行 */
-    overflow: hidden; /* 防止图片超出容器 */
+    flex-wrap: wrap;
+    overflow: hidden;
     position: fixed;
     left: 50%;
     bottom: 45%;
@@ -54,8 +54,8 @@ export default {
 }
 
 .tile {
-  width: 29px; /* 根据需要调整图片的宽度 */
-  height: 40px; /* 根据需要调整图片的高度 */
-  margin: -1px; /* 图片之间的间距 */
+  width: 29px;
+  height: 40px;
+  margin: -1px;
 }
 </style>

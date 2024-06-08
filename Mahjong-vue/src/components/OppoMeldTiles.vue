@@ -30,13 +30,13 @@ export default {
         },
     },
     methods: {
-        // 根据牌编号生成相应的图片 URL
+        // Generate the corresponding image URL based on the card number
         getTileUrl(tile, groupIndex) {
-            // 检查当前组的状态
+            // CHECK THE STATUS OF THE CURRENT GROUP
             if (this.oppoIfHideMeld[groupIndex] === true) {
                 return new URL('../assets/tiles-opposite/back.png', import.meta.url).href;
             }
-            // 获取牌的前两位
+            // The first two digits of the tiles
             const tilePrefix = String(tile).slice(0, 2);
             return new URL(`../assets/tiles-opposite/${tilePrefix}.png`, import.meta.url).href;
         }

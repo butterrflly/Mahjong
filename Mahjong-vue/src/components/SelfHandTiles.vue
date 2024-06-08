@@ -1,7 +1,7 @@
 <template>
     <div v-if="gameStatus" class="container">
         <div class="hand-tiles">
-            <!-- 迭代 handTiles.handTile 数组中的每个元素，为每个牌生成一个 <img> 标签 -->
+            <!-- Iterate over each element in the handTiles.handTile array to generate a tag for each tile <img> -->
             <img
                 v-for="tile in handTiles"
                 :key="tile"
@@ -44,10 +44,10 @@ export default {
         }
     },
     methods: {
-        // 根据牌编号生成相应的图片 URL
+        // Generate the corresponding image URL based on the card number
         getTileUrl(tile) {
             if (tile != null && Math.abs(tile) !== 0){
-                // 获取牌的前两位
+                // The first two digits of the tiles
                 const tilePrefix = Math.floor(tile / 10);
                 return new URL(`../assets/tiles-front/${tilePrefix}.png`, import.meta.url).href;
             }else {
@@ -83,26 +83,26 @@ export default {
 
 .hand-tiles {
     position: relative;
-    box-shadow: 3px -6px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+    box-shadow: 3px -6px 8px rgba(0, 0, 0, 0.1);
 }
 
 .deal-tiles {
     position: relative;
     margin-left: 20px;
-    box-shadow: 3px -6px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+    box-shadow: 3px -6px 8px rgba(0, 0, 0, 0.1);
 }
 
 .hand-tiles img {
-    transition: transform 0.3s; /* 动画效果 */
+    transition: transform 0.3s;
 }
 .hand-tiles img:hover {
-    transform: translateY(-15px); /* 悬停时上浮 */
+    transform: translateY(-15px);
 }
 .deal-tiles img {
-    transition: transform 0.3s; /* 动画效果 */
+    transition: transform 0.3s;
 }
 .deal-tiles img:hover {
-    transform: translateY(-15px); /* 悬停时上浮 */
+    transform: translateY(-15px);
 }
 
 .tile {

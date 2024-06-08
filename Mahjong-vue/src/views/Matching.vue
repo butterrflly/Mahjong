@@ -6,15 +6,12 @@
       <h2>Matching a game</h2>
         <div class="room">
             <button v-if="createRoomButtonIf" v-on:click="createRoomCheck()">creatRoom</button>
-            <button v-if="joinRoomButtonIf" v-on:click="joinRoomCheck()">Join in the Room</button>
+            <button v-if="joinRoomButtonIf" v-on:click="joinRoomCheck()">Join in a Room</button>
         </div>
 
       <div v-if="createRoomIf">
-        <!-- if the room is created and can't start -->
-        <h2 v-if="!canStart">Waiting for players to join...</h2>
-
         Room ID: <input v-model="createARoom.roomId" ><br />
-        <!-- 添加确认按d钮 -->
+        <!-- Add a confirmation button -->
         <button v-on:click="createRoom()" class="confirmRoomButton" >Confirm</button>
       </div>
 
@@ -113,7 +110,7 @@ export default {
       handleMessage(data) {
         this.roomNum = JSON.stringify(data.msg["room number"]);
         this.roomInfo = JSON.stringify(data.msg["room message"]);
-        this.getMessage(this.roomInfo); // 在接收到数据时调用 getMessage 方法
+        this.getMessage(this.roomInfo); // The getMessage method is called when data is received
         if(data.operation == "getHandTile")
           this.signal = JSON.stringify(data.msg)
         console.log(this.signal);
@@ -168,7 +165,7 @@ export default {
 
 
         //info for room
-        async createRoom() {//添加一个房间号输入,已获得房间号,
+        async createRoom() {//Add a room number input and have obtained a room number,
           WebSocketService.sendMessage(JSON.stringify({operation: 'createRoom', roomID: this.createARoom.roomId}))
           try{
             this.createARoom.successMessage = "success Creating a room."
@@ -200,12 +197,12 @@ export default {
         },
     },
 
-    // 连接 WebSocket 并注册消息处理回调函数
+    // Connect to the WebSocket and register the message handling callback function
     mounted() {
         WebSocketService.addMessageListener(this.handleMessage);
     },
 
-    // 移除消息处理回调函数
+    // Removed the message handling callback function
     beforeUnmount() {
         WebSocketService.removeMessageListener(this.handleMessage);
     }
@@ -233,7 +230,7 @@ export default {
 }
 
 h2 {
-  font-size: 2.5rem; /* 放大标题 */
+  font-size: 2.5rem;
   font-weight: bold;
   color: #000000FF;
   margin: 20px 0;

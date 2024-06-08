@@ -6,7 +6,7 @@ import App from "./App.vue";
 import router from './router';
 
 
-//加载路由器
+//Load the router
 const app = createApp(App)
 app.use(router)
 app.use(ElementPlus)

@@ -26,9 +26,9 @@
         <button v-if="changePasswordIf" v-on:click="changePassword(userName, password, newPassword)">Login！</button>
       </div>
 
-      <!-- 表单 -->
+      <!-- FORMS -->
       <div>
-        <!-- 是否注册 -->
+        <!-- Whether to register or not -->
         <div v-if="registerIf">
           <h2>Set your userName and password</h2>
           new user name:<input v-model="userName" /><br />
@@ -39,7 +39,7 @@
 
         </div>
 
-        <!-- 是否删除账户 -->
+        <!-- Whether to delete the account -->
         <div v-if="deleteAccountIf">
           <h2>Make sure you want to Close Account</h2>
           user name want to delete:<input v-model="userName" /><br />
@@ -49,7 +49,7 @@
           </div>
         </div>
 
-        <!-- 是否登陆 -->
+        <!-- Whether to log in -->
         <div v-if="loginIf">
           <h2>Please enter your user name and password</h2>
           user name:<input v-model="userName" /><br />
@@ -59,7 +59,7 @@
           </div>
         </div>
 
-        <!-- 是否登陆 -->
+        <!-- Whether to log out -->
         <div v-if="logoutIf">
           <h2>Please enter your user name and password</h2>
           user name:<input v-model="userName" /><br />
@@ -68,7 +68,7 @@
           </div>
         </div>
 
-        <!-- 是否改密码 -->
+        <!-- Whether to change the password -->
         <div v-if="changePasswordIf">
           <h2>Please enter your user name, old password and new password</h2>
           user name:<input v-model="userName" /><br />
@@ -79,9 +79,9 @@
           </div>
         </div>
 
-        <!-- 显示错误消息 -->
+        <!-- An error message is displayed -->
         <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
-        <!-- 显示成功消息 -->
+        <!-- A success message is displayed -->
         <div v-if="successMessage"  class="success-message">{{ successMessage }}
         </div>
       </div>
@@ -116,13 +116,13 @@ export default defineComponent({
       newPassword:'',
       successMessage:'',
       errorMessage:'',
-      // 控制5个表单的出现
+      //Control the appearance of 5 forms
       registerIf:false,
       deleteAccountIf:false,
       loginIf:false,
       changePasswordIf: false,
       logoutIf:false,
-      // 控制5个按钮的出现
+      // Control the appearance of 5 buttons
       registerButtonIf:true,
       deleteAccountButtonIf:true,
       loginButtonIf:true,
@@ -133,13 +133,13 @@ export default defineComponent({
 
   methods: {
     backToChoose(){
-      // 控制5个表单的出现
+      //Control the appearance of 5 forms
           this.registerIf=false;
           this.deleteAccountIf=false;
           this.loginIf=false;
           this.changePasswordIf= false;
           this.logoutIf=false;
-          // 控制5个按钮的出现
+          // Control the appearance of 5 buttons
           this.registerButtonIf=true;
           this.deleteAccountButtonIf=true;
           this.loginButtonIf=true;
@@ -245,7 +245,7 @@ export default defineComponent({
 
     async signup(name, password) {
       try {
-        // 使用封装的 postData 函数发起 POST 请求
+        // Use the encapsulated postData function to initiate a POST request
         const response = await postData('user/signup', { name: name, password: password });
         console.log('Response from POST:', response);
         if (response=="注册成功") {
@@ -262,10 +262,10 @@ export default defineComponent({
     },
 
     async login(name, password) {
-      // 向服务器保存name，并在之后的页面接收返回信息
+      // Save the name to the server and receive the return message on a subsequent page
 
       try {
-        // 使用封装的 postData 函数发起 POST 请求
+        // Use the encapsulated postData function to initiate a POST request
         const response = await postData('user/login', { name: name, password: password });
         console.log('Response from POST:', response);
         if (response=="登录成功") {
@@ -289,9 +289,9 @@ export default defineComponent({
     },
 
     async logout(name) {
-      // 向服务器保存name，并在之后的页面接收返回信息
+      // Save the name to the server and receive the return message on a subsequent page
       try {
-        // 使用封装的 postData 函数发起 POST 请求
+        // Use the encapsulated postData function to initiate a POST request
         const response = await postData('user/logout', { name: name});
         console.log('Response from POST:', response);
         if (response=="退出成功") {
@@ -311,7 +311,7 @@ export default defineComponent({
 
     async deleteUser(name, password) {
       try {
-        // 使用封装的 postData 函数发起 POST 请求
+        // Use the encapsulated postData function to initiate a POST request
         const response = await postData('user/deleteUser', { name: name, password: password });
         console.log('Response from POST:', response);
         return response;
@@ -325,7 +325,7 @@ export default defineComponent({
 
     async changePassword(name, oldPassword, newPassword) {
       try {
-        // 使用封装的 postData 函数发起 POST 请求
+        // Use the encapsulated postData function to initiate a POST request
         const response = await postData('user/changePassword', { name: name, oldPassword: oldPassword, newPassword: newPassword });
         console.log('Response from POST:', response);
         return response;
@@ -434,7 +434,7 @@ export default defineComponent({
 
     .rulesButton {
       position: absolute;
-      top: calc(100% + 20px); /* 20px的间距，你可以根据需要调整 */
+      top: calc(100% + 20px);
       left: 50%;
       transform: translateX(-50%);
       background-color: #5bc0de;

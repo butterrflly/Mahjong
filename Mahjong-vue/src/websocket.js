@@ -12,7 +12,7 @@ class WebSocketService {
         // Using an array of callbacks to store message processing callback functions,
         // allows multiple components to register their own callback functions to process incoming messages.
         this.callbacks = [];
-        this.messageBuffer = []; // 用于存储在监听器注册之前收到的消息
+        this.messageBuffer = []; // Used to store messages received before the listener registers
     }
 
     connect() {
@@ -26,7 +26,7 @@ class WebSocketService {
         this.socket.onmessage = (event) => {
             try{
                 const data = JSON.parse(event.data);
-                this.messageBuffer.push(data); // 将消息存储在缓冲区中
+                this.messageBuffer.push(data); // Store the message in a buffer
                 this.callbacks.forEach(callback => callback(data));
             }catch (error) {
                 console.error('Failed to parse JSON:', error);
@@ -51,7 +51,7 @@ class WebSocketService {
 
     addMessageListener(callback) {
         this.callbacks.push(callback);
-        // 当新的监听器注册时，将缓冲区中的消息传递给它
+        // When a new listener registers, the message in the buffer is passed to it
         this.messageBuffer.forEach(data => callback(data));
     }
 
