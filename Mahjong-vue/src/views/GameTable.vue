@@ -5,12 +5,19 @@
       <!-- name and prepare status of four player-->
         <div v-if="selfName" class="player-name myName">{{this.selfName}}</div>
         <div v-if="selfPrepare" class="player-name myPrepare">{{"Prepared!"}}</div>
+        <div v-if="selfScore" class="player-name myScore">{{this.selfScore}}</div>
+
         <div v-if="prevName" class="player-name leftName">{{this.prevName}}</div>
         <div v-if="prevPrepare" class="player-name leftPrepare">{{"Prepared!"}}</div>
+        <div v-if="prevScore" class="player-name leftScore">{{this.selfScore}}</div>
+
         <div v-if="oppoName" class="player-name oppoName">{{this.oppoName}}</div>
         <div v-if="oppoPrepare" class="player-name oppoPrepare">{{"Prepared!"}}</div>
+        <div v-if="oppoScore" class="player-name oppoScore">{{this.selfScore}}</div>
+
         <div v-if="nextName" class="player-name rightName">{{this.nextName}}</div>
         <div v-if="nextPrepare" class="player-name rightPrepare">{{"Prepared!"}}</div>
+        <div v-if="nextScore" class="player-name rightScore">{{this.selfScore}}</div>
 
         <!-- display message -->
         <div >
@@ -185,6 +192,12 @@ export default {
             oppoPrepare:'',
             prevPrepare:'',
 
+            // score
+            selfScore:null,
+            nextScore:null,
+            oppoScore:null,
+            prevScore:null,
+
             // {"self", "nextPlayer", "oppositePlayer", "prevPlayer"}
             discardPosition:'',
             dealPosition:'',
@@ -264,6 +277,10 @@ export default {
                 this.nextPrepare = data.msg["nextPlayer"]["prepare"];
                 this.oppoPrepare = data.msg["oppositePlayer"]["prepare"];
                 this.prevPrepare = data.msg["prevPlayer"]["prepare"];
+                this.selfScore = data.msg["self"]["score"];
+                this.nextScore = data.msg["nextPlayer"]["score"];
+                this.oppoScore = data.msg["oppositePlayer"]["score"];
+                this.prevScore = data.msg["prevPlayer"]["score"];
 
             } else if (data.operation === "discard") {
                 // The return value of the discard,
