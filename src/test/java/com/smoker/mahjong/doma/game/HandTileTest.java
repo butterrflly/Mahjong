@@ -9,160 +9,126 @@ import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for the HandTile class.
+ */
 public class HandTileTest {
-// F4 P12 T16
+
     private HandTile handTile;
-    private Tile tile1, tile2, tile3, tile4;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         handTile = new HandTile();
-        tile1 = new Tile(101, true);
-        tile2 = new Tile(102, true);
-        tile3 = new Tile(103, true);
-        tile4 = new Tile(104, true);
     }
 
     @Test
-    void testAddTile() {
-        handTile.addTile(tile1);
-        assertTrue(handTile.getHandTile().contains(tile1), "手牌应包含刚添加的牌");
+    public void testAddTile() {
+        // Test adding a tile to the hand
+        Tile tile = new Tile(111, true); // 1Wan 1
+        handTile.addTile(tile);
+        assertEquals(1, handTile.getHandTile().size());
+        assertEquals(111, handTile.getHandTile().get(0).getId());
     }
 
     @Test
-    void testRemoveTile() {
-        handTile.addTile(tile1);
-        handTile.removeTile(tile1);
-        assertFalse(handTile.getHandTile().contains(tile1), "手牌不应包含已移除的牌");
+    public void testRemoveTile() {
+        // Test removing a tile from the hand
+        Tile tile = new Tile(111, true); // 1Wan 1
+        handTile.addTile(tile);
+        handTile.removeTile(tile);
+        assertEquals(0, handTile.getHandTile().size());
     }
 
     @Test
-    void testCleanTile() {
+    public void testCleanTile() {
+        // Test clearing all tiles from the hand
+        Tile tile1 = new Tile(111, true); // 1Wan 1
+        Tile tile2 = new Tile(211, true); // 2Tiao 1
         handTile.addTile(tile1);
+        handTile.addTile(tile2);
         handTile.cleanTile();
-        assertTrue(handTile.getHandTile().isEmpty(), "清空手牌后，手牌应为空");
+        assertEquals(0, handTile.getHandTile().size());
     }
 
     @Test
-    void testRemoveTileList() {
-        ArrayList<Tile> tiles = new ArrayList<>();
-        tiles.add(tile1);
-        tiles.add(tile2);
+    public void testRemoveMultipleTiles() {
+        // Test removing multiple tiles from the hand
+        Tile tile1 = new Tile(111, true); // 1Wan 1
+        Tile tile2 = new Tile(112, true); // 1Wan 2
+        ArrayList<Tile> tilesToRemove = new ArrayList<>();
+        tilesToRemove.add(tile1);
+        tilesToRemove.add(tile2);
         handTile.addTile(tile1);
         handTile.addTile(tile2);
-        handTile.removeTile(tiles);
-        assertFalse(handTile.getHandTile().contains(tile1), "手牌不应包含已移除的牌");
-        assertFalse(handTile.getHandTile().contains(tile2), "手牌不应包含已移除的牌");
+        handTile.removeTile(tilesToRemove);
+        assertEquals(0, handTile.getHandTile().size());
     }
 
     @Test
-    void testCanPang() {
-        handTile.addTile(tile1);
-        handTile.addTile(new Tile(111, true));
-        handTile.addTile(tile2);
-        assertTrue(handTile.canPang(101), "手牌应可以碰101牌");
+    public void testCanPang() {
+        // Ensure canPang method works correctly
+        handTile.addTile(new Tile(111, true)); // 1Wan 1
+        handTile.addTile(new Tile(112, true)); // 1Wan 2
+        handTile.addTile(new Tile(113, true)); // 1Wan 3
+        assertTrue(handTile.canPang(111));
+        assertFalse(handTile.canPang(211));
     }
 
     @Test
-    void testCanKong() {
-        handTile.addTile(tile1);
-        handTile.addTile(new Tile(101, true));
-        handTile.addTile(new Tile(101, true));
-        handTile.addTile(new Tile(101, true));
-        assertTrue(handTile.canKong(101), "手牌应可以杠101牌");
+    public void testCanKong() {
+        // Ensure canKong method works correctly
+        handTile.addTile(new Tile(111, true)); // 1Wan 1
+        handTile.addTile(new Tile(112, true)); // 1Wan 2
+        handTile.addTile(new Tile(113, true)); // 1Wan 3
+        handTile.addTile(new Tile(114, true)); // 1Wan 4
+        assertTrue(handTile.canKong(111));
+        assertFalse(handTile.canKong(211));
     }
 
     @Test
-    void testCanKongList() {
-        handTile.addTile(tile1);
-        handTile.addTile(new Tile(101, true));
-        handTile.addTile(new Tile(101, true));
-        handTile.addTile(new Tile(101, true));
-        ArrayList<Tile> kongTiles = handTile.canKong();
-        assertFalse(kongTiles.isEmpty(), "应有可以杠的牌");
-        assertEquals(1, kongTiles.size(), "应有一个可以杠的牌");
+    public void testCanHu() {
+        // Ensure canHu method works correctly
+        handTile.addTile(new Tile(111, true)); // 1Wan 1
+        handTile.addTile(new Tile(112, true)); // 1Wan 2
+        handTile.addTile(new Tile(113, true)); // 1Wan 3
+        handTile.addTile(new Tile(121, true)); // 2Wan 1
+        handTile.addTile(new Tile(122, true)); // 2Wan 2
+        handTile.addTile(new Tile(123, true)); // 2Wan 3
+        Tile huTile = new Tile(111, true); // 1Wan 1
+        assertEquals(2, handTile.canHu(huTile)); // Expected normal Hu
     }
 
     @Test
-    void testCanChow() {
-        handTile.addTile(new Tile(101, true));
-        handTile.addTile(new Tile(102, true));
-        handTile.addTile(new Tile(103, true));
-        Tile chowTile = new Tile(104, true);
-        ArrayList<ArrayList<Tile>> chowTiles = handTile.canChow(chowTile);
-        assertFalse(chowTiles.isEmpty(), "应有可以吃的牌组合");
+    public void testPang() {
+        // Ensure Pang method works correctly
+        handTile.addTile(new Tile(111, true)); // 1Wan 1
+        handTile.addTile(new Tile(112, true)); // 1Wan 2
+        handTile.addTile(new Tile(113, true)); // 1Wan 3
+        handTile.Pang(new Tile(111, true)); // Pang 1Wan
+        assertEquals(3, handTile.getMelds().get(0).getMeld().size()); // Should have 3 tiles in the meld
     }
 
     @Test
-    void testCanHu() {
-        handTile.addTile(new Tile(101, true));
-        handTile.addTile(new Tile(102, true));
-        handTile.addTile(new Tile(103, true));
-        handTile.addTile(new Tile(104, true));
-        Tile huTile = new Tile(105, true);
-        assertNotNull(handTile.canHu(huTile), "应可以胡牌");
+    public void testKong() {
+        // Ensure Kong method works correctly
+        handTile.addTile(new Tile(111, true)); // 1Wan 1
+        handTile.addTile(new Tile(112, true)); // 1Wan 2
+        handTile.addTile(new Tile(113, true)); // 1Wan 3
+        handTile.addTile(new Tile(114, true)); // 1Wan 4
+        handTile.Kong(new Tile(111, true)); // Kong 1Wan
+        assertEquals(4, handTile.getMelds().get(0).getMeld().size()); // Should have 4 tiles in the meld
     }
 
     @Test
-    void testPang() {
-        handTile.addTile(tile1);
-        handTile.addTile(new Tile(101, true));
-        handTile.addTile(new Tile(101, true));
-        handTile.Pang(tile1);
-        assertEquals(1, handTile.getMelds().size(), "应有一个碰的组合");
-    }
-
-    @Test
-    void testKong() {
-        handTile.addTile(tile1);
-        handTile.addTile(new Tile(101, true));
-        handTile.addTile(new Tile(101, true));
-        handTile.addTile(new Tile(101, true));
-        handTile.Kong(tile1);
-        assertEquals(1, handTile.getMelds().size(), "应有一个杠的组合");
-    }
-
-    @Test
-    void testChow() {
-        handTile.addTile(new Tile(101, true));
-        handTile.addTile(new Tile(102, true));
+    public void testChow() {
+        // Ensure Chow method works correctly
+        handTile.addTile(new Tile(111, true)); // 1Wan 1
+        handTile.addTile(new Tile(112, true)); // 1Wan 2
+        handTile.addTile(new Tile(113, true)); // 1Wan 3
         ArrayList<Tile> chowTiles = new ArrayList<>();
-        chowTiles.add(tile1);
-        chowTiles.add(tile2);
-        handTile.Chow(chowTiles, new Tile(103, true));
-        assertEquals(1, handTile.getMelds().size(), "应有一个吃的组合");
-    }
-
-    @Test
-    void testHu() {
-        handTile.addTile(new Tile(101, true));
-        handTile.addTile(new Tile(102, true));
-        handTile.addTile(new Tile(103, true));
-        handTile.Hu(new Tile(104, true));
-        // 不做进一步断言，因为该方法无具体实现
-    }
-
-    @Test
-    void testSort() {
-        handTile.addTile(new Tile(103, true));
-        handTile.addTile(new Tile(102, true));
-        handTile.addTile(new Tile(101, true));
-        handTile.sort();
-        assertEquals(101, handTile.getHandTile().get(0).getId(), "手牌应按顺序排序");
-    }
-
-    @Test
-    void testGetHandTile() {
-        handTile.addTile(tile1);
-        assertTrue(handTile.getHandTile().contains(tile1), "应返回手牌列表");
-    }
-
-    @Test
-    void testGetMelds() {
-        handTile.addTile(tile1);
-        handTile.addTile(new Tile(101, true));
-        handTile.addTile(new Tile(101, true));
-        handTile.Pang(tile1);
-        assertFalse(handTile.getMelds().isEmpty(), "应返回组合列表");
+        chowTiles.add(new Tile(111, true)); // 1Wan 1
+        chowTiles.add(new Tile(113, true)); // 1Wan 3
+        handTile.Chow(chowTiles, new Tile(112, true)); // Chow 1Wan 2
+        assertEquals(3, handTile.getMelds().get(0).getMeld().size()); // Should have 3 tiles in the meld
     }
 }

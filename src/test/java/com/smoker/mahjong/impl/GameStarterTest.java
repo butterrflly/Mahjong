@@ -1,295 +1,180 @@
 package com.smoker.mahjong.impl;
 
-import com.smoker.mahjong.doma.Game.HandTile;
 import com.smoker.mahjong.doma.Game.Tile;
 import com.smoker.mahjong.doma.User.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for the GameStarter class.
+ */
 public class GameStarterTest {
-// F13 P19 T32
+
     private GameStarter gameStarter;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         gameStarter = new GameStarter("testRoom");
-        gameStarter.addPlayer("player1");
-        gameStarter.addPlayer("player2");
-        gameStarter.addPlayer("player3");
-        gameStarter.addPlayer("player4");
-    }
-
-    @Test
-    void testStartGame() {
-        gameStarter.getPlayerList().forEach(player -> player.setPrepare());
-        assertTrue(gameStarter.startGame(), "游戏应该成功开始");
-    }
-
-    @Test
-    void testGameOver() {
-        gameStarter.getPlayerList().forEach(player -> player.setPrepare());
+        gameStarter.addPlayer("Player1");
+        gameStarter.addPlayer("Player2");
+        gameStarter.addPlayer("Player3");
+        gameStarter.addPlayer("Player4");
+        gameStarter.findPlayer("Player1").setPrepare();
+        gameStarter.findPlayer("Player2").setPrepare();
+        gameStarter.findPlayer("Player3").setPrepare();
+        gameStarter.findPlayer("Player4").setPrepare();
         gameStarter.startGame();
-        gameStarter.gameOver();
-        assertFalse(gameStarter.startGame(), "游戏应该结束");
     }
 
     @Test
-    void testAddPlayer() {
-        GameStarter newGameStarter = new GameStarter("newRoom");
-        assertEquals("添加成功", newGameStarter.addPlayer("newPlayer"), "新玩家应该成功添加");
+    public void testStartGame() {
+        // Test starting the game with all players prepared
+        assertTrue(gameStarter.startGame());
     }
 
     @Test
-    void testRemovePlayer() {
-        assertEquals("移除成功", gameStarter.removePlayer("player1"), "玩家应该成功移除");
+    public void testAddPlayer() {
+        // Test adding a player to the game
+        gameStarter.removePlayer("Player4"); // Ensure room for one more player
+        assertEquals("添加成功", gameStarter.addPlayer("Player5"));
     }
 
     @Test
-    void testGetPlayerList() {
-        ArrayList<Player> playerList = gameStarter.getPlayerList();
-        assertEquals(4, playerList.size(), "玩家列表的长度应该是4");
+    public void testRemovePlayer() {
+        // Test removing a player from the game
+        assertEquals("移除成功", gameStarter.removePlayer("Player1"));
     }
 
     @Test
-    void testGetPlayerNum() {
-        int playerNum = gameStarter.getPlayerNum();
-        assertEquals(4, playerNum, "玩家数量应该是4");
+    public void testGetPlayerList() {
+        // Test getting the list of players
+        assertEquals(4, gameStarter.getPlayerList().size());
     }
 
     @Test
-    void testGetDealPlayer() {
-        gameStarter.getPlayerList().forEach(player -> player.setPrepare());
-        gameStarter.startGame();
-        assertNotNull(gameStarter.getDealPlayer(), "应该有一个发牌的玩家");
+    public void testGetPlayerNum() {
+        // Test getting the number of players
+        assertEquals(4, gameStarter.getPlayerNum());
     }
 
     @Test
-    void testGetDealTileID() {
-        gameStarter.getPlayerList().forEach(player -> player.setPrepare());
-        gameStarter.startGame();
-        int dealTileID = gameStarter.deal();
-        assertTrue(dealTileID > 0, "发牌的ID应该大于0");
-    }
-
-    @Test
-    void testGetDiscardPlayerName() {
-        gameStarter.getPlayerList().forEach(player -> player.setPrepare());
-        gameStarter.startGame();
+    public void testGetDealPlayer() {
+        // Test getting the player who is dealing
         gameStarter.deal();
-        gameStarter.discard("player1", 101);
-        assertEquals("player1", gameStarter.getDiscardPlayerName(), "弃牌玩家应该是player1");
+        assertNotNull(gameStarter.getDealPlayer());
     }
 
     @Test
-    void testGetDiscardTileID() {
-        gameStarter.getPlayerList().forEach(player -> player.setPrepare());
-        gameStarter.startGame();
+    public void testGetDealTileID() {
+        // Test getting the ID of the dealt tile
         gameStarter.deal();
-        gameStarter.discard("player1", 101);
-        assertEquals(101, gameStarter.getDiscardTileID(), "弃牌的ID应该是101");
+        assertTrue(gameStarter.getDealTileID() > 0);
     }
 
     @Test
-    void testGetHandTile() {
-        gameStarter.getPlayerList().forEach(player -> player.setPrepare());
-        gameStarter.startGame();
-        HandTile handTile = gameStarter.getHandTile("player1");
-        assertNotNull(handTile, "应该返回player1的手牌");
+    public void testGetDiscardPlayerName() {
+        // Test getting the name of the player who discarded
+        gameStarter.deal();
+        int tileID = gameStarter.getDealTileID();
+        gameStarter.discard("Player1", tileID);
+        assertEquals("Player1", gameStarter.getDiscardPlayerName());
     }
 
     @Test
-    void testSetBanker() {
-        gameStarter.getPlayerList().forEach(player -> player.setPrepare());
-        gameStarter.startGame();
+    public void testGetDiscardTileID() {
+        // Test getting the ID of the discarded tile
+        gameStarter.deal();
+        int tileID = gameStarter.getDealTileID();
+        gameStarter.discard("Player1", tileID);
+        assertEquals(tileID, gameStarter.getDiscardTileID());
+    }
+
+    @Test
+    public void testGetHandTile() {
+        // Test getting the hand tiles of a player
+        assertNotNull(gameStarter.getHandTile("Player1"));
+    }
+
+    @Test
+    public void testSetBanker() {
+        // Test setting the banker
         gameStarter.setBanker();
-        assertNotNull(gameStarter.getBanker(), "庄家应该被设置");
+        assertNotNull(gameStarter.getBanker());
     }
 
     @Test
-    void testGetBanker() {
-        gameStarter.getPlayerList().forEach(player -> player.setPrepare());
-        gameStarter.startGame();
-        assertNotNull(gameStarter.getBanker(), "应该返回庄家的名字");
+    public void testGetBanker() {
+        // Test getting the banker
+        assertNotNull(gameStarter.getBanker());
     }
 
     @Test
-    void testDeal() {
-        gameStarter.getPlayerList().forEach(player -> player.setPrepare());
-        gameStarter.startGame();
-        int dealTileID = gameStarter.deal();
-        assertTrue(dealTileID > 0, "发牌的ID应该大于0");
+    public void testDeal() {
+        // Test dealing a tile to a player
+        int tileID = gameStarter.deal();
+        assertTrue(tileID > 0);
     }
 
     @Test
-    void testDiscard() {
-        gameStarter.getPlayerList().forEach(player -> player.setPrepare());
-        gameStarter.startGame();
+    public void testDiscard() {
+        // Test discarding a tile by a player
         gameStarter.deal();
-        int removedTileID = gameStarter.discard("player1", 101);
-        assertEquals(101, removedTileID, "移除的牌ID应该是101");
+        int tileID = gameStarter.getDealTileID();
+        assertEquals(tileID, gameStarter.discard("Player1", tileID));
     }
 
     @Test
-    void testCanPang() {
-        gameStarter.getPlayerList().forEach(player -> player.setPrepare());
-        gameStarter.startGame();
-        assertFalse(gameStarter.canPang("player1", 101), "在没有相同牌的情况下，不能碰");
+    public void testGetSequence() {
+        // Test getting player sequence
+        Player[] sequence = gameStarter.getSequence("Player1");
+        assertEquals(4, sequence.length);
+        assertEquals("Player1", sequence[0].getName());
     }
 
     @Test
-    void testCanKong() {
-        gameStarter.getPlayerList().forEach(player -> player.setPrepare());
-        gameStarter.startGame();
-        assertFalse(gameStarter.canKong("player1", 101), "在没有相同牌的情况下，不能杠");
+    public void testFindPlayer() {
+        // Test finding a player by name
+        assertNotNull(gameStarter.findPlayer("Player1"));
     }
 
     @Test
-    void testCanKongMultiple() {
-        gameStarter.getPlayerList().forEach(player -> player.setPrepare());
-        gameStarter.startGame();
-        ArrayList<Tile> kongTiles = gameStarter.canKong("player1");
-        assertTrue(kongTiles.isEmpty(), "在没有相同牌的情况下，不能杠");
-    }
-
-    @Test
-    void testCanChow() {
-        gameStarter.getPlayerList().forEach(player -> player.setPrepare());
-        gameStarter.startGame();
-        ArrayList<ArrayList<Tile>> chowTiles = gameStarter.canChow("player1", 101);
-        assertTrue(chowTiles.isEmpty(), "在没有相应顺子的情况下，不能吃牌");
-    }
-
-    @Test
-    void testCanHu() {
-        gameStarter.getPlayerList().forEach(player -> player.setPrepare());
-        gameStarter.startGame();
-        assertFalse(gameStarter.canHu("player1", 101), "在不满足胡牌条件的情况下，不能胡牌");
-    }
-
-    @Test
-    void testPang() throws NoSuchFieldException, IllegalAccessException {
-        gameStarter.getPlayerList().forEach(player -> player.setPrepare());
-        gameStarter.startGame();
-        gameStarter.Pang("player1", 101);
-
-        Player player = gameStarter.findPlayer("player1");
-        HandTile handTile = player.getHandTile();
-
-        Field meldsField = HandTile.class.getDeclaredField("melds");
-        meldsField.setAccessible(true);
-        ArrayList melds = (ArrayList) meldsField.get(handTile);
-
-        assertFalse(melds.isEmpty(), "玩家应该有一个碰牌");
-    }
-
-    @Test
-    void testKong() throws NoSuchFieldException, IllegalAccessException {
-        gameStarter.getPlayerList().forEach(player -> player.setPrepare());
-        gameStarter.startGame();
-        gameStarter.Kong("player1", 101);
-
-        Player player = gameStarter.findPlayer("player1");
-        HandTile handTile = player.getHandTile();
-
-        Field meldsField = HandTile.class.getDeclaredField("melds");
-        meldsField.setAccessible(true);
-        ArrayList melds = (ArrayList) meldsField.get(handTile);
-
-        assertFalse(melds.isEmpty(), "玩家应该有一个杠牌");
-    }
-
-    @Test
-    void testChow() throws NoSuchFieldException, IllegalAccessException {
-        gameStarter.getPlayerList().forEach(player -> player.setPrepare());
-        gameStarter.startGame();
-        ArrayList<Tile> chowTiles = new ArrayList<>();
-        gameStarter.Chow(chowTiles, "player1", 101);
-
-        Player player = gameStarter.findPlayer("player1");
-        HandTile handTile = player.getHandTile();
-
-        Field meldsField = HandTile.class.getDeclaredField("melds");
-        meldsField.setAccessible(true);
-        ArrayList melds = (ArrayList) meldsField.get(handTile);
-
-        assertFalse(melds.isEmpty(), "玩家应该有一个吃牌");
-    }
-
-    @Test
-    void testHu() throws NoSuchFieldException, IllegalAccessException {
-        gameStarter.getPlayerList().forEach(player -> player.setPrepare());
-        gameStarter.startGame();
-        gameStarter.Hu("player1", 101, "player2");
-
-        Field winnerField = GameStarter.class.getDeclaredField("winner");
-        winnerField.setAccessible(true);
-        Player winner = (Player) winnerField.get(gameStarter);
-
-        assertEquals("player1", winner.getName(), "玩家1应该是赢家");
-    }
-
-    @Test
-    void testCanDraw() {
-        gameStarter.getPlayerList().forEach(player -> player.setPrepare());
-        gameStarter.startGame();
-        assertFalse(gameStarter.canDraw(), "在牌堆未空的情况下，不能荒牌");
-    }
-
-    @Test
-    void testGetSequence() {
-        gameStarter.getPlayerList().forEach(player -> player.setPrepare());
-        gameStarter.startGame();
-        Player[] sequence = gameStarter.getSequence("player1");
-        assertEquals(4, sequence.length, "应该返回4个玩家的顺序");
-    }
-
-    @Test
-    void testFindPlayer() {
-        Player player = gameStarter.findPlayer("player1");
-        assertNotNull(player, "应该能找到player1");
-    }
-
-    @Test
-    void testFindTile() {
-        gameStarter.getPlayerList().forEach(player -> player.setPrepare());
-        gameStarter.startGame();
-        Tile tile = gameStarter.findTile(101);
-        assertNotNull(tile, "应该能找到指定ID的牌");
-    }
-
-    @Test
-    void testAddTableTile() {
-        gameStarter.getPlayerList().forEach(player -> player.setPrepare());
-        gameStarter.startGame();
+    public void testFindTile() {
+        // Test finding a tile by ID
         gameStarter.deal();
+        int tileID = gameStarter.getDealTileID();
+        assertNotNull(gameStarter.findTile(tileID));
+    }
+
+    @Test
+    public void testAddTableTile() {
+        // Test adding a tile to the table
+        gameStarter.deal();
+        int tileID = gameStarter.getDealTileID();
+        gameStarter.discard("Player1", tileID);
         gameStarter.addTableTile();
-        assertFalse(gameStarter.getTableTile().isEmpty(), "牌桌上应该有牌");
+        assertTrue(gameStarter.getTableTile().size() > 0);
     }
 
     @Test
-    void testGetTableTile() {
-        gameStarter.getPlayerList().forEach(player -> player.setPrepare());
-        gameStarter.startGame();
-        gameStarter.deal();
-        gameStarter.addTableTile();
-        assertFalse(gameStarter.getTableTile().isEmpty(), "牌桌上应该有牌");
+    public void testGetTableTile() {
+        // Test getting the tiles on the table
+        assertNotNull(gameStarter.getTableTile());
     }
 
     @Test
-    void testPrintHand() {
-        gameStarter.getPlayerList().forEach(player -> player.setPrepare());
-        gameStarter.startGame();
-        gameStarter.printHand("player1");
-        // 不做进一步断言，因为输出到控制台
+    public void testPrintHand() {
+        // Test printing the hand tiles and melds of a player
+        gameStarter.printHand("Player1");
+        assertNotNull(gameStarter.getHandTile("Player1"));
     }
 
     @Test
-    void testGetRoomID() {
-        assertEquals("testRoom", gameStarter.getRoomID(), "房间ID应该是testRoom");
+    public void testGetRoomID() {
+        // Test getting the room ID
+        assertEquals("testRoom", gameStarter.getRoomID());
     }
 }

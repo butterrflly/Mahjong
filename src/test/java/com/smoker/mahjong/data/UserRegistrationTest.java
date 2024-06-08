@@ -2,123 +2,168 @@ package com.smoker.mahjong.data;
 
 import org.junit.jupiter.api.*;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for the UserRegistration class.
+ */
 public class UserRegistrationTest {
-// P11 T11
 
-    private static final String TEST_FILENAME = "test_users.txt"; // 测试文件名
-    private static String originalFilename; // 原始文件名
-
-    @BeforeAll
-    public static void setUpClass() {
-        // 保存原始文件名，并设置为测试文件名
-        originalFilename = UserRegistration.getFilename();
-        UserRegistration.setFilename(TEST_FILENAME);
-    }
-
-    @AfterAll
-    public static void tearDownClass() {
-        // 恢复原始文件名
-        UserRegistration.setFilename(originalFilename);
-    }
+    private static final String TEST_FILENAME = "test_users.txt";
 
     @BeforeEach
     public void setUp() throws IOException {
-        // 创建测试文件并写入初始数据
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(TEST_FILENAME))) {
-            bw.write("existingUser existingPassword\n"); // 写入一个已存在的用户信息
-        }
+        UserRegistration.setFilename(TEST_FILENAME);
+        // Ensure the test file is clean before each test
+        new BufferedWriter(new FileWriter(TEST_FILENAME, false)).close();
     }
 
     @AfterEach
     public void tearDown() {
-        // 删除测试文件
         File file = new File(TEST_FILENAME);
         if (file.exists()) {
-            file.delete(); // 如果测试文件存在，删除它
+            file.delete();
         }
     }
 
     @Test
     public void testSignup() {
-        // 测试用户注册功能
-        String result = UserRegistration.signup("newUser", "newPassword");
-        assertEquals("注册成功", result); // 验证注册结果是否正确
+        // Test user signup functionality
+        String result = UserRegistration.signup("user1", "password1");
+        assertEquals("注册成功", result); // Translation: "Registration successful"
+
+        // Verify the user is added
+        ArrayList<String> users = UserRegistration.readFile(TEST_FILENAME);
+        assertEquals(1, users.size());
+        assertEquals("user1 password1 off-line", users.get(0));
     }
 
     @Test
-    public void testSignupUserExists() {
-        // 测试注册已存在的用户
-        String result = UserRegistration.signup("existingUser", "newPassword");
-        assertEquals("用户已存在", result); // 验证是否返回用户已存在的提示
+    public void testSignupUserAlreadyExists() {
+        // Test signing up a user that already exists
+        UserRegistration.signup("user1", "password1");
+        String result = UserRegistration.signup("user1", "password1");
+        assertEquals("用户已存在", result); // Translation: "User already exists"
     }
 
     @Test
     public void testLogin() {
-        // 测试用户登录功能
-        String result = UserRegistration.login("existingUser", "existingPassword");
-        assertEquals("登录成功", result); // 验证登录结果是否正确
+        // Test user login functionality
+        UserRegistration.signup("user1", "password1");
+        String result = UserRegistration.login("user1", "password1");
+        assertEquals("登录成功", result); // Translation: "Login successful"
+
+        // Verify the user's status is updated to on-line
+        ArrayList<String> users = UserRegistration.readFile(TEST_FILENAME);
+        assertEquals("user1 password1 on-line", users.get(0));
     }
 
     @Test
-    public void testLoginWrongPassword() {
-        // 测试使用错误密码登录
-        String result = UserRegistration.login("existingUser", "wrongPassword");
-        assertEquals("密码错误", result); // 验证是否返回密码错误的提示
+    public void testLoginIncorrectPassword() {
+        // Test login with incorrect password
+        UserRegistration.signup("user1", "password1");
+        String result = UserRegistration.login("user1", "wrongpassword");
+        assertEquals("密码错误", result); // Translation: "Incorrect password"
     }
 
     @Test
-    public void testLoginUserNotFound() {
-        // 测试登录不存在的用户
-        String result = UserRegistration.login("nonExistentUser", "password");
-        assertEquals("用户不存在", result); // 验证是否返回用户不存在的提示
+    public void testLoginUserAlreadyLoggedIn() {
+        // Test login when user is already logged in
+        UserRegistration.signup("user1", "password1");
+        UserRegistration.login("user1", "password1");
+        String result = UserRegistration.login("user1", "password1");
+        assertEquals("用户已登录", result); // Translation: "User already logged in"
+    }
+
+    @Test
+    public void testLoginUserNotExists() {
+        // Test login when user does not exist
+        String result = UserRegistration.login("user1", "password1");
+        assertEquals("用户不存在", result); // Translation: "User does not exist"
+    }
+
+    @Test
+    public void testLogout() {
+        // Test user logout functionality
+        UserRegistration.signup("user1", "password1");
+        UserRegistration.login("user1", "password1");
+        String result = UserRegistration.logout("user1");
+        assertEquals("退出成功", result); // Translation: "Logout successful"
+
+        // Verify the user's status is updated to off-line
+        ArrayList<String> users = UserRegistration.readFile(TEST_FILENAME);
+        assertEquals("user1 password1 off-line", users.get(0));
+    }
+
+    @Test
+    public void testLogoutUserNotLoggedIn() {
+        // Test logout when user is not logged in
+        UserRegistration.signup("user1", "password1");
+        String result = UserRegistration.logout("user1");
+        assertEquals("用户未登录", result); // Translation: "User not logged in"
+    }
+
+    @Test
+    public void testLogoutUserNotExists() {
+        // Test logout when user does not exist
+        String result = UserRegistration.logout("user1");
+        assertEquals("用户不存在", result); // Translation: "User does not exist"
     }
 
     @Test
     public void testDeleteUser() {
-        // 测试删除用户功能
-        String result = UserRegistration.deleteUser("existingUser", "existingPassword");
-        assertEquals("删除成功", result); // 验证删除结果是否正确
+        // Test user deletion functionality
+        UserRegistration.signup("user1", "password1");
+        String result = UserRegistration.deleteUser("user1", "password1");
+        assertEquals("删除成功", result); // Translation: "Deletion successful"
+
+        // Verify the user is removed
+        ArrayList<String> users = UserRegistration.readFile(TEST_FILENAME);
+        assertEquals(0, users.size());
     }
 
     @Test
-    public void testDeleteUserWrongPassword() {
-        // 测试使用错误密码删除用户
-        String result = UserRegistration.deleteUser("existingUser", "wrongPassword");
-        assertEquals("密码错误", result); // 验证是否返回密码错误的提示
+    public void testDeleteUserIncorrectPassword() {
+        // Test deleting a user with incorrect password
+        UserRegistration.signup("user1", "password1");
+        String result = UserRegistration.deleteUser("user1", "wrongpassword");
+        assertEquals("密码错误", result); // Translation: "Incorrect password"
     }
 
     @Test
-    public void testDeleteUserNotFound() {
-        // 测试删除不存在的用户
-        String result = UserRegistration.deleteUser("nonExistentUser", "password");
-        assertEquals("用户不存在", result); // 验证是否返回用户不存在的提示
+    public void testDeleteUserNotExists() {
+        // Test deleting a user that does not exist
+        String result = UserRegistration.deleteUser("user1", "password1");
+        assertEquals("用户不存在", result); // Translation: "User does not exist"
     }
 
     @Test
     public void testChangePassword() {
-        // 测试修改密码功能
-        String result = UserRegistration.changePassword("existingUser", "existingPassword", "newPassword");
-        assertEquals("修改成功", result); // 验证修改结果是否正确
+        // Test changing the password of a user
+        UserRegistration.signup("user1", "password1");
+        String result = UserRegistration.changePassword("user1", "password1", "newpassword");
+        assertEquals("修改成功", result); // Translation: "Password changed successfully"
+
+        // Verify the password is updated
+        ArrayList<String> users = UserRegistration.readFile(TEST_FILENAME);
+        assertEquals("user1 newpassword off-line", users.get(0));
     }
 
     @Test
-    public void testChangePasswordWrongOldPassword() {
-        // 测试使用错误的旧密码修改密码
-        String result = UserRegistration.changePassword("existingUser", "wrongPassword", "newPassword");
-        assertEquals("密码错误", result); // 验证是否返回密码错误的提示
+    public void testChangePasswordIncorrectOldPassword() {
+        // Test changing password with incorrect old password
+        UserRegistration.signup("user1", "password1");
+        String result = UserRegistration.changePassword("user1", "wrongpassword", "newpassword");
+        assertEquals("密码错误", result); // Translation: "Incorrect password"
     }
 
     @Test
-    public void testChangePasswordUserNotFound() {
-        // 测试修改不存在的用户的密码
-        String result = UserRegistration.changePassword("nonExistentUser", "password", "newPassword");
-        assertEquals("用户不存在", result); // 验证是否返回用户不存在的提示
+    public void testChangePasswordUserNotExists() {
+        // Test changing password for a user that does not exist
+        String result = UserRegistration.changePassword("user1", "password1", "newpassword");
+        assertEquals("用户不存在", result); // Translation: "User does not exist"
     }
 }
