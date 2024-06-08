@@ -211,8 +211,6 @@ public class WebSocketServer {
                     String nextCanHu = gameService.canHu(playerName, roomID); // Check if the next player can Hu
                     String nextPlayerName = (String) JSON.parseObject(JSON.parseObject(nextCanHu).get("msg").toString()).get("playerName");
 
-                    System.out.println(nextPlayerName);
-
                     if (nextPlayerName.equals("null")) {
                         noPangOrKong.set(0); // Reset noPangOrKong counter
 
@@ -221,7 +219,6 @@ public class WebSocketServer {
                         for (Session s : roomSession.get(roomID)) {
                             if (s == discardPlayer)
                                 continue;
-                            System.out.println("canPangOrKong");
                             sendMessageToUser(gameService.canPangOrKong(playerMap.get(s), roomID), s); // Check if the player can Pang or Kong
                         }
                         return;
@@ -233,8 +230,6 @@ public class WebSocketServer {
                     String roomID = roomMap.get(session);
 
                     int count = noPangOrKong.incrementAndGet(); // Increment noPangOrKong counter
-
-                    System.out.println(count);
 
                     if (count == 3) {
                         String canChow = gameService.canChow(roomID); // Check if the player can Chow

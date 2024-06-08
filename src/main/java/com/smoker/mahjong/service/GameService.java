@@ -80,7 +80,8 @@ public class GameService {
 
     /**
      * Retrieves information about all game rooms
-     * @return JSON string containing the operation and room messages
+     * @return JSON string containing the operation and room messages:
+     * {"operation" : "getGameRooms", "msg" : {"name" : String, "room number" : int, "room message" : {"room id_1" : player number, "room id_2" : player number, ...}}}
      */
     public String getGameRooms(String playerName) {
         Map<String, Object> result = new HashMap<>();
@@ -106,7 +107,11 @@ public class GameService {
 
     /**
      * Retrieves player information for a specific room
-     * @return JSON string containing the operation and player messages
+     * @return JSON string containing the operation and player messages:
+     * {"operation" : "getRoomPlayerMessage", "msg" : {"self" : {"name" : String, "prepare" : boolean, "score" : int},
+     * "nextPlayer" : {"name" : String, "prepare" : boolean, "score" : int},
+     * "oppositePlayer" : {"name" : String, "prepare" : boolean, "score" : int},
+     * "prevPlayer" : {"name" : String, "prepare" : boolean, "score" : int}}}
      */
     public String getRoomPlayerMessage(String playerName, String roomID) {
         GameStarter gs = games.get(roomID);
@@ -139,7 +144,11 @@ public class GameService {
 
     /**
      * Retrieves the hand tiles of players in a specific room
-     * @return JSON string containing the operation and hand tile messages
+     * @return JSON string containing the operation and hand tile messages:
+     * {"operation" : "getHandTile", "msg" : {"self" : {"name" : String, "handTile number" : int, "handTile" : [int, int, ...]},
+     * "nextPlayer" : {"name" : String, "handTile number" : int, "handTile" : [int, int, ...]},
+     * "oppositePlayer" : {"name" : String, "handTile number" : int, "handTile" : [int, int, ...]},
+     * "prevPlayer" : {"name" : String, "handTile number" : int, "handTile" : [int, int, ...]}}}
      */
     public String getHandTile(String playerName, String roomID) {
         GameStarter gs = games.get(roomID);
@@ -165,7 +174,15 @@ public class GameService {
 
     /**
      * Retrieves the melds of players in a specific room
-     * @return JSON string containing the operation and meld messages
+     * @return JSON string containing the operation and meld messages:
+     * {"operation" : "getMeld", "msg" : {"self" :                 {"name" : String, "meld number" : int, "meld number list" : [int, int, ...], "isHide list" : [boolean, boolean, ...]},
+     * "selfMelds" :            [[int, int, ...], [int, int, ...], ...],
+     * "nextPlayer" :           {"name" : String, "meld number" : int, "meld number list" : [int, int, ...], "isHide list" : [boolean, boolean, ...]},
+     * "nextPlayerMelds" :      [[int, int, ...], [int, int, ...], ...],
+     * "oppositePlayer" :       {"name" : String, "meld number" : int, "meld number list" : [int, int, ...], "isHide list" : [boolean, boolean, ...]},
+     * "oppositePlayerMelds" :  [[int, int, ...], [int, int, ...], ...],
+     * "prevPlayer" :           {"name" : String, "meld number" : int, "meld number list" : [int, int, ...], "isHide list" : [boolean, boolean, ...]}
+     * "prevPlayerMelds" :      [[int, int, ...], [int, int, ...], ...]}}
      */
     public String getMeld(String playerName, String roomID) {
         GameStarter gs = games.get(roomID);
@@ -209,7 +226,8 @@ public class GameService {
 
     /**
      * Retrieves the tiles on the table in a specific room
-     * @return JSON string containing the operation and table tile messages
+     * @return JSON string containing the operation and table tile messages:
+     * {"operation" : "getTableTile", "msg" : {"tableTile" : [tileID_1, tileID_2, ...]}}
      */
     public String getTableTile(String roomID) {
         GameStarter gs = games.get(roomID);
@@ -237,7 +255,9 @@ public class GameService {
 
     /**
      * Deals a tile to the current player and provides information about the deal
-     * @return JSON string containing the operation and deal messages
+     * @return JSON string containing the operation and deal messages:
+     * {"operation" : "deal", "msg" : {"position" : String, "playerName" : String, "tileID" : int}}
+     * positions = {"self", "nextPlayer", "oppositePlayer", "prevPlayer"}
      */
     public String deal(String playerName, String roomID) {
         GameStarter gs = games.get(roomID);
@@ -264,7 +284,8 @@ public class GameService {
 
     /**
      * Retrieves self-affair information for a player in a specific room
-     * @return JSON string containing the operation and self-affair messages
+     * @return JSON string containing the operation and self-affair messages:
+     * {"operation" : "getSelfAffair", "msg" : {"playerName" : String, "canKong" : boolean, "canHu" : boolean}}
      */
     public String getSelfAffair(String playerName, String roomID) {
         GameStarter gs = games.get(roomID);
@@ -285,7 +306,8 @@ public class GameService {
 
     /**
      * Requests the player to discard a tile
-     * @return JSON string containing the discard request message
+     * @return JSON string containing the discard request message:
+     * {"operation" : "discardRequest", "msg" : "Until you play"}
      */
     public String discardRequest() {
         Map<String, Object> result = new HashMap<>();
@@ -305,7 +327,9 @@ public class GameService {
 
     /**
      * Provides information about the discarded tile
-     * @return JSON string containing the operation and discard messages
+     * @return JSON string containing the operation and discard messages:
+     * {"operation" : "discard", "msg" : {"position" : String, "playerName" : String, "tileID" : int}}
+     * positions = {"self", "nextPlayer", "oppositePlayer", "prevPlayer"}
      */
     public String discard(String playerName, String roomID, String discardPlayerName) {
         GameStarter gs = games.get(roomID);
@@ -332,7 +356,8 @@ public class GameService {
 
     /**
      * Checks if the next player can Hu (win) after a tile is discarded
-     * @return JSON string containing the operation and Hu messages
+     * @return JSON string containing the operation and Hu messages:
+     * {"operation" : "canHu", "msg" : {"playerName" : String, "canHu" : boolean}}
      */
     public String canHu(String playerName, String roomID) {
         GameStarter gs = games.get(roomID);
@@ -365,7 +390,8 @@ public class GameService {
 
     /**
      * Checks if the current player can Pang or Kong
-     * @return JSON string containing the operation and Pang or Kong messages
+     * @return JSON string containing the operation and Pang or Kong messages:
+     * {"operation" : "canPangOrKong", "msg" : {"playerName" : String, "canPang" : boolean, "canKong" : boolean}}
      */
     public String canPangOrKong(String playerName, String roomID) {
         GameStarter gs = games.get(roomID);
@@ -387,7 +413,8 @@ public class GameService {
 
     /**
      * Checks if the next player can Chow after a tile is discarded
-     * @return JSON string containing the operation and Chow messages
+     * @return JSON string containing the operation and Chow messages:
+     * {"operation" : "canChow", "msg" : {"playerName" : String, "canChow" : boolean}}
      */
     public String canChow(String roomID) {
         GameStarter gs = games.get(roomID);
@@ -422,7 +449,9 @@ public class GameService {
 
     /**
      * Provides information about the Hu (win) operation
-     * @return JSON string containing the operation and Hu messages
+     * @return JSON string containing the operation and Hu messages:
+     * {"operation" : "Hu", "msg" : {"position" : String, "playerName" : String}}
+     * positions = {"self", "nextPlayer", "oppositePlayer", "prevPlayer"}
      */
     public String Hu(String playerName, String roomID, String winnerPlayerName) {
         GameStarter gs = games.get(roomID);
@@ -447,7 +476,8 @@ public class GameService {
 
     /**
      * Retrieves Kong operation information for a player
-     * @return JSON string containing the operation and Kong messages
+     * @return JSON string containing the operation and Kong messages:
+     * {"operation" : "Kong", "msg" : {"playerName" : String, "KongNum" : int, "KongList" : [TileID_1, TileID_2, ...]}}
      */
     public String Kong(String playerName, String roomID) {
         GameStarter gs = games.get(roomID);
@@ -484,7 +514,8 @@ public class GameService {
 
     /**
      * Retrieves Chow operation information for a player
-     * @return JSON string containing the operation and Chow messages
+     * @return JSON string containing the operation and Chow messages:
+     * {"operation" : "Chow", "msg" : {"playerName" : String, "ChowNum" : int, "ChowList" : [[TileID_1, TileID_2, TileID_3], ...]}}
      */
     public String Chow(String playerName, String roomID) {
         GameStarter gs = games.get(roomID);
@@ -540,7 +571,8 @@ public class GameService {
 
     /**
      * Sends a draw game message
-     * @return JSON string containing the draw message
+     * @return JSON string containing the draw message:
+     * {"operation" : "Draw", "msg" : "Game Over"}
      */
     public String Draw() {
         Map<String, Object> result = new HashMap<>();
