@@ -41,11 +41,21 @@ export default {
 
 <style scoped>
 .container {
+    width: 300px; /* 固定宽度 */
+    height: 200px; /* 固定高度 */
     display: flex;
     align-items: center;
+    flex-wrap: wrap; /* 使图片自动换行 */
+    overflow: hidden; /* 防止图片超出容器 */
     position: fixed;
     left: 50%;
-    bottom: 50%;
+    bottom: 45%;
     transform: translate(-50%, 50%);
+}
+
+.tile {
+  width: 29px; /* 根据需要调整图片的宽度 */
+  height: 40px; /* 根据需要调整图片的高度 */
+  margin: -1px; /* 图片之间的间距 */
 }
 </style>

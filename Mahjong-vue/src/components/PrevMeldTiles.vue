@@ -1,5 +1,5 @@
 <template>
-    <div class="tile-container">
+    <div class="tile-container" v-if="gameStatus">
         <div v-for="(group, index) in prevMeldTiles" :key="index" class="tile-group">
             <img
                     v-for="(tile, tileIndex) in group"
@@ -22,7 +22,12 @@ export default {
 
         prevIfHideMeld: {
             required: true
-        }
+        },
+
+        gameStatus: {
+          required: true,
+          type: Boolean
+        },
     },
     methods: {
         // 根据牌编号生成相应的图片 URL
@@ -45,9 +50,9 @@ export default {
     flex-direction: column;
     align-items: center; /* 水平居中对齐*/
     position: fixed;
-    left: 30%;
+    left: 28%;
     bottom: 50%;
-    transform: translate(0, -50%);
+    transform: translate(0, 50%);
 }
 
 .tile-group {
@@ -58,9 +63,9 @@ export default {
 }
 
 .tile {
-    width: 59px; /* 根据需要调整图片的宽度 */
-    height: 48px; /* 根据需要调整图片的高度 */
-    margin: -7.8px; /* 图片之间的间距 */
+    width: 40px; /* 根据需要调整图片的宽度 */
+    height: 32px; /* 根据需要调整图片的高度 */
+    margin: -5.5px; /* 图片之间的间距 */
 }
 </style>
 

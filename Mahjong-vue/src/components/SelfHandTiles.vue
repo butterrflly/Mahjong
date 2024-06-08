@@ -77,7 +77,7 @@ export default {
     align-items: center;
     position: fixed;
     left: 50%;
-    bottom: 5%;
+    bottom: 8%;
     transform: translate(-50%, 0);
 }
 
@@ -106,7 +106,7 @@ export default {
 }
 
 .tile {
-    width: 44px;
-    height: 70px;
+    width: 50px;
+    height: 80px;
 }
 </style>

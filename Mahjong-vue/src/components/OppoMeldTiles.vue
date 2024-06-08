@@ -1,5 +1,5 @@
 <template>
-    <div class="tile-container">
+    <div class="tile-container" v-if="gameStatus">
         <div v-for="(group, index) in oppoMeldTiles" :key="index" class="tile-group">
             <img
                 v-for="(tile, tileIndex) in group"
@@ -22,7 +22,12 @@ export default {
 
         oppoIfHideMeld: {
             required: true
-        }
+        },
+
+        gameStatus: {
+          required: true,
+          type: Boolean
+        },
     },
     methods: {
         // 根据牌编号生成相应的图片 URL
@@ -42,10 +47,10 @@ export default {
 <style scoped>
 .tile-container {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     position: fixed;
-    top: 30%;
+    top: 28%;
     left: 50%;
     transform: translate(-50%, 0);
 }
@@ -53,13 +58,13 @@ export default {
 .tile-group {
     display: flex;
     justify-content: center;
-    margin-bottom: 20px; /* 组与组之间的固定间距 */
+    margin-right: 20px; /* gap between groups */
 }
 
 .tile {
-    width: 42px; /* 根据需要调整图片的宽度 */
-    height: 60px; /* 根据需要调整图片的高度 */
-    margin: -1px; /* 图片之间的间距 */
+    width: 28px;
+    height: 40px;
+    margin: -1px; /* gap between tiles */
 }
 </style>
 

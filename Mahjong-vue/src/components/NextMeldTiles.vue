@@ -1,5 +1,5 @@
 <template>
-    <div class="hand-tiles">
+    <div class="hand-tiles" v-if="gameStatus">
         <div v-for="(group, index) in nextMeldTiles" :key="index" class="tile-group">
             <img
                 v-for="(tile, tileIndex) in group"
@@ -22,7 +22,12 @@ export default {
 
         nextIfHideMeld: {
             required: true
-        }
+        },
+
+        gameStatus: {
+          required: true,
+          type: Boolean
+        },
     },
     methods: {
         // 根据牌编号生成相应的图片 URL
@@ -46,21 +51,22 @@ export default {
     align-items: center; /* 垂直居中 */
     gap: 20px; /* 间距 */
     position: fixed;
-    right: 30%;
+    right: 28%;
     bottom: 50%;
-    transform: translate(0, -50%);
+    transform: translate(0, 50%);
 }
 
 .tile-group {
     display: flex;
     justify-content: center;
     margin-bottom: 20px; /* 组与组之间的固定间距 */
+    flex-direction: column;
 }
 
 .tile {
-    width: 55px; /* 根据需要调整图片的宽度 */
-    height: 44px; /* 根据需要调整图片的高度 */
-    margin: -1px; /* 图片之间的间距 */
+    width: 40px; /* 根据需要调整图片的宽度 */
+    height: 32px; /* 根据需要调整图片的高度 */
+    margin: -5.5px; /* 图片之间的间距 */
 }
 </style>
 

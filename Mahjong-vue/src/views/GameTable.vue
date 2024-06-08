@@ -1,6 +1,8 @@
 <template>
     <div class="background">
         <button v-if="!gameStart" v-on:click="prepare()" class="ready-button">Prepare</button>
+
+      <!-- name and prepare status of four player-->
         <div v-if="selfName" class="player-name myName">{{this.selfName}}</div>
         <div v-if="selfPrepare" class="player-name myPrepare">{{"Prepared!"}}</div>
         <div v-if="prevName" class="player-name leftName">{{this.prevName}}</div>
@@ -10,6 +12,7 @@
         <div v-if="nextName" class="player-name rightName">{{this.nextName}}</div>
         <div v-if="nextPrepare" class="player-name rightPrepare">{{"Prepared!"}}</div>
 
+        <!-- display message -->
         <div >
             <div v-if="message" class="info-message">{{ this.message }}</div>
             <div v-if="error" class="error-message">{{ this.error }}</div>
@@ -20,8 +23,11 @@
                            :handTiles="selfHandTiles"
                            :dealID="selfDealID"
                            :canDiscard="canDiscard"/>
-            <SelfMeldTiles :selfMeldTiles="selfMeldTiles"
+            <SelfMeldTiles :gameStatus="gameStart"
+                           :selfMeldTiles="selfMeldTiles"
                            :selfIfHideMeld="selfIfHideMeld" />
+
+            <!-- my discard -->
             <img
                 v-if="selfDiscardUrl !== ''"
                 :src="selfDiscardUrl"
@@ -29,9 +35,12 @@
                 class="Discard"
                 id="selfDiscard"
             />
+
             <button v-on:click="hu()" v-if="canHu" class="Hu">Hu</button>
             <button v-on:click="noHu()" v-if="canHu" class="HuSkip">Skip</button>
             <button v-on:click="chow()" v-if="canChow" class="Chow">Chow</button>
+
+            <!-- select how to chow -->
             <div>
                 <div v-if="chowList.length > 1"
                      v-for="(group, index) in chowList"
@@ -46,8 +55,11 @@
                     />
                 </div>
             </div>
+
             <button v-on:click="pang()" v-if="canPang" class="Pang">Pang</button>
             <button v-on:click="kong()" v-if="canKong" class="Kong">Kong</button>
+
+            <!-- select how to kong -->
             <img
                 v-if="kongList > 1"
                 v-for="tile in kongList"
@@ -57,6 +69,7 @@
                 class="kongTile"
                 v-on:click="selectKong(tile)"
             />
+
             <button v-on:click="noPangOrKong()" v-if="canPang||canKong" class="PangKongSkip">Skip</button>
             <button v-on:click="noChow()" v-if="canChow" class="ChowSkip">Skip</button>
         </div>
@@ -64,8 +77,11 @@
         <div class="left">  <!--left tiles-->
             <PrevHandTiles :gameStatus="gameStart"
                            :ifDeal="prevDeal"/>
-            <PrevMeldTiles :prevMeldTiles="prevMeldTiles"
+            <PrevMeldTiles :gameStatus="gameStart"
+                           :prevMeldTiles="prevMeldTiles"
                            :prevIfHideMeld="prevIfHideMeld"/>
+
+           <!-- left discard -->
             <img
                 v-if="prevDiscardUrl !== ''"
                 :src="prevDiscardUrl"
@@ -76,11 +92,13 @@
         </div>
 
         <div class="opposite">  <!--opposite tiles-->
-
             <OppoHandTiles :gameStatus="gameStart"
                            :ifDeal="oppoDeal"/>
-            <OppoMeldTiles :oppoMeldTiles="oppoMeldTiles"
+            <OppoMeldTiles :gameStatus="gameStart"
+                           :oppoMeldTiles="oppoMeldTiles"
                            :oppoIfHideMeld="oppoIfHideMeld"/>
+
+            <!-- opposite discard -->
             <img
                 v-if="oppoDiscardUrl !== ''"
                 :src="oppoDiscardUrl"
@@ -91,11 +109,13 @@
         </div>
 
         <div class="right">  <!--right tiles-->
-
             <NextHandTiles :gameStatus="gameStart"
                            :ifDeal="nextDeal"/>
-            <NextMeldTiles :nextMeldTiles="nextMeldTiles"
+            <NextMeldTiles :gameStatus="gameStart"
+                           :nextMeldTiles="nextMeldTiles"
                            :nextIfHideMeld="nextIfHideMeld"/>
+
+            <!-- right discard -->
             <img
                 v-if="nextDiscardUrl !== ''"
                 :src="nextDiscardUrl"
@@ -105,9 +125,17 @@
             />
         </div>
 
+        <!-- tiles displayed on the table -->
         <div class="tableTiles">
             <TableTiles :gameStatus="gameStart"
                         :tiles="tableTiles"/>
+        </div>
+
+        <!-- tiles of hu player-->
+        <div class="huPlayerTiles">
+            <HuPlayerTiles :meld-tiles="huHandTiles"
+                           :hand-tiles="huMeldTiles"
+                           :game-status="gameStart"/>
         </div>
     </div>
 </template>
@@ -123,12 +151,14 @@ import OppoMeldTiles from "../components/OppoMeldTiles.vue";
 import PrevMeldTiles from "../components/PrevMeldTiles.vue";
 import NextMeldTiles from "../components/NextMeldTiles.vue";
 import TableTiles from "../components/TableTiles.vue";
+import HuPlayerTiles from "../components/HuPlayerTiles.vue";
 
 
 export default {
     name: "GameTable",
 
     components: {
+      HuPlayerTiles,
         TableTiles,
         PrevMeldTiles,
         OppoMeldTiles,
@@ -168,12 +198,14 @@ export default {
             nextHandTiles:[],
             oppoHandTiles:[],
             prevHandTiles:[],
+
             // meld tiles of each player, 2D array
             // [[int, int, int], ...]
             selfMeldTiles:[],
             nextMeldTiles:[],
             oppoMeldTiles:[],
             prevMeldTiles:[],
+
             // if meld tiles hide, a boolean for a group
             // [boolean, boolean, ...]
             selfIfHideMeld:[],
@@ -181,32 +213,42 @@ export default {
             oppoIfHideMeld:[],
             prevIfHideMeld:[],
 
+            // if can hu
             canHu:false,
             canChow:false,
             canPang:false,
             canKong:false,
 
+            // url to show discard tiles
             selfDiscardUrl:'',
             nextDiscardUrl:'',
             oppoDiscardUrl:'',
             prevDiscardUrl:'',
 
+            // control the display of deal tiles
             selfDealID:null,
             nextDeal:false,
             oppoDeal:false,
             prevDeal:false,
 
+            // information of hu player
             huName:'',
             huPosition:'',
+            huHandTiles: '',
+            huMeldTiles: '',
+
+            // to display the way of kong and chow
             kongList:[],  // [TileID_1, TileID_2, ...]
             chowList:[],  // [[TileID_1, TileID_2, TileID_3], ...]
+
             tableTiles:[],
+
+            // control the discard of player
             canDiscard:false,
+
+            // messages to display
             message:'',
             error:'',
-
-            showTiles: false,
-
         }
     },
 
@@ -224,107 +266,119 @@ export default {
                 this.prevPrepare = data.msg["prevPlayer"]["prepare"];
 
             } else if (data.operation === "discard") {
-                // 出牌的返回值，包括位置和牌id，用于把出的牌展示在桌面
+                // The return value of the discard,
+                // including the position and tile id,
+                // is used to display the tiles that has been discarded on the table.
                 this.showDiscard(data.msg["position"], data.msg["tileID"]);
-                this.canDiscard = false;  // 已经出过牌，不允许再出牌
-                console.log("已经展示过出的牌，canDiscard=" + this.canDiscard)
+                this.canDiscard = false;  // Tiles have already been dealt, no more discard are permitted
 
             } else if (data.operation === "getHandTile") {
-                // 游戏开始时，显示所有手牌
-                this.gameStart = true;
                 this.selfPrepare = this.prevPrepare = this.oppoPrepare = this.nextPrepare = false;
-                // 更新手牌时，隐藏发的牌，即将发的牌加入手牌
+                // When updating hand tiles, hide tiles that has been discarded
+                // i.e. add the discard tiles to hand tiles
                 this.selfDealID = '';
                 this.nextDeal = this.oppoDeal = this.prevDeal = false;
                 this.selfHandTiles = data.msg["self"]["handTile"];
                 this.nextHandTiles = data.msg["nextPlayer"]["handTile"];
                 this.oppoHandTiles = data.msg["oppositePlayer"]["handTile"];
                 this.prevHandTiles = data.msg["prevPlayer"]["handTile"];
+                // if someone hu, get his hand tiles
+                if (this.huPosition !== '') {
+                  this.huHandTiles = data.msg[this.huPosition]["handTile"];
+                }
 
             } else if (data.operation === "getMeld") {
                 this.selfMeldTiles = data.msg["selfMelds"];
                 this.nextMeldTiles = data.msg["nextPlayerMelds"];
                 this.oppoMeldTiles = data.msg["oppositePlayerMelds"];
                 this.prevMeldTiles = data.msg["prevPlayerMelds"];
-                console.log("this.selfMeldTiles=" + data.msg["selfMelds"]);
-                console.log("this.nextMeldTiles=" + data.msg["nextPlayerMelds"]);
-                console.log("this.oppoMeldTiles=" + data.msg["oppositePlayerMelds"]);
-                console.log("this.prevMeldTiles=" + data.msg["prevPlayerMelds"]);
                 this.selfIfHideMeld = data.msg["self"]["isHide list"];
                 this.nextIfHideMeld = data.msg["nextPlayer"]["isHide list"];
                 this.oppoIfHideMeld = data.msg["oppositePlayer"]["isHide list"];
                 this.prevIfHideMeld = data.msg["prevPlayer"]["isHide list"];
+                // if someone hu, get his meld tiles
+                if (this.huPosition !== '') {
+                  this.huMeldTiles = data.msg[this.huPosition]["handTile"];
+                }
 
             } else if (data.operation === "deal") {
+                // At the start of the game, show all tiles
+                this.gameStart = true;
                 this.deal(data.msg["position"], data.msg["tileID"])
 
             } else if (data.operation === "canHu") {
                 this.canHu = data.msg["canHu"];
+                // automatically judge and send noHu
                 if (this.canHu === false) {
                     WebSocketService.sendMessage(JSON.stringify({ operation: 'noHu'}));
+                } else {
+                  this.message = "Choose to Hu or not"
                 }
 
             } else if (data.operation === "getPangOrKong") {
-                console.log("receive affair")
-
                 this.canPang = data.msg["canPang"];
                 this.canKong = data.msg["canKong"];
+                // automatically judge and send noPangOrKong
                 if (this.canPang === false && this.canKong === false) {
                     WebSocketService.sendMessage(JSON.stringify({ operation: 'noPangOrKong'}));
+                } else if (this.canPang === true) {
+                    this.message = "Choose to Pang or not"
+                } else if (this.canKong ===  true) {
+                  this.message = "Choose to Kong or not"
                 }
 
             } else if (data.operation === "canChow") {
                 this.canChow = data.msg["canChow"];
+                // automatically judge and send noChow
                 if (this.canChow === false) {
                     WebSocketService.sendMessage(JSON.stringify({ operation: 'noChow'}));
+                } else {
+                    this.message = "Choose to Chow or not"
                 }
 
             } else if (data.operation === "getSelfAffair") {
                 this.canKong = data.msg["canKong"];
-                console.log("can self kong status:" + this.canKong);
-
                 this.canHu = data.msg["canHu"];
-                console.log("can hu status:" + this.canHu);
 
             } else if (data.operation === "Hu") {
                 this.huName = JSON.stringify(data.msg["playerName"]);
                 this.huPosition = JSON.stringify(data.msg["position"]);
                 this.message = this.huName + "has HU!!!!!"
-                this.showTiles = true;
                 this.restart();
 
             } else if (data.operation === "Kong") {
                 this.kongList = data.msg["KongList"];
-                // 一种杠法不选择，直接开杠
+                // Only one situation, no selection
                 if (this.kongList.length === 1) {
-                    this.kong(this.kongList[0])
+                    this.selectKong(this.kongList[0])
+                } else {
+                  this.message = "Please choose a way to Kong:"
                 }
-                console.log ("kong list:" + this.kongList);
 
             } else if (data.operation === "Chow") {
                 this.chowList = data.msg["ChowList"];
-                // 一种吃法不选择，直接开吃
+                // Only one situation, no selection
                 if (this.chowList.length === 1) {
                     this.selectChow(this.chowList[0])
+                } else {
+                    this.message = "Please choose a way to Chow:"
                 }
-                console.log("chowList:" + this.chowList);
 
             } else if (data.operation === "discardRequest") {
-                console.log ("receive discard request")
+                // can discard
                 this.message = JSON.stringify(data.msg);
                 this.canDiscard = true;
 
             } else if (data.operation === "getTableTile") {
                 this.tableTiles = data.msg["tableTile"];
-                console.log ("table tile=" + this.tableTiles);
 
             } else if (data.operation === "Draw") {
                 this.message = "Draw, game over";
-                this.showTiles = true;
                 this.restart();
             }
         },
 
+        // prepare, send prepare message and display ready message
         prepare() {
             try {
                 WebSocketService.sendMessage(JSON.stringify({ operation: 'prepare'}));
@@ -335,10 +389,12 @@ export default {
             }
         },
 
-        // 给玩家发牌，即返回这个位置发的牌的url，对应在手牌组件中展示
+        // Deal the tiles to the player,
+        // i.e. return the url of the tiles discarded in this position,
+        // corresponding to the display in the handTiles component
         deal(dealPosition, dealID) {
             try{
-                // 清空之前出的牌
+                // Clear tiles that has been discarded
                 this.hideImages("Discard");
                 this.message = '';
 
@@ -356,10 +412,11 @@ export default {
             }
         },
 
-        // 把出的牌展示在桌面上，即返回一个discardUrl
+        // Display the discarded tiles on the desk,
+        // i.e. return a discardUrl
         showDiscard(discardPosition, discardID) {
             try{
-                // 获取牌的前两位
+                // Getting the first two number of tileID
                 const tilePrefix = Math.floor(discardID / 10);
                 if (discardPosition === "self") {
                     this.selfDiscardUrl =  new URL(`../assets/tiles-me/${tilePrefix}.png`, import.meta.url).href;
@@ -378,9 +435,7 @@ export default {
 
         pang() {
             WebSocketService.sendMessage(JSON.stringify({operation: "Pang"}));
-            // 清空之前出的牌
-            this.hideImages("Discard")
-            // 清空吃碰杠按钮
+            // Clear buttons of chow, pang and kong
             this.canPang = false;
             this.canKong = false;
             this.canChow = false;
@@ -388,9 +443,7 @@ export default {
 
         kong() {
             WebSocketService.sendMessage(JSON.stringify({operation: "Kong"}));
-            // 清空之前出的牌
-            this.hideImages(".Discard")
-            // 清空吃碰杠按钮
+            // Clear buttons of chow, pang and kong
             this.canKong = false;
             this.canPang = false;
             this.canChow = false;
@@ -398,14 +451,18 @@ export default {
 
         selectKong(id){
             WebSocketService.sendMessage(JSON.stringify({operation: "selectKong", tileID: id}));
+            // Clear buttons of chow, pang and kong
+            // Clear tiles that has been discarded
+            this.hideImages("Discard")
+            this.canChow = false;
+            this.canPang = false;
+            this.canKong = false;
+            this.kongList = ''  // hide the chosen menu
         },
 
         chow() {
             WebSocketService.sendMessage(JSON.stringify({operation: "Chow"}));
-            console.log("选择吃，发送了吃的操作")
-            // 清空之前出的牌
-            this.hideImages("Discard")
-            // 清空吃碰杠按钮
+            // Clear buttons of chow, pang and kong
             this.canChow = false;
             this.canPang = false;
             this.canKong = false;
@@ -413,7 +470,13 @@ export default {
 
         selectChow(list) {
             WebSocketService.sendMessage(JSON.stringify({operation: "selectChow", tileIDList: JSON.stringify(list)}));
-            console.log("选择了怎么样吃，发送了selectChow，tileIDList=" + list)
+            // Clear tiles that has been discarded
+            this.hideImages("Discard")
+            // Clear buttons of chow, pang and kong
+            this.canChow = false;
+            this.canPang = false;
+            this.canKong = false;
+
         },
 
         hu() {
@@ -431,12 +494,16 @@ export default {
 
         noPangOrKong() {
             WebSocketService.sendMessage(JSON.stringify({operation: "noPangOrKong"}));
+            // Clear tiles that has been discarded
+            this.hideImages("Discard")
             this.canPang = false;
             this.canKong = false;
         },
 
         noChow() {
             WebSocketService.sendMessage(JSON.stringify({operation: "noChow"}));
+            // Clear tiles that has been discarded
+            this.hideImages("Discard")
             this.canChow = false;
         },
 
@@ -445,7 +512,6 @@ export default {
             this.tableTiles = [];
             this.selfHandTiles = this.nextHandTiles = this.oppoHandTiles = this.prevHandTiles = [];
             this.selfPrepare = this.nextPrepare = this.oppoPrepare = this.prevPrepare = false;
-            this.message = '';
             this.selfMeldTiles = this.nextMeldTiles = this.oppoMeldTiles = this.prevMeldTiles = [];
             this.canHu = false;
             this.canChow = false;
@@ -459,45 +525,41 @@ export default {
             this.nextDeal = false;
             this.oppoDeal = false;
             this.prevDeal = false;
-            this.huName = '';
-            this.huPosition = '';
-            this.kongList = [];  // [TileID_1, TileID_2, ...]
-            this.chowList = [];  // [[TileID_1, TileID_2, TileID_3], ...]
+            this.kongList = [];
+            this.chowList = [];
             this.canDiscard = false;
         },
 
         // helper method
-        // 隐藏指定class图片
+        // hide the img of specified class name
         hideImages(className) {
-            // 获取所有指定 class 的图片元素
+            // Get all image elements of the specified class name
             const tileImages = this.$el.querySelectorAll(className);
 
-            // 遍历这些图片元素，将它们的 src 属性设为空
+            // Iterate over these image elements, setting their src attribute to null
             tileImages.forEach(img => {
                 img.src = '';
-            });
-            document.querySelectorAll("." + className).forEach(element => {
-                element.classList.add("hidden");
             });
         },
 
 
-        // 根据牌编号生成相应的图片 URL, 用作自己面前的牌组以及选择吃法
+        // Generate an image URL based on the tileID,
+        // which can be used for the tiles wall in front of self and for choosing how to chow.
         getTileUrl(tile) {
-            // 获取牌的前两位
+            // get first two numbers of tileID
             const tilePrefix = Math.floor(tile / 10);
             return new URL(`../assets/tiles-me/${tilePrefix}.png`, import.meta.url).href;
         },
 
     },
 
-    // 注册消息处理回调函数
+    // Registering Message Handling Callback Function
     mounted() {
         WebSocketService.addMessageListener(this.handleMessage);
         this.hideImages("Discard");
     },
 
-    // 移除消息处理回调函数
+    // Remove the Message Handling Callback Function
     beforeUnmount() {
         WebSocketService.removeMessageListener(this.handleMessage);
     }
@@ -518,7 +580,7 @@ export default {
         height: 100vh;
     }
 
-    /* 玩家名字容器样式 */
+    /* player name container style */
     .player-name {
         background-color: rgba(255, 0, 0, 0); /* 使用 rgba() 函数设置透明的背景颜色 */
         color: #ffffff; /* 文本颜色为白色 */
@@ -532,6 +594,7 @@ export default {
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 添加阴影 */
     }
 
+    /* ready button style */
     .ready-button {
         background-color: #007bff; /* 按钮背景颜色 */
         color: #fff; /* 按钮文字颜色 */
@@ -552,6 +615,7 @@ export default {
         transform: scale(1.1); /* 鼠标悬停时按钮放大为原来的 1.1 倍 */
     }
 
+    /* error message style */
     .error-message {
         color: red; /* 设置文字颜色为红色 */
         text-align: center; /* 居中对齐文字 */
@@ -563,6 +627,7 @@ export default {
         width: fit-content; /* 自动适应内容宽度 */
     }
 
+    /* info message style */
     .info-message {
         color: #155724; /* 设置文字颜色为深绿色 */
         text-align: center; /* 居中对齐文字 */
@@ -575,7 +640,7 @@ export default {
         border-radius: 5px; /* 添加圆角 */
     }
 
-    /* 顶部玩家名字 */
+    /* top player name */
     .oppoName {
         position: fixed;
         display: inline-block;
@@ -584,7 +649,7 @@ export default {
         transform: translateX(-50%);
     }
 
-    /* 底部玩家名字 */
+    /* bottom player name */
     .myName {
         position: fixed;
         display: inline-block;
@@ -593,7 +658,7 @@ export default {
         transform: translateX(-50%);
     }
 
-    /* 左侧玩家名字 */
+    /* left player name */
     .leftName {
         position: fixed;
         display: inline-block;
@@ -602,7 +667,7 @@ export default {
         transform: translateY(-50%);
     }
 
-    /* 右侧玩家名字 */
+    /* right player name */
     .rightName {
         position: fixed;
         display: inline-block;
@@ -687,52 +752,130 @@ export default {
         box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
         transition: 0.1s ease; /* 动画过渡效果 */
         position: fixed;
-        top:70%;
-        left:45%;
+        bottom: 18%;
+        left: 45%;
     }
     .Chow:hover {
         transform: scale(1.1); /* 鼠标悬停时按钮放大为原来的 1.1 倍 */
     }
 
-    .Pang {
+    .ChowSkip {
+      background-color: #007bff; /* 按钮背景颜色 */
+      color: #fff; /* 按钮文字颜色 */
+      padding: 5px 10px; /* 按钮内边距 */
+      border: none; /* 去除边框 */
+      border-radius: 5px; /* 圆角边框 */
+      font-size: 1.5em; /* 字体大小 */
+      font-weight: bold; /* 字体加粗 */
+      text-align: center; /* 文本居中 */
+      cursor: pointer; /* 鼠标悬停时显示为指针 */
+      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+      transition: 0.1s ease; /* 动画过渡效果 */
+      position: fixed;
+      bottom: 18%;
+      left: 53%;
+    }
+    .ChowSkip:hover {
+      transform: scale(1.1); /* 鼠标悬停时按钮放大为原来的 1.1 倍 */
+    }
 
+    .Pang {
+        background-color: #007bff; /* 按钮背景颜色 */
+        color: #fff; /* 按钮文字颜色 */
+        padding: 5px 10px; /* 按钮内边距 */
+        border: none; /* 去除边框 */
+        border-radius: 5px; /* 圆角边框 */
+        font-size: 1.5em; /* 字体大小 */
+        font-weight: bold; /* 字体加粗 */
+        text-align: center; /* 文本居中 */
+        cursor: pointer; /* 鼠标悬停时显示为指针 */
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+        transition: 0.1s ease; /* 动画过渡效果 */
+        position: fixed;
+        bottom:18%;
+        left:60%;
     }
     .Pang:hover {
         transform: scale(1.1); /* 鼠标悬停时按钮放大为原来的 1.1 倍 */
     }
 
     .Kong {
-
+        background-color: #007bff; /* 按钮背景颜色 */
+        color: #fff; /* 按钮文字颜色 */
+        padding: 5px 10px; /* 按钮内边距 */
+        border: none; /* 去除边框 */
+        border-radius: 5px; /* 圆角边框 */
+        font-size: 1.5em; /* 字体大小 */
+        font-weight: bold; /* 字体加粗 */
+        text-align: center; /* 文本居中 */
+        cursor: pointer; /* 鼠标悬停时显示为指针 */
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+        transition: 0.1s ease; /* 动画过渡效果 */
+        position: fixed;
+        bottom: 18%;
+        left: 70%;
     }
     .Kong:hover {
         transform: scale(1.1); /* 鼠标悬停时按钮放大为原来的 1.1 倍 */
     }
 
-    .Hu {
+    .PangKongSkip {
+      background-color: #007bff; /* 按钮背景颜色 */
+      color: #fff; /* 按钮文字颜色 */
+      padding: 5px 10px; /* 按钮内边距 */
+      border: none; /* 去除边框 */
+      border-radius: 5px; /* 圆角边框 */
+      font-size: 1.5em; /* 字体大小 */
+      font-weight: bold; /* 字体加粗 */
+      text-align: center; /* 文本居中 */
+      cursor: pointer; /* 鼠标悬停时显示为指针 */
+      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+      transition: 0.1s ease; /* 动画过渡效果 */
+      position: fixed;
+      bottom: 18%;
+      left: 65%;
+    }
+    .PangKongSkip:hover {
+      transform: scale(1.1); /* 鼠标悬停时按钮放大为原来的 1.1 倍 */
+    }
 
+    .Hu {
+        background-color: #e30606; /* 按钮背景颜色 */
+        color: #fff; /* 按钮文字颜色 */
+        padding: 5px 10px; /* 按钮内边距 */
+        border: none; /* 去除边框 */
+        border-radius: 5px; /* 圆角边框 */
+        font-size: 1.5em; /* 字体大小 */
+        font-weight: bold; /* 字体加粗 */
+        text-align: center; /* 文本居中 */
+        cursor: pointer; /* 鼠标悬停时显示为指针 */
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+        transition: 0.1s ease; /* 动画过渡效果 */
+        position: fixed;
+        bottom: 18%;
+        left: 40%;
     }
     .Hu:hover {
         transform: scale(1.1); /* 鼠标悬停时按钮放大为原来的 1.1 倍 */
     }
 
     .HuSkip {
-
+      background-color: #e30606; /* 按钮背景颜色 */
+      color: #fff; /* 按钮文字颜色 */
+      padding: 5px 10px; /* 按钮内边距 */
+      border: none; /* 去除边框 */
+      border-radius: 5px; /* 圆角边框 */
+      font-size: 1.5em; /* 字体大小 */
+      font-weight: bold; /* 字体加粗 */
+      text-align: center; /* 文本居中 */
+      cursor: pointer; /* 鼠标悬停时显示为指针 */
+      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+      transition: 0.1s ease; /* 动画过渡效果 */
+      position: fixed;
+      bottom: 18%;
+      left: 50%;
     }
     .HuSkip:hover {
-        transform: scale(1.1); /* 鼠标悬停时按钮放大为原来的 1.1 倍 */
-    }
-
-    .PangKongSkip {
-
-    }
-    .PangKongSkip:hover {
-        transform: scale(1.1); /* 鼠标悬停时按钮放大为原来的 1.1 倍 */
-    }
-
-    .ChowSkip {
-
-    }
-    .ChowSkip:hover {
         transform: scale(1.1); /* 鼠标悬停时按钮放大为原来的 1.1 倍 */
     }
 
@@ -743,36 +886,36 @@ export default {
     #selfDiscard {
         position: fixed;
         left: 50%;
-        bottom: 30%;
+        bottom: 28%;
         transform: translate(-50%, 0);
-        width: 46px;
-        height: 64px;
+        width: 36px;
+        height: 50px;
     }
 
     #nextDiscard {
         position: fixed;
-        right: 30%;
+        right: 33%;
         top: 50%;
         transform: translate(0, -50%);
-        width: 59px;
-        height: 48px;
+        width: 43px;
+        height: 33px;
     }
 
     #oppoDiscard {
         position: fixed;
         left: 50%;
-        top: 30%;
+        top: 33%;
         transform: translate(-50%, 0);
-        width: 42px;
-        height: 60px;
+        width: 35px;
+        height: 50px;
     }
 
     #prevDiscard {
         position: fixed;
-        left: 30%;
+        left: 32%;
         top: 50%;
         transform: translate(0, -50%);
-        width: 59px;
-        height: 48px;
+        width: 43px;
+        height: 33px;
     }
 </style>
