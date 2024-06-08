@@ -6,93 +6,132 @@ import com.smoker.mahjong.doma.User.Player;
 import java.util.ArrayList;
 import java.util.Collections;
 
+/**
+ * Represents the tile library for the Mahjong game, managing the creation, shuffling, and dealing of tiles.
+ */
 public class TileLibrary {
-    // 储存牌库信息
+    // Stores the list of players
     private ArrayList<Player> playerList;
+    // Stores the tiles to be dealt
     private ArrayList<Tile> tiles;
-
+    // Stores all the tiles initially created
     private ArrayList<Tile> totalTiles;
-
+    // Stores the tiles on the table
     private ArrayList<Tile> tableTiles;
 
-
-
-
-    public TileLibrary(ArrayList<Player> playerList){
+    /**
+     * Constructor for TileLibrary.
+     * Initializes the tile library with the given player list, creates tiles, shuffles them, and deals the initial hands.
+     * @param playerList - The list of players.
+     */
+    public TileLibrary(ArrayList<Player> playerList) {
         this.tableTiles = new ArrayList<>();
         this.playerList = playerList;
         tiles = new ArrayList<>();
-        createTiles();
-        shuffle(tiles);
-        dealInitialHand();
+        createTiles(); // Create initial set of tiles
+        shuffle(tiles); // Shuffle the tiles
+        dealInitialHand(); // Deal the initial hand to players
     }
 
     /**
-     * 创建初始牌库
-     *
-     * 牌的 id 可以精准找到牌的 类型 大小 第几张牌
-     * id 一定是一个三位数
-     *
-     * 百位是牌的类型  1 对应 万， 2 对应 条， 3 对应 饼， 4 对应 风牌（东南西北）， 5 对应 字牌 （中发白）
-     * 十位是牌的大小  其中 筒、条、万 数字就是其对应的大小   风牌中 1，2，3，4 对应东南西北， 字牌中 1，2，3 对应中发白
-     * 个位代表这是第几张牌  因为每种类型的牌有 4个 ，所以个位就用来记录 这是4张一样的牌中的第几个 大小范围是 1 ~ 4
+     * Creates the initial set of tiles.
+     * Each tile is identified by a unique three-digit ID.
+     * Hundreds place indicates tile type: 1-Wan, 2-Tiao, 3-Bing, 4-Wind tiles, 5-Character tiles.
+     * Tens place indicates tile value.
+     * Units place indicates which of the four identical tiles it is.
      */
-    public void createTiles(){
-        for(int suit = 1; suit <= 5; suit++){
+    public void createTiles() {
+        for (int suit = 1; suit <= 5; suit++) {
             int figure = 9;
-            if (suit == 4) figure = 4;
-            if (suit == 5) figure = 3;
-            for(int num = 1; num <= figure; num++){
-                for(int index = 1; index <= 4; index++){
-                    tiles.add(new Tile(suit * 100 + num * 10 + index, true));
+            if (suit == 4) figure = 4; // Wind tiles
+            if (suit == 5) figure = 3; // Character tiles
+            for (int num = 1; num <= figure; num++) {
+                for (int index = 1; index <= 4; index++) {
+                    tiles.add(new Tile(suit * 100 + num * 10 + index, true)); // Add each tile to the list
                 }
             }
         }
-        totalTiles = new ArrayList<>(tiles);
+        totalTiles = new ArrayList<>(tiles); // Copy all tiles to totalTiles
     }
 
-    public void shuffle(ArrayList<Tile> tiles){
-        Collections.shuffle(tiles);
+    /**
+     * Shuffles the tiles.
+     * @param tiles - The list of tiles to shuffle.
+     */
+    public void shuffle(ArrayList<Tile> tiles) {
+        Collections.shuffle(tiles); // Shuffle the tiles
     }
 
-
-    public void dealInitialHand(){
-        // 发牌算法
-        for(Player player : playerList){
-            player.cleanHandTile();
-            for(int i = 0; i < 13; i++){
-                player.addInitialHand(tiles.remove(0));
+    /**
+     * Deals the initial hand to each player.
+     * Each player receives 13 tiles.
+     */
+    public void dealInitialHand() {
+        for (Player player : playerList) {
+            player.cleanHandTile(); // Clean player's hand
+            for (int i = 0; i < 13; i++) {
+                player.addInitialHand(tiles.remove(0)); // Deal 13 tiles to each player
             }
         }
     }
 
-    public Tile deal(String name){
-        for(Player player : playerList){
-            if(player.getName().equals(name)){
-                return player.getHandTile().addTile(tiles.remove(0));
+    /**
+     * Deals one tile to the specified player.
+     * @param name - The name of the player.
+     * @return The dealt tile.
+     */
+    public Tile deal(String name) {
+        for (Player player : playerList) {
+            if (player.getName().equals(name)) {
+                return player.getHandTile().addTile(tiles.remove(0)); // Deal one tile to the player
             }
         }
-        return null;
+        return null; // If player not found, return null
     }
 
-    public Tile findTile(int id){
-        for(Tile tile : totalTiles){
-            if(tile.getId() == id){
-                return tile;
+    /**
+     * Finds a tile by its ID.
+     * @param id - The ID of the tile.
+     * @return The tile if found, else null.
+     */
+    public Tile findTile(int id) {
+        for (Tile tile : totalTiles) {
+            if (tile.getId() == id) {
+                return tile; // Return the tile if found
             }
         }
-        return null;
+        return null; // If tile not found, return null
     }
 
-    public void addTableTile(Tile tile){
-        tableTiles.add(tile);
+    /**
+     * Adds a tile to the table tiles.
+     * @param tile - The tile to add.
+     */
+    public void addTableTile(Tile tile) {
+        tableTiles.add(tile); // Add the tile to the table tiles
     }
 
-    public ArrayList<Tile> getTableTile(){
-        return tableTiles;
+    /**
+     * Gets the tiles on the table.
+     * @return The list of table tiles.
+     */
+    public ArrayList<Tile> getTableTile() {
+        return tableTiles; // Return the list of table tiles
     }
 
-    public ArrayList<Tile> getTiles(){
+    /**
+     * Gets the remaining tiles.
+     * @return The list of remaining tiles.
+     */
+    public ArrayList<Tile> getTiles() {
         return tiles;
+    }
+
+    /**
+     * Gets the initial tiles.
+     * @return The list of initial tiles.
+     */
+    public ArrayList<Tile> getTotalTiles() {
+        return totalTiles;
     }
 }

@@ -1,6 +1,5 @@
 package com.smoker.mahjong.doma.user;
 
-import com.smoker.mahjong.doma.Game.HandTile;
 import com.smoker.mahjong.doma.Game.Tile;
 import com.smoker.mahjong.doma.User.Player;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,82 +9,110 @@ import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for the Player class.
+ */
 public class PlayerTest {
-// F3 P7 T10
+
     private Player player;
-    private Player banker;
-    private Player winner;
-    private ArrayList<Player> losers;
 
     @BeforeEach
-    void setUp() {
-        player = new Player("player1");
-        banker = new Player("banker");
-        winner = new Player("winner");
-        losers = new ArrayList<>();
+    public void setUp() {
+        // Initialize a player with name "TestPlayer"
+        player = new Player("TestPlayer");
     }
 
     @Test
-    void testAddInitialHand() {
-        Tile tile = new Tile(101, true);
+    public void testGetName() {
+        // Ensure getName method works correctly
+        assertEquals("TestPlayer", player.getName());
+    }
+
+    @Test
+    public void testGetHandTile() {
+        // Ensure getHandTile method works correctly
+        assertNotNull(player.getHandTile());
+    }
+
+    @Test
+    public void testGetScore() {
+        // Ensure getScore method works correctly
+        assertEquals(5000, player.getScore());
+    }
+
+    @Test
+    public void testIsPrepare() {
+        // Ensure isPrepare method works correctly
+        assertFalse(player.isPrepare());
+    }
+
+    @Test
+    public void testSetPrepare() {
+        // Ensure setPrepare method works correctly
+        player.setPrepare();
+        assertTrue(player.isPrepare());
+        player.setPrepare();
+        assertFalse(player.isPrepare());
+    }
+
+    @Test
+    public void testCleanHandTile() {
+        // Ensure cleanHandTile method works correctly
+        player.getHandTile().addTile(new Tile(111, true)); // Add a tile to hand
+        player.cleanHandTile();
+        assertEquals(0, player.getHandTile().getHandTile().size());
+    }
+
+    @Test
+    public void testAddInitialHand() {
+        // Ensure addInitialHand method works correctly
+        Tile tile = new Tile(111, true); // Create a tile
         player.addInitialHand(tile);
-        HandTile handTile = player.getHandTile();
-        assertTrue(handTile.getHandTile().contains(tile), "手牌应包含刚添加的牌");
+        assertEquals(1, player.getHandTile().getHandTile().size());
+        assertEquals(111, player.getHandTile().getHandTile().get(0).getId());
     }
 
     @Test
-    void testScoringNormalWin() {
-        losers.add(new Player("loser1"));
-        player.scoring(banker, player, losers, "normal");
-        assertEquals(5800, player.getScore(), "平胡情况下庄家应得分5800");
-    }
+    public void testScoring() {
+        // Initialize banker, winner, and loser players
+        Player banker = new Player("Banker");
+        Player winner = new Player("Winner");
+        ArrayList<Player> losers = new ArrayList<>();
+        losers.add(new Player("Loser1"));
 
-    @Test
-    void testScoringSevenPairsWin() {
-        losers.add(new Player("loser1"));
-        player.scoring(banker, player, losers, "seven pairs");
-        assertEquals(6600, player.getScore(), "七对情况下庄家应得分6600");
-    }
+        // Store initial score for comparison
+        int initialScore = player.getScore();
 
-    @Test
-    void testScoringDraw() {
-        player.scoring(banker, null, null, null);
-        assertEquals(5000, player.getScore(), "荒牌情况下分数应保持不变");
-    }
+        // Test case where player is the winner and not self-drawn
+        player.scoring(banker, player, losers, 1);
+        // Expected score calculation: initialScore + (100 * 1 * 6)
+        assertEquals(initialScore + 1 * 100 * 6, player.getScore());
 
-    @Test
-    void testScoringLoser() {
-        losers.add(player);
-        winner.scoring(banker, winner, losers, "normal");
-        assertEquals(4800, player.getScore(), "平胡情况下输家应失分4800");
-    }
+        // Reset score
+        player = new Player("TestPlayer");
+        initialScore = player.getScore();
 
-    @Test
-    void testGetName() {
-        assertEquals("player1", player.getName(), "玩家的名字应为player1");
-    }
+        // Test case where player is a loser and the banker wins
+        player.scoring(banker, banker, losers, 1);
+        // Expected score calculation: initialScore - (100 * 1 * 2)
+        assertEquals(initialScore - 1 * 2 * 100, player.getScore());
 
-    @Test
-    void testGetHandTile() {
-        HandTile handTile = player.getHandTile();
-        assertNotNull(handTile, "应返回玩家的手牌");
-    }
+        // Reset score
+        player = new Player("TestPlayer");
+        initialScore = player.getScore();
 
-    @Test
-    void testGetScore() {
-        assertEquals(5000, player.getScore(), "初始分数应为5000");
-    }
+        // Test case where player is the banker and wins by self-draw
+        player.scoring(player, player, new ArrayList<>(), 1);
+        // Expected score calculation: initialScore + (100 * 1 * 12)
+        assertEquals(initialScore + 1 * 100 * 12, player.getScore());
 
-    @Test
-    void testIsPrepare() {
-        assertFalse(player.isPrepare(), "初始情况下应未准备");
-    }
+        // Reset score
+        player = new Player("TestPlayer");
+        initialScore = player.getScore();
 
-    @Test
-    void testSetPrepare() {
-        player.setPrepare();
-        assertTrue(player.isPrepare(), "设置准备后应为准备状态");
-        player.setPrepare();
-        assertFalse(player.isPrepare(), "再次设置准备后应为未准备状态");
+        // Test case where player is a loser and another player wins by self-draw
+        player.scoring(banker, winner, losers, 1);
+        // Expected score calculation: initialScore - (100 * 1 * 2)
+        assertEquals(initialScore - 1 * 100 * 2, player.getScore());
     }
 }

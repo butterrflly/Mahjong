@@ -1,43 +1,65 @@
 package com.smoker.mahjong.doma.Game;
 
-
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * This class represents the hand tiles of a player and provides various methods
+ * to manipulate and check the tiles for actions like Pong, Kong, Chow, and Hu.
+ */
 public class HandTile {
 
-    private ArrayList<Tile> handTile;
-
-    private ArrayList<Meld> melds;
-
-
+    private ArrayList<Tile> handTile; // List of tiles in hand
+    private ArrayList<Meld> melds; // List of melds (Pong, Kong, Chow)
 
     public HandTile() {
         handTile = new ArrayList<Tile>();
         melds = new ArrayList<Meld>();
     }
 
+    /**
+     * Adds a tile to the hand and sorts the hand.
+     * @param tile the tile to add
+     * @return the added tile
+     */
     public Tile addTile(Tile tile){
         handTile.add(tile);
-        sort();
+        sort(); // Sort the hand after adding the tile
         return tile;
     }
 
+    /**
+     * Removes a tile from the hand and sorts the hand.
+     * @param tile the tile to remove
+     * @return the ID of the removed tile
+     */
     public int removeTile(Tile tile){
         handTile.remove(tile);
-        sort();
+        sort(); // Sort the hand after removing the tile
         return tile.getId();
     }
 
+    /**
+     * Clears all tiles from the hand.
+     */
     public void cleanTile(){
         handTile.clear();
     }
 
+    /**
+     * Removes multiple tiles from the hand.
+     * @param tiles the list of tiles to remove
+     */
     public void removeTile(ArrayList<Tile> tiles){
         for (Tile tile : tiles)
             handTile.remove(tile);
     }
 
+    /**
+     * Checks if a tile can be used to form a Pong.
+     * @param tileID the ID of the tile to check
+     * @return true if Pong can be formed, false otherwise
+     */
     public boolean canPang(int tileID) {
         int num = 0;
         for (Tile tile : handTile)
@@ -47,11 +69,15 @@ public class HandTile {
         return num >= 2;
     }
 
+    /**
+     * Checks if a tile can be used to form a Kong.
+     * @param tileID the ID of the tile to check
+     * @return true if Kong can be formed, false otherwise
+     */
     public boolean canKong(int tileID) {
         int numHand = 0;
         int numMelds = 0;
         boolean contain = false;
-
 
         for (Tile tile : handTile) {
             if (tile.getId() == tileID) {
@@ -82,11 +108,9 @@ public class HandTile {
         return numHand >= 3 || numMelds > 0;
     }
 
-
     /**
-     * 每回合检查自己的手牌有没有 4 个一样的牌
-     * 检查是否可以在自己回合内杠牌
-     * @return 可以杠牌 的 列表 ，可能有多个可以开杠的牌
+     * Checks if there are any tiles that can form a Kong.
+     * @return a list of tiles that can form a Kong
      */
     public ArrayList<Tile> canKong(){
         ArrayList<Tile> kongTiles = new ArrayList<>();
@@ -102,10 +126,10 @@ public class HandTile {
         return kongTiles;
     }
 
-
     /**
-     * 因为可能会有多种吃法，所以返回一个二维数组
-     * 二位数组 肯能为空， 也就是没有可以吃的 组合
+     * Checks if a tile can be used to form a Chow.
+     * @param tile the tile to check
+     * @return a list of possible Chow combinations
      */
     public ArrayList<ArrayList<Tile>> canChow(Tile tile) {
         ArrayList<ArrayList<Tile>> chowTiles = new ArrayList<>();
@@ -126,7 +150,6 @@ public class HandTile {
         Tile tile2 = inArrayList(tiles, num - 1);
         Tile tile3 = inArrayList(tiles, num + 1);
         Tile tile4 = inArrayList(tiles, num + 2);
-
 
         if (tile1 != null && tile2 != null){
             ArrayList<Tile> c = new ArrayList<>();
@@ -152,7 +175,11 @@ public class HandTile {
         return chowTiles;
     }
 
-
+    /**
+     * Checks if a tile can be used to form a Hu.
+     * @param tile the tile to check
+     * @return the type of Hu that can be formed (0 if none)
+     */
     public int canHu(Tile tile) {
         ArrayList<Tile> tempHandTile = new ArrayList<>(handTile);
 
@@ -172,11 +199,9 @@ public class HandTile {
             }
         }
 
-
         if (pair.size() == 0) return 0;
 
-
-        // 7 small pair
+        // Check for 7 pairs
         if (pair.size() == 14) {
             Map<Integer, Integer> countMap = new HashMap<>();
             for (Tile tempTile : pair) {
@@ -184,7 +209,7 @@ public class HandTile {
                 countMap.put(currentID, countMap.getOrDefault(currentID, 0) + 1);
             }
 
-            // big 7 pair
+            // Check for 4 pairs (big 7 pairs)
             for (int count : countMap.values()) {
                 if (count >= 4) {
                     System.out.println("big 7 pair");
@@ -195,7 +220,6 @@ public class HandTile {
             return 4;
         }
 
-
         int meldTripletNum = 0;
         for (Meld meld : melds){
             if (meld.getType().equals("Pang") || meld.getType().equals("Kong")){
@@ -204,17 +228,17 @@ public class HandTile {
         }
 
         while (pair.size() != 0) {
-            ArrayList <Tile> temp = new ArrayList<>(tempHandTile);
+            ArrayList<Tile> temp = new ArrayList<>(tempHandTile);
             temp.remove(pair.remove(0));
             temp.remove(pair.remove(0));
 
-            ArrayList<Integer> tileIDs = new ArrayList<>(temp.stream().map(Tile :: getId).map(id -> id / 10).toList());
+            ArrayList<Integer> tileIDs = new ArrayList<>(temp.stream().map(Tile::getId).map(id -> id / 10).collect(Collectors.toList()));
             int tripletNum = 0;
             boolean canHu = false;
 
             while (tileIDs.size() >= 3) {
                 if (tileIDs.get(0).equals(tileIDs.get(1)) && tileIDs.get(0).equals(tileIDs.get(2))) {
-                    tileIDs.subList(0, 3).clear();  // Remove first three elements
+                    tileIDs.subList(0, 3).clear(); // Remove first three elements
                     tripletNum++;
                 } else if (tileIDs.contains(tileIDs.get(0) + 1) && tileIDs.contains(tileIDs.get(0) + 2)) {
                     if (tileIDs.get(0) / 10 > 3){
@@ -238,8 +262,12 @@ public class HandTile {
         return 0;
     }
 
+    /**
+     * Forms a Pong with the given tile.
+     * @param tile the tile to form a Pong with
+     */
     public void Pang(Tile tile) {
-        // 碰牌
+        // Form a Pong
         ArrayList<Tile> meld = new ArrayList<>();
 
         for (Tile value : handTile) {
@@ -253,8 +281,12 @@ public class HandTile {
         melds.add(new Meld(meld, "Pang", false));
     }
 
+    /**
+     * Forms a Kong with the given tile.
+     * @param tile the tile to form a Kong with
+     */
     public void Kong(Tile tile) {
-        // 杠牌
+        // Form a Kong
         ArrayList<Tile> meld = new ArrayList<>();
 
         for (Tile value : handTile) {
@@ -270,19 +302,6 @@ public class HandTile {
         } else {
             for (int i = 0; i < melds.size(); i++) {
                 Meld m = melds.get(i);
-//                int num = 0;
-//                for (Tile value : m.getMeld()){
-//                    if  (tile.getId() / 10 == value.getId() / 10){
-//                        num++;
-//                    }
-//                }
-//                if (num == 3){
-//                    melds.remove(m);
-//                    meld.addAll(m.getMeld());
-//                    meld.add(tile);
-//                    melds.add(new Meld(meld, "Kong", false));
-//                    break;
-//                }
 
                 if (m.getType().equals("Pang")){
                     if (tile.getId() / 10 == m.getMeld().get(0).getId() / 10){
@@ -297,13 +316,13 @@ public class HandTile {
         }
     }
 
-
     /**
-     * 因为可能会有多种吃法，所以需要一种吃的组合
-     * 所以额外的一个数组参数就是吃的组合
+     * Forms a Chow with the given tiles and tile.
+     * @param chowTiles the tiles to form a Chow with
+     * @param tile the tile to form a Chow with
      */
     public void Chow(ArrayList<Tile> chowTiles, Tile tile) {
-        // 吃牌
+        // Form a Chow
         chowTiles.remove(tile);
         Tile tile1 = chowTiles.remove(0);
         Tile tile2 = chowTiles.remove(0);
@@ -315,12 +334,14 @@ public class HandTile {
         melds.add(new Meld(chowTiles, "Chow", false));
     }
 
-
+    /**
+     * Forms a Hu with the given tile.
+     * @param tile the tile to form a Hu with
+     * @return the type of Hu formed
+     */
     public int Hu(Tile tile) {
-        // 胡牌
-        int HuType;
-
-        HuType = canHu(tile);
+        // Form a Hu
+        int HuType = canHu(tile);
 
         if (!handTile.contains(tile)){
             handTile.add(tile);
@@ -328,19 +349,14 @@ public class HandTile {
 
         ArrayList<Tile> tempHandTile = new ArrayList<>(handTile);
 
-        // 大 单吊
+        // Check for 大单吊 (big single wait)
         if (tempHandTile.size() == 2){
             System.out.println("大 单吊");
             HuType *= 2;
         }
 
-
-
-        // 一条龙
-        ArrayList<Integer> tileIDs = new ArrayList<>(tempHandTile.stream().map(Tile :: getId).map(id -> id / 10).distinct().toList());
-
-        System.out.println(tileIDs.toString());
-
+        // Check for 一条龙 (dragon)
+        ArrayList<Integer> tileIDs = new ArrayList<>(tempHandTile.stream().map(Tile::getId).map(id -> id / 10).distinct().collect(Collectors.toList()));
         boolean hasAllSuites = true;
         for (int i = 1; i <= 3; i++) {
             hasAllSuites = true;
@@ -361,20 +377,18 @@ public class HandTile {
             HuType *= 2;
         }
 
-
-        // 清一色
+        // Check for 清一色 (pure one suit)
         for (Meld meld : melds){
             tempHandTile.addAll(meld.getMeld());
         }
 
-        if (tempHandTile.stream().map(Tile :: getId).map(id -> id / 100).distinct().count() == 1){
+        if (tempHandTile.stream().map(Tile::getId).map(id -> id / 100).distinct().count() == 1){
             System.out.println("清一色");
             HuType *= 2;
         }
 
         return HuType;
     }
-
 
     private Tile inArrayList(ArrayList<Tile> tiles, int id) {
         for (Tile value : tiles) {
@@ -386,7 +400,7 @@ public class HandTile {
     }
 
     public void sort(){
-        handTile.sort(Comparator.comparing(Tile :: getId));
+        handTile.sort(Comparator.comparing(Tile::getId)); // Sort the hand tiles
     }
 
     public ArrayList<Tile> getHandTile(){
@@ -398,4 +412,3 @@ public class HandTile {
         return melds;
     }
 }
-
