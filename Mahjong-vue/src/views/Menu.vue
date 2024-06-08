@@ -33,6 +33,9 @@
           <h2>Set your userName and password</h2>
           new user name:<input v-model="userName" /><br />
           new password:<input type="password" v-model="password" /><br />
+          <div class="backButton">
+            <BackButton v-on:click="backToChoose()" class="backButton"/>
+          </div>
 
         </div>
 
@@ -41,6 +44,9 @@
           <h2>Make sure you want to Close Account</h2>
           user name want to delete:<input v-model="userName" /><br />
           enter the password:<input type="password" v-model="password" /><br />
+          <div class="backButton">
+            <BackButton v-on:click="backToChoose()" class="backButton"/>
+          </div>
         </div>
 
         <!-- 是否登陆 -->
@@ -48,12 +54,18 @@
           <h2>Please enter your user name and password</h2>
           user name:<input v-model="userName" /><br />
           password:<input type="password" v-model="password" /><br />
+          <div class="backButton">
+            <BackButton v-on:click="backToChoose()" class="backButton"/>
+          </div>
         </div>
 
         <!-- 是否登陆 -->
         <div v-if="logoutIf">
           <h2>Please enter your user name and password</h2>
           user name:<input v-model="userName" /><br />
+          <div class="backButton">
+            <BackButton v-on:click="backToChoose()" class="backButton"/>
+          </div>
         </div>
 
         <!-- 是否改密码 -->
@@ -62,6 +74,9 @@
           user name:<input v-model="userName" /><br />
           old password:<input type="password" v-model="password" /><br />
           new password:<input type="password" v-model="newPassword" /><br />
+          <div class="backButton">
+            <BackButton v-on:click="backToChoose()" class="backButton"/>
+          </div>
         </div>
 
         <!-- 显示错误消息 -->
@@ -103,24 +118,36 @@ export default defineComponent({
       newPassword:'',
       successMessage:'',
       errorMessage:'',
-      // 控制四个表单的出现
+      // 控制5个表单的出现
       registerIf:false,
       deleteAccountIf:false,
       loginIf:false,
       changePasswordIf: false,
-      // 控制四个按钮的出现
+      logoutIf:false,
+      // 控制5个按钮的出现
       registerButtonIf:true,
       deleteAccountButtonIf:true,
       loginButtonIf:true,
       changePasswordButtonIf:true,
-      logoutIf:false,
       logoutButtonIf:true,
     }
   },
 
   methods: {
-
-
+    backToChoose(){
+      // 控制5个表单的出现
+          this.registerIf=false;
+          this.deleteAccountIf=false;
+          this.loginIf=false;
+          this.changePasswordIf= false;
+          this.logoutIf=false;
+          // 控制5个按钮的出现
+          this.registerButtonIf=true;
+          this.deleteAccountButtonIf=true;
+          this.loginButtonIf=true;
+          this.changePasswordButtonIf=true;
+          this.logoutButtonIf=true;
+    },
 
     register() {
       this.successMessage = '';

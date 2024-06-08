@@ -1,7 +1,7 @@
 <template>
     <div class="background">
-      <div>
-        <router-link to="/Menu"><BackButton class="backButton"/></router-link>
+      <div >
+        <BackButton v-on:click="backToChoose()" class="backButton"/>
       </div>
       <h2>Matching a game</h2>
         <div class="room">
@@ -118,6 +118,16 @@ export default {
           this.signal = JSON.stringify(data.msg)
         console.log(this.signal);
 
+      },
+      backToChoose(){
+        this.HaveCreateRoomIf=false;
+        this.createRoomButtonIf= true;
+        this.createRoomIf= false;
+        this.joinRoomButtonIf= true;
+        this.joinRoomIf=false;
+        this.joinedIf=false;
+        this.canStart = false;
+        this.roomExist= false;
       },
 
       createRoomCheck(){
