@@ -1,123 +1,151 @@
 package com.smoker.mahjong.doma.User;
 
-
 import com.smoker.mahjong.doma.Game.HandTile;
 import com.smoker.mahjong.doma.Game.Meld;
 import com.smoker.mahjong.doma.Game.Tile;
 import java.util.ArrayList;
 
+/**
+ * This class represents a player in the Mahjong game.
+ * A player has a name, hand tiles, melds, a score, and a prepare state.
+ */
 public class Player {
-    private int id;
-    private String name;
-    private HandTile handTile;
-    private ArrayList<Meld> melds;
-    private int score;
-    private boolean prepare;
+    private int id; // The unique identifier for the player
+    private String name; // The name of the player
+    private HandTile handTile; // The hand tiles of the player
+    private ArrayList<Meld> melds; // The melds of the player
+    private int score; // The score of the player
+    private boolean prepare; // The prepare state of the player
 
+    /**
+     * Constructor for Player.
+     * @param name the name of the player
+     */
     public Player(String name) {
         this.name = name;
         this.handTile = new HandTile();
         this.melds = new ArrayList<Meld>();
-        this.score = 5000; // 分数初始化
+        this.score = 5000; // Initialize score
         this.prepare = false;
     }
 
+    /**
+     * Clears the hand tiles and melds of the player.
+     */
     public void cleanHandTile() {
         this.handTile = new HandTile();
         this.melds = new ArrayList<Meld>();
     }
 
-
+    /**
+     * Adds an initial hand tile and sorts the hand.
+     * @param tile the tile to add
+     */
     public void addInitialHand(Tile tile) {
-        //Distribute the initial hand
-        handTile.addTile(tile);
-        handTile.sort();
+        handTile.addTile(tile); // Add the tile to the hand
+        handTile.sort(); // Sort the hand tiles
     }
 
-
     /**
-     * 用于游戏结束后的算分
+     * Calculates the score for the player based on the game outcome.
      *
-     * @param banker 庄家
-     * @param winner 赢家，可能是null
-     * @param loser  输家，可能是null
+     * @param banker the banker player
+     * @param winner the winner player, can be null
+     * @param loser the loser players, can be null
+     * @param HuType the type of Hu
      */
-    public void scoring(Player banker, Player winner, ArrayList<Player> loser, int HuTYpe) {
-        int points = 100 * HuTYpe;
-        // 荒牌
+    public void scoring(Player banker, Player winner, ArrayList<Player> loser, int HuType) {
+        int points = 100 * HuType;
+        // If there's no winner, it's a draw
         if (winner == null) {
             return;
         }
 
         if (winner == this) {
-            // 胡牌
+            // If the player is the winner
             if (loser.size() == 1) {
-                // 不是 自摸胡牌
+                // If not self-drawn
                 if (banker == this) {
-                    // 庄家小胡
+                    // Banker small win
                     score += points * 8;
                 } else {
-                    // 闲家小胡
+                    // Non-banker small win
                     if (loser.get(0) == banker) {
-                        // 庄家点炮
+                        // Banker discarded
                         score += points * 6;
                     } else {
-                        // 闲家点炮
+                        // Non-banker discarded
                         score += points * 5;
                     }
                 }
             } else {
-                // 自摸胡牌
+                // Self-drawn win
                 if (banker == this) {
-                    // 庄家自摸
+                    // Banker self-drawn
                     score += points * 12;
                 } else {
-                    // 闲家自摸
+                    // Non-banker self-drawn
                     score += points * 8;
                 }
             }
         } else {
+            // If the player is a loser
             if (loser.contains(this)) {
-                // 是自己点炮 或 有人自摸
+                // If the player discarded or someone self-drawn
                 points *= 2;
             }
-            // 别人点炮且 无自摸
             if (banker == this) {
-                // 自己是庄家
+                // If the player is the banker
                 score -= points * 2;
             } else {
-                // 自己不是庄家
+                // If the player is not the banker
                 if (winner == banker) {
-                    // 庄家胡牌
+                    // Banker wins
                     score -= points * 2;
                 } else {
-                    // 闲家胡牌
+                    // Non-banker wins
                     score -= points;
                 }
             }
         }
     }
 
+    /**
+     * Gets the name of the player.
+     * @return the name of the player
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Gets the hand tiles of the player.
+     * @return the hand tiles of the player
+     */
     public HandTile getHandTile() {
         return handTile;
     }
 
+    /**
+     * Gets the score of the player.
+     * @return the score of the player
+     */
     public int getScore() {
         return score;
     }
 
-
-
+    /**
+     * Checks if the player is prepared.
+     * @return true if the player is prepared, false otherwise
+     */
     public boolean isPrepare() {
         return prepare;
     }
 
+    /**
+     * Toggles the prepare state of the player.
+     */
     public void setPrepare() {
         prepare = !prepare;
     }
-
 }
