@@ -1,5 +1,5 @@
 <template>
-  <div v-if="gameStatus" class="handTiles">
+  <div v-if="!gameStatus" class="handTiles">
     <img
         v-for="tile in handTiles"
         :key="tile"
@@ -8,7 +8,7 @@
         class="tile"
     />
   </div>
-  <div v-if="gameStatus" class="meldTiles">
+  <div v-if="!gameStatus" class="meldTiles">
     <div v-for="(group, index) in meldTiles" :key="index" class="tile-group">
       <img
           v-for="(tile, tileIndex) in group"

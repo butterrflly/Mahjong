@@ -133,8 +133,8 @@
 
         <!-- tiles of hu player-->
         <div class="huPlayerTiles">
-            <HuPlayerTiles :meld-tiles="huHandTiles"
-                           :hand-tiles="huMeldTiles"
+            <HuPlayerTiles :meld-tiles="huMeldTiles"
+                           :hand-tiles="huHandTiles"
                            :game-status="gameStart"/>
         </div>
     </div>
@@ -284,7 +284,16 @@ export default {
                 this.prevHandTiles = data.msg["prevPlayer"]["handTile"];
                 // if someone hu, get his hand tiles
                 if (this.huPosition !== '') {
-                  this.huHandTiles = data.msg[this.huPosition]["handTile"];
+                  if (this.huPosition === "self") {
+                      this.huHandTiles = data.msg["self"]["handTile"];
+                  } else if (this.huPosition === "nextPlayer") {
+                      this.huHandTiles = data.msg["nextPlayer"]["handTile"];
+                  } else if (this.huPosition === "nextPlayer") {
+                      this.huHandTiles = data.msg["oppositePlayer"]["handTile"];
+                  } else if (this.huPosition === "prevPlayer") {
+                      this.huHandTiles = data.msg["prevPlayer"]["handTile"];
+                  }
+
                 }
 
             } else if (data.operation === "getMeld") {
@@ -298,7 +307,15 @@ export default {
                 this.prevIfHideMeld = data.msg["prevPlayer"]["isHide list"];
                 // if someone hu, get his meld tiles
                 if (this.huPosition !== '') {
-                  this.huMeldTiles = data.msg[this.huPosition]["handTile"];
+                  if (this.huPosition === "self") {
+                    this.huMeldTiles = data.msg["selfMelds"];
+                  } else if (this.huPosition === "nextPlayer") {
+                    this.huHandTiles = data.msg["nextPlayerMelds"];
+                  } else if (this.huPosition === "oppositePlayer") {
+                    this.huHandTiles = data.msg["oppositePlayerMelds"];
+                  } else if (this.huPosition === "prevPlayer") {
+                    this.huHandTiles = data.msg["prevPlayerMelds"];
+                  }
                 }
 
             } else if (data.operation === "deal") {
@@ -344,6 +361,7 @@ export default {
                 this.huName = JSON.stringify(data.msg["playerName"]);
                 this.huPosition = JSON.stringify(data.msg["position"]);
                 this.message = this.huName + "has HU!!!!!"
+                this.gameStart = false;
                 this.restart();
 
             } else if (data.operation === "Kong") {
@@ -476,6 +494,7 @@ export default {
             this.canChow = false;
             this.canPang = false;
             this.canKong = false;
+            this.chowList = '';  // hide the chosen menu
 
         },
 
