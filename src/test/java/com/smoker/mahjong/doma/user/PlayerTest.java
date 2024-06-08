@@ -84,34 +84,34 @@ public class PlayerTest {
         int initialScore = player.getScore();
 
         // Test case where player is the winner and not self-drawn
-        player.scoring(banker, player, losers, 1);
+        player.scoring(banker, player, losers, 2);
         // Expected score calculation: initialScore + (100 * 1 * 6)
-        assertEquals(initialScore + 1 * 100 * 6, player.getScore());
+        assertEquals(initialScore + 2 * 100 * 5, player.getScore());
 
         // Reset score
         player = new Player("TestPlayer");
         initialScore = player.getScore();
 
         // Test case where player is a loser and the banker wins
-        player.scoring(banker, banker, losers, 1);
+        player.scoring(banker, banker, losers, 2);
         // Expected score calculation: initialScore - (100 * 1 * 2)
-        assertEquals(initialScore - 1 * 2 * 100, player.getScore());
+        assertEquals(initialScore - 2 * 2 * 100, player.getScore());
 
         // Reset score
         player = new Player("TestPlayer");
         initialScore = player.getScore();
 
         // Test case where player is the banker and wins by self-draw
-        player.scoring(player, player, new ArrayList<>(), 1);
+        player.scoring(player, player, new ArrayList<>(), 2);
         // Expected score calculation: initialScore + (100 * 1 * 12)
-        assertEquals(initialScore + 1 * 100 * 12, player.getScore());
+        assertEquals(initialScore + 2 * 100 * 12, player.getScore());
 
         // Reset score
         player = new Player("TestPlayer");
         initialScore = player.getScore();
 
         // Test case where player is a loser and another player wins by self-draw
-        player.scoring(banker, winner, losers, 1);
+        player.scoring(banker, winner, losers, 2);
         // Expected score calculation: initialScore - (100 * 1 * 2)
         assertEquals(initialScore - 1 * 100 * 2, player.getScore());
     }
