@@ -80,11 +80,9 @@
         </div>
 
         <!-- 显示错误消息 -->
-        <div v-if="errorMessage" class="error-message">{{ errorMessage }}
-          <button v-if="errorMessage" v-on:click="back()">back</button>
-        </div>
+        <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
         <!-- 显示成功消息 -->
-        <div v-if="successMessage" v-on="gotoMatching()" class="success-message">{{ successMessage }}
+        <div v-if="successMessage"  class="success-message">{{ successMessage }}
         </div>
       </div>
 
@@ -147,6 +145,8 @@ export default defineComponent({
           this.loginButtonIf=true;
           this.changePasswordButtonIf=true;
           this.logoutButtonIf=true;
+          this.errorMessage ='';
+          this.successMessage = '';
     },
 
     register() {
@@ -241,9 +241,7 @@ export default defineComponent({
       this.logoutIf = true;
     },
 
-    gotoMatching(){
-      this.$router.push('/Matching');
-    },
+
 
     async signup(name, password) {
       try {
@@ -273,11 +271,14 @@ export default defineComponent({
         if (response=="登录成功") {
           this.successMessage = "success!"
           WebSocketService.sendMessage(JSON.stringify({operation: "login", playerName: name}))
+          this.$router.push('/Matching');
           // this.$router.push({path: '/'});
         } else if (response === "密码错误") {
           this.errorMessage = "wrong password！";
         } else if (response === "用户不存在") {
           this.errorMessage = "account does not exist!";
+        } else if (response === "用户已登录") {
+          this.errorMessage = "account has been login!";
         }
       } catch (error) {
         console.error('Error during POST:', error);
