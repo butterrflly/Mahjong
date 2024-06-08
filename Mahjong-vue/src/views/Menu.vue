@@ -69,8 +69,7 @@
           <button v-if="errorMessage" v-on:click="back()">back</button>
         </div>
         <!-- 显示成功消息 -->
-        <div v-if="successMessage" class="success-message">{{ successMessage }}
-          <button v-if="successMessage" v-on:click="gotoMatching()">confirm</button>
+        <div v-if="successMessage" v-on="gotoMatching()" class="success-message">{{ successMessage }}
         </div>
       </div>
 
@@ -121,8 +120,9 @@ export default defineComponent({
 
   methods: {
 
+
+
     register() {
-      // 初始化，控制四个表单和按钮的出现
       this.successMessage = '';
       this.errorMessage = '';
       this.registerButtonIf = false;
@@ -133,7 +133,7 @@ export default defineComponent({
       this.loginIf = false;
       this.logoutButtonIf = false;
       this.logoutIf = false;
-      this.changePasswordButtonIf = true;
+      this.changePasswordButtonIf = false;
       this.changePasswordIf = false;
     },
 
@@ -148,7 +148,7 @@ export default defineComponent({
       this.loginIf = false;
       this.logoutButtonIf = false;
       this.logoutIf = false;
-      this.changePasswordButtonIf = true;
+      this.changePasswordButtonIf = false;
       this.changePasswordIf = false;
     },
 
@@ -362,15 +362,6 @@ export default defineComponent({
       justify-content: flex-start;
       align-items: center;
       margin-bottom: 20px;
-    }
-
-    .register .backButton {
-      background-color: #d9534f;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
     }
 
     .register button {

@@ -1,10 +1,12 @@
 <template>
     <div class="background">
-        <h2>Matching a game</h2>
+      <div>
+        <router-link to="/Menu"><BackButton class="backButton"/></router-link>
+      </div>
+      <h2>Matching a game</h2>
         <div class="room">
             <button v-if="createRoomButtonIf" v-on:click="createRoomCheck()">creatRoom</button>
             <button v-if="joinRoomButtonIf" v-on:click="joinRoomCheck()">Join in the Room</button>
-
         </div>
 
       <div v-if="createRoomIf">
@@ -41,9 +43,10 @@
 //创建房间
 import WebSocketService from '../websocket.js';
 import RulesButton from "../components/RulesButton.vue";
+import BackButton from "../components/BackButton.vue";
 
 export default {
-  components: {RulesButton},
+  components: {BackButton, RulesButton},
     data(){
       return {
         owner: '',
@@ -202,52 +205,96 @@ export default {
 
 <style scoped>
 .background {
-    background-image: url('../assets/background.png');
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-    position: fixed;
-    top:0;
-    left:0;
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    text-align: center;
+  background-image: url('../assets/background.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  font-family: 'Arial', sans-serif;
 }
 
-.container {
-  background: rgba(255, 255, 255, 0.8);
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.room, .RoomGather {
+h2 {
+  font-size: 2.5rem; /* 放大标题 */
+  font-weight: bold;
+  color: #000000FF;
   margin: 20px 0;
 }
 
-.actionButton, .confirmRoomButton, .chooseRoomButton {
-  background-color: green;
-  color: white;
-  border: none;
+.room, .RoomGather {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+button {
   padding: 10px 20px;
   margin: 10px 0;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #ffffff;
+  background-color: #4CAF50;
+  border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 16px;
+  transition: background-color 0.3s ease;
 }
 
-.actionButton:hover, .confirmRoomButton:hover, .chooseRoomButton:hover {
-  background-color: darkgreen;
+button:hover {
+  background-color: #45a049;
 }
 
-.inputField {
-  padding: 5px;
+.confirmRoomButton, .chooseRoomButton {
+  padding: 10px 20px;
+  margin: 10px 0;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #ffffff;
+  background-color: #0f8a3c;
+  border: none;
   border-radius: 5px;
-  border: 1px solid #ccc;
-  margin-top: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.confirmRoomButton:hover, .chooseRoomButton:hover {
+  background-color: #1e87e0;
+}
+
+input {
+  padding: 10px;
+  margin: 10px 0;
+  font-size: 1rem;
+  border: 2px solid #ffffff;
+  border-radius: 5px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+input:focus {
+  border-color: #4CAF50;
+}
+
+.backButton {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 1.5rem;
+  color: #ffffff;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.backButton:hover {
+  color: #4CAF50;
 }
 </style>
+
