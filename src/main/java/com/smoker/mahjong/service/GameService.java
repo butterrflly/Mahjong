@@ -312,7 +312,7 @@ public class GameService {
     public String discardRequest() {
         Map<String, Object> result = new HashMap<>();
         result.put("operation", "discardRequest");
-        result.put("msg", "你怎么还不出牌啊，我等的花都谢了"); // Translation: "Why haven't you discarded a tile yet? I've been waiting forever."
+        result.put("msg", "It's your turn, please discard"); // Translation: "Why haven't you discarded a tile yet? I've been waiting forever."
 
         return JSONObject.toJSONString(result);
     }
